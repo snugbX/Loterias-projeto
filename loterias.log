@@ -245,3 +245,719 @@
 2025-07-28 02:14:43,072 - INFO - 127.0.0.1 - - [28/Jul/2025 02:14:43] "GET /gerar_jogos/quina?num_games=5 HTTP/1.1" 200 -
 2025-07-28 02:15:43,530 - INFO - 5 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-07-28_02-15-42.csv'
 2025-07-28 02:15:43,531 - INFO - 127.0.0.1 - - [28/Jul/2025 02:15:43] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2025-08-09 18:49:22,411 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-08-09 18:49:22,411 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-09 18:49:22,414 - INFO -  * Restarting with stat
+2025-08-09 18:49:23,773 - WARNING -  * Debugger is active!
+2025-08-09 18:49:23,789 - INFO -  * Debugger PIN: 415-545-082
+2025-08-09 18:49:25,690 - INFO - 192.168.18.5 - - [09/Aug/2025 18:49:25] "[36mGET / HTTP/1.1[0m" 304 -
+2025-08-09 18:49:25,718 - INFO - 192.168.18.5 - - [09/Aug/2025 18:49:25] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-08-09 18:49:25,719 - INFO - 192.168.18.5 - - [09/Aug/2025 18:49:25] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-08-09 18:49:26,129 - INFO - 192.168.18.5 - - [09/Aug/2025 18:49:26] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-09 18:49:52,539 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-49-52.csv'
+2025-08-09 18:49:52,541 - INFO - 192.168.18.5 - - [09/Aug/2025 18:49:52] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-08-09 18:50:43,397 - INFO - 192.168.18.5 - - [09/Aug/2025 18:50:43] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2025-08-09 18:51:04,586 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-04.csv'
+2025-08-09 18:51:04,586 - INFO - 192.168.18.5 - - [09/Aug/2025 18:51:04] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-08-09 18:51:32,451 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-32.csv'
+2025-08-09 18:51:32,452 - INFO - 192.168.18.5 - - [09/Aug/2025 18:51:32] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-08-09 18:51:51,046 - INFO - 192.168.18.5 - - [09/Aug/2025 18:51:51] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-08-09 18:51:56,276 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-56.csv'
+2025-08-09 18:51:56,277 - INFO - 192.168.18.5 - - [09/Aug/2025 18:51:56] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-08-09 18:52:30,621 - INFO - 5 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-52-30.csv'
+2025-08-09 18:52:30,622 - INFO - 192.168.18.5 - - [09/Aug/2025 18:52:30] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2025-08-30 16:33:46,655 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-08-30 16:33:46,656 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-30 16:33:46,659 - INFO -  * Restarting with stat
+2025-08-30 16:33:47,880 - WARNING -  * Debugger is active!
+2025-08-30 16:33:47,895 - INFO -  * Debugger PIN: 415-545-082
+2025-08-30 16:33:50,492 - ERROR - 192.168.18.5 - - [30/Aug/2025 16:33:50] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00-\x00\x02\x01\x01\x00')
+2025-08-30 16:33:50,492 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:50] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03!óÙû@\x9f\x9dq,Í\x82úò÷j`#9"Ctà~_NæÀÜÅ8Îw ½xQ\x8arÅêý\x81\x0fÚYMÆÃ\x86-õ\x92rº1÷Å\x7fK¹Ô4ä;\x0b\x00 úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063\x9a\x9a\x00\x00\x00+\x00\x07\x06\x9a\x9a\x03\x04\x03\x03\x00\x12\x00\x00ÿ\x01\x00\x01\x00\x00\x17\x00\x00\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00-\x00\x02\x01\x01\x00[0m" 400 -
+2025-08-30 16:33:50,560 - ERROR - 192.168.18.5 - - [30/Aug/2025 16:33:50] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00')
+2025-08-30 16:33:50,560 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:50] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03ê\x8aõ\x86FEÙ\x0dåü\x92´E\x06&D¬\x09K\x8e\x88Ûê$UªH\x80gw3d ÔÑ´ÞÚ×\x9f}+ë\x15\x8aÞ`&\x13ùê7<*\x9eæªè¡5ýµ9Eq\x00 êê\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06S**\x00\x00\x00-\x00\x02\x01\x01\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00[0m" 400 -
+2025-08-30 16:33:53,583 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:53] "GET / HTTP/1.1" 200 -
+2025-08-30 16:33:53,639 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:53] "GET /style.css HTTP/1.1" 200 -
+2025-08-30 16:33:53,655 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:53] "GET /script.js HTTP/1.1" 200 -
+2025-08-30 16:33:54,699 - INFO - 192.168.18.5 - - [30/Aug/2025 16:33:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-30 16:34:20,743 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:20] "[36mGET / HTTP/1.1[0m" 304 -
+2025-08-30 16:34:20,771 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:20] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-08-30 16:34:20,772 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:20] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-08-30 16:34:21,521 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-30_16-34-20.csv'
+2025-08-30 16:34:21,527 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:21] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-08-30 16:34:37,578 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:37] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-08-30 16:34:49,219 - INFO - 192.168.18.5 - - [30/Aug/2025 16:34:49] "GET /get_file_content/megasena_resultados_2025-08-30_16-34-20.csv HTTP/1.1" 200 -
+2025-09-23 14:53:45,009 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-09-23 14:53:45,261 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-23 14:53:45,264 - INFO -  * Restarting with stat
+2025-09-23 14:53:46,642 - WARNING -  * Debugger is active!
+2025-09-23 14:53:46,655 - INFO -  * Debugger PIN: 415-545-082
+2025-09-23 14:53:49,455 - ERROR - 192.168.18.5 - - [23/Sep/2025 14:53:49] code 400, message Bad request version ('\x02h2\x08http/1.1\x003\x04ï\x04íZZ\x00\x01\x00\x11ì\x04ÀÜ3\x02s\x86w\x91ó\x03l#')
+2025-09-23 14:53:49,456 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:49] "[31m[1m\x16\x03\x01\x07\x00\x01\x00\x06ü\x03\x03\x8a¹\x17ÙÚ¿Ø\x85Çy\x84Íºu\x85Ê\\\x96¥~\x8d\x19Sâ\x14Ak\x001#&^ \x0f¦¡"\x90vÔÜ\x01\x01%f\x0dÁXï¹üNN©C0¥Bä@ÎÿÃ`\x8b\x00 **\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x93úú\x00\x00\x00#\x00\x00þ\x0d\x01\x1a\x00\x00\x01\x00\x01\x15\x00 \x92Ì$¯\x1a6W'²\x18Ï/f¬\x92¾\x91ï\x83aîC\x84ÏL¥\x03\x97Ä8ü[\x00ðãtç1÷®æ\x8ap}µ¯½Ó@L\x11ë\x1bi\x81\x8eùçùMW\x93¦\x0eù\x92(;±\x00\x18Ù(\x9f@O´YJ\x099òÖ\x1b·]\x01J\x90ê£\x8c\x07\x89_·ÖË^ûú\x1bP$ã\x00k\x97íòa\x18 \x8c\x9c%¿ã\x150®'×û<\x9f\x12©üqàÀíÏPÍ®¿\x18î\x92\x04/à\x04r\x8b\x1a9/¾r[A\x95uÞ\x94ÿKV\x0f\x0cS\x86[ÖÔy\x07\x9e\x10{)d\x0d/ô\x98.\x19¶\x12°¶;þ\x90ùlûît\x10U\x03Áz\x0eWÉ9ke¯A®§ÒBóùõ\x09\x89Â\x09£:\x80(®u³;ÒÚý)\x0d)qe¼Å»ÁäsÉ\x8dTÀ\x9cË\x08xÖwü\x08\x8cÏ\x0d\x0f[Æ.q\x12\x11àó@mxû½T]FJ¾3DÍ\x00\x05\x00\x03\x02h2\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x003\x04ï\x04íZZ\x00\x01\x00\x11ì\x04ÀÜ3\x02s\x86w\x91ó\x03l#\x1c[0m" 400 -
+2025-09-23 14:53:49,457 - ERROR - 192.168.18.5 - - [23/Sep/2025 14:53:49] code 400, message Bad request version ('\x00\x02\x01\x00\x00')
+2025-09-23 14:53:49,457 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:49] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03\x10Yy´\x8f¨\x1d ÈâtD$\x04\x80?½v\x04Ï\x15Å©E'\x8d\x849_ã\x1b\x9c G\x18;\x13\x11S\x03oé§>â-7K\x92ÉCo²¿\x86\x7fã?jW\x86 ü\x92Ú\x00 jj\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063**\x00\x00DÍ\x00\x05\x00\x03\x02h2þ\x0d\x00º\x00\x00\x01\x00\x01\x01\x00 "ÏYæ\x88¯\x12\x93í¥\x13\x1dàL ­¶U\x9a\x13¾ý\x174hÁ«¼\x9a\x16Ù/\x00\x90U\x0f«1&èhzô\x95­n\x8aj'<\x0fì\x0eågÍL\x90Þµ\x89e]%ð%\x19ÑÍ\x90yónCl\x91\x1bá=u½\x8bGUÉjîÅ#¦4ã»Ð\x9fÄRõr7!©££Àªú?E&_µG\x10`·Ì\x19\x95¿\x8b¸Îq£\x98ì\x8bÐÂ½öl;È\x05\x8b\x9c\x9e\x090)ú\x18\x8eéS\x9d¸2?\x84@Ë\x80\x84\x8dë¶-\x06\x0fs~´Þ\x15`\x04c\x1b@¿\x88ÿ§\x8f=\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x0b\x00\x02\x01\x00\x00[0m" 400 -
+2025-09-23 14:53:57,530 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:57] "GET / HTTP/1.1" 200 -
+2025-09-23 14:53:58,045 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:58] "GET /style.css HTTP/1.1" 200 -
+2025-09-23 14:53:58,584 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:58] "GET /script.js HTTP/1.1" 200 -
+2025-09-23 14:53:59,385 - INFO - 192.168.18.5 - - [23/Sep/2025 14:53:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-23 14:54:02,946 - INFO - 192.168.18.5 - - [23/Sep/2025 14:54:02] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-09-23 14:54:10,635 - INFO - 192.168.18.5 - - [23/Sep/2025 14:54:10] "GET /get_file_content/megasena_resultados_2025-08-30_16-34-20.csv HTTP/1.1" 200 -
+2025-09-23 14:54:19,677 - INFO - 192.168.18.5 - - [23/Sep/2025 14:54:19] "[36mGET / HTTP/1.1[0m" 304 -
+2025-09-23 14:54:19,706 - INFO - 192.168.18.5 - - [23/Sep/2025 14:54:19] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-09-23 14:54:19,707 - INFO - 192.168.18.5 - - [23/Sep/2025 14:54:19] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-09-23 14:56:09,910 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:09] "[36mGET / HTTP/1.1[0m" 304 -
+2025-09-23 14:56:09,976 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:09] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-09-23 14:56:09,978 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:09] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-09-23 14:56:37,710 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:37] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-09-23 14:56:40,979 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:40] "GET /get_file_content/megasena_resultados_2025-08-09_18-49-52.csv HTTP/1.1" 200 -
+2025-09-23 14:56:53,849 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:53] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-09-23 14:56:56,459 - INFO - 192.168.18.5 - - [23/Sep/2025 14:56:56] "GET /get_file_content/megasena_resultados_2025-08-09_18-49-52.csv HTTP/1.1" 200 -
+2025-09-23 14:57:05,061 - INFO - Arquivo deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-49-52.csv
+2025-09-23 14:57:05,062 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:05] "POST /delete_file/megasena_resultados_2025-08-09_18-49-52.csv HTTP/1.1" 200 -
+2025-09-23 14:57:05,072 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:05] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-09-23 14:57:06,759 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:06] "GET /get_file_content/megasena_resultados_2025-08-09_18-51-04.csv HTTP/1.1" 200 -
+2025-09-23 14:57:16,545 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:16] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-09-23 14:57:19,088 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:19] "GET /get_file_content/megasena_resultados_2025-08-09_18-51-32.csv HTTP/1.1" 200 -
+2025-09-23 14:57:33,115 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:33] "GET /get_file_content/megasena_resultados_2025-08-09_18-51-56.csv HTTP/1.1" 200 -
+2025-09-23 14:57:40,144 - INFO - 192.168.18.5 - - [23/Sep/2025 14:57:40] "GET /get_file_content/megasena_resultados_2025-08-09_18-52-30.csv HTTP/1.1" 200 -
+2025-10-04 18:37:00,249 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-10-04 18:37:00,251 - INFO - [33mPress CTRL+C to quit[0m
+2025-10-04 18:37:00,254 - INFO -  * Restarting with stat
+2025-10-04 18:37:01,579 - WARNING -  * Debugger is active!
+2025-10-04 18:37:01,595 - INFO -  * Debugger PIN: 415-545-082
+2025-10-04 18:37:04,615 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:04] "GET / HTTP/1.1" 200 -
+2025-10-04 18:37:04,855 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:04] "GET /style.css HTTP/1.1" 200 -
+2025-10-04 18:37:04,879 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:04] "GET /script.js HTTP/1.1" 200 -
+2025-10-04 18:37:06,002 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-10-04 18:37:30,484 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-10-04_18-37-30.csv'
+2025-10-04 18:37:30,485 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:30] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-10-04 18:37:34,700 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:34] "[36mGET / HTTP/1.1[0m" 304 -
+2025-10-04 18:37:34,725 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:34] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-10-04 18:37:34,728 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:34] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-10-04 18:37:39,607 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:39] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-10-04 18:37:45,607 - INFO - 192.168.18.5 - - [04/Oct/2025 18:37:45] "GET /get_file_content/megasena_resultados_2025-10-04_18-37-30.csv HTTP/1.1" 200 -
+2025-11-11 16:46:11,405 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-11-11 16:46:11,405 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-11 16:46:11,408 - INFO -  * Restarting with stat
+2025-11-11 16:46:12,758 - WARNING -  * Debugger is active!
+2025-11-11 16:46:12,775 - INFO -  * Debugger PIN: 415-545-082
+2025-11-11 16:46:15,304 - ERROR - 192.168.18.5 - - [11/Nov/2025 16:46:15] code 400, message Bad request version ('CÅ\x89Å\x9c\x15BÜ\x99\x9eÛÊa1CD\x02Á\x08Ut=U®Ìñ\x99Á\x97FQ\x88\x0f;Õ*\x04\x07°\x8d3\x80\x8cñW?\x10\x08±Ö\x1a\x86¨6\x9b¶\x1bþÌÍOe\x81\x16,8÷ëJ\x15°³ZªO>rÃ¸<\x81\x82Ì\x0f\x08°c¨kºDBÎ\x80!\x95\x97')
+2025-11-11 16:46:15,305 - INFO - 192.168.18.5 - - [11/Nov/2025 16:46:15] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03Çùlw\x16³¸\x86T\x1ellz\x92Ú\x0bzD*¼0*\x8fÇùP\x06¿\x1f?oU \x16Z\x8b<}"Ø¥=\x13qj÷Õ\x84F¦qe\x87\x02\x84\x80ý£âÅ8\x92GË¸\x00 jj\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063ZZ\x00\x00DÍ\x00\x05\x00\x03\x02h2\x00\x12\x00\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00\x0b\x00\x02\x01\x00\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00\x17\x00\x00\x003\x04ï\x04íJJ\x00\x01\x00\x11ì\x04Àþ\x88\x86ñ)N\x8a\x98OÑìmä«H\x8f)týÓ2Ç\x05\x99G\x06\x12qhw\x88û«\x88\x9c CÅ\x89Å\x9c\x15BÜ\x99\x9eÛÊa1CD\x02Á\x08Ut=U®Ìñ\x99Á\x97FQ\x88\x0f;Õ*\x04\x07°\x8d3\x80\x8cñW?\x10\x08±Ö\x1a\x86¨6\x9b¶\x1bþÌÍOe\x81\x16,8÷ëJ\x15°³ZªO>rÃ¸<\x81\x82Ì\x0f\x08°c¨kºDBÎ\x80!\x95\x97[0m" 400 -
+2025-11-11 16:46:15,307 - ERROR - 192.168.18.5 - - [11/Nov/2025 16:46:15] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x1b\x00\x03\x02\x00\x02\x003\x04ï\x04íZZ\x00\x01\x00\x11ì\x04À4Ñ\x15\x02ö')
+2025-11-11 16:46:15,307 - INFO - 192.168.18.5 - - [11/Nov/2025 16:46:15] "[31m[1m\x16\x03\x01\x07\x00\x01\x00\x06ü\x03\x03ºæ\x0b\x96¨ÿÉ|§óÄ\x1d\x9f\x1f*º¯àÇ\x86\x06¶\x8fKÔaò§éú"é Ú_\x81\x15\x11dZ\x17\x08\x90Z\x80\x0c£,gF+F\x05\x85\x04\x08Êx»\x0cñöç/$\x00 ºº\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x93zz\x00\x00þ\x0d\x01\x1a\x00\x00\x01\x00\x01h\x00 &\x9fÊ\x8aïbà£"\x96:â»\x9fÑíL\x90!"\x89\x8c´ð\x94&/k3C\x1d|\x00ð¼c\x14\x9d÷ûV§íü\x0c¤½+¼\x17~:yXB\x89Ú\x1aûaÊ \x99\x0f+Õ\x7fÚËT9Ñû$Où\x06& Ä9øÒ¹Q¸þá¶àï)DÉ*çô¥ê²5«ÊØ\x09\x0bI\x18^¯qßCxyöxN®Å\x87»îã\x88ç0%Éçê*þÊ@ß\x8b1tÐ\x9dý #]8¨>\x85cY\x14=\x01\x0c­åyÏ7\x0d\x9d\x11Û0ò¨\x86Âþ©ÿÛ`\x84\x01æD\x85x.ë]¹\x07øÿº¾1×\x93\x13\x9d°îW\x803<\x0f°\x16Ì =ÓIÝèlÄÊ\x92¹ñ¼eJ(ø5v\x12}ö4EÄ¡5ù\x81\x1d\x19D±\x05BM\x18)\x95³ ·­Ð%êÜs9\x86\x8e\x94#+<\x18Õh\x09\x97¸.`\x01æ÷Ì\x16Ì[ÿ\x01\x00\x01\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00-\x00\x02\x01\x01\x00#\x00\x00\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x1b\x00\x03\x02\x00\x02\x003\x04ï\x04íZZ\x00\x01\x00\x11ì\x04À4Ñ\x15\x02ö[0m" 400 -
+2025-11-11 16:46:45,502 - ERROR - 192.168.18.5 - - [11/Nov/2025 16:46:45] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00')
+2025-11-11 16:46:45,502 - INFO - 192.168.18.5 - - [11/Nov/2025 16:46:45] "[31m[1m\x16\x03\x01\x06à\x01\x00\x06Ü\x03\x03r¨C5\x8aþ}ßÀÕ\x01:'\x10ýWr'­¬d\x17\x9aÿ^lêg6ÉT« ñÜ\x81(e¢>\x0c;ß¨]d\x85±\x89%¤QÅ\x82\x91\\\x89L÷iùQä\x8eÅ\x00 êê\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06s::\x00\x00ÿ\x01\x00\x01\x00\x00\x17\x00\x00DÍ\x00\x05\x00\x03\x02h2\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00[0m" 400 -
+2025-11-11 16:46:45,504 - ERROR - 192.168.18.5 - - [11/Nov/2025 16:46:45] code 400, message Bad request version ('Á\x88LBÌâçñ\x99\x08\x94YVòvÖ¬')
+2025-11-11 16:46:45,504 - INFO - 192.168.18.5 - - [11/Nov/2025 16:46:45] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03¤7ï\x11\x06þáìtS»43¤\x03\x80¾\x8bþ®T\x0fp$1ÇÙÎÎ\x11\x0b\x95 ú\x99n´à\x12ÎHP FÐ,|éQ#Ùæ²\\{SlV|;S«ü\x9fÆ\x00 ªª\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063zz\x00\x00\x00\x1b\x00\x03\x02\x00\x02\x00\x17\x00\x00þ\x0d\x00º\x00\x00\x01\x00\x01+\x00 Á\x88LBÌâçñ\x99\x08\x94YVòvÖ¬[0m" 400 -
+2025-11-11 16:47:17,454 - INFO - 192.168.18.5 - - [11/Nov/2025 16:47:17] "GET / HTTP/1.1" 200 -
+2025-11-11 16:47:17,485 - INFO - 192.168.18.5 - - [11/Nov/2025 16:47:17] "GET /style.css HTTP/1.1" 200 -
+2025-11-11 16:47:17,486 - INFO - 192.168.18.5 - - [11/Nov/2025 16:47:17] "GET /script.js HTTP/1.1" 200 -
+2025-11-11 16:47:18,710 - INFO - 192.168.18.5 - - [11/Nov/2025 16:47:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-11-11 16:59:06,968 - INFO -  * Detected change in 'H:\\docs\\ChatGPT\\Loterias projeto\\src\\gerador_loterias.py', reloading
+2025-11-11 16:59:07,993 - INFO -  * Restarting with stat
+2025-11-11 16:59:10,346 - WARNING -  * Debugger is active!
+2025-11-11 16:59:10,364 - INFO -  * Debugger PIN: 415-545-082
+2025-11-11 16:59:11,389 - INFO -  * Detected change in 'H:\\docs\\ChatGPT\\Loterias projeto\\src\\gerador_loterias.py', reloading
+2025-11-11 16:59:12,437 - INFO -  * Restarting with stat
+2025-11-11 16:59:14,887 - WARNING -  * Debugger is active!
+2025-11-11 16:59:14,902 - INFO -  * Debugger PIN: 415-545-082
+2025-11-11 16:59:15,030 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:15] "[36mGET / HTTP/1.1[0m" 304 -
+2025-11-11 16:59:15,042 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:15] "GET / HTTP/1.1" 200 -
+2025-11-11 16:59:15,075 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:15] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-11-11 16:59:15,078 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:15] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-11-11 16:59:16,666 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:16] "[36mGET / HTTP/1.1[0m" 304 -
+2025-11-11 16:59:16,704 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:16] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-11-11 16:59:16,706 - INFO - 192.168.18.5 - - [11/Nov/2025 16:59:16] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-11-11 17:24:06,269 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-11-11 17:24:06,433 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-11 17:24:06,439 - INFO -  * Restarting with stat
+2025-11-11 17:24:09,620 - WARNING -  * Debugger is active!
+2025-11-11 17:24:09,640 - INFO -  * Debugger PIN: 415-545-082
+2025-11-11 17:24:11,486 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:11] "[36mGET / HTTP/1.1[0m" 304 -
+2025-11-11 17:24:11,539 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:11] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-11-11 17:24:11,543 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:11] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-11-11 17:24:27,552 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:27] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-11-11 17:24:36,114 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-04.csv
+2025-11-11 17:24:36,299 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-32.csv
+2025-11-11 17:24:36,468 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-51-56.csv
+2025-11-11 17:24:36,638 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-09_18-52-30.csv
+2025-11-11 17:24:36,811 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-08-30_16-34-20.csv
+2025-11-11 17:24:37,150 - INFO - Arquivo de histórico deletado: H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-10-04_18-37-30.csv
+2025-11-11 17:24:37,337 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:37] "POST /clear_history/megasena HTTP/1.1" 200 -
+2025-11-11 17:24:37,346 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:37] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-11-11 17:24:59,301 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-11-11_17-24-58.csv'
+2025-11-11 17:24:59,302 - INFO - 192.168.18.5 - - [11/Nov/2025 17:24:59] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2025-11-11 17:50:39,891 - INFO - 5 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-11-11_17-50-39.csv'
+2025-11-11 17:50:39,892 - INFO - 192.168.18.5 - - [11/Nov/2025 17:50:39] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2025-12-19 18:10:11,172 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-12-19 18:10:11,174 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-19 18:10:11,177 - INFO -  * Restarting with stat
+2025-12-19 18:10:12,686 - WARNING -  * Debugger is active!
+2025-12-19 18:10:12,704 - INFO -  * Debugger PIN: 415-545-082
+2025-12-19 18:10:15,501 - ERROR - 192.168.18.5 - - [19/Dec/2025 18:10:15] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x06')
+2025-12-19 18:10:15,501 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:15] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03D\x84-0\x14tiCÕþï]\x86vt\x90\x87B×|îH/\x15\x95µû\x9d^Sdß [0m" 400 -
+2025-12-19 18:10:15,502 - ERROR - 192.168.18.5 - - [19/Dec/2025 18:10:15] code 400, message Bad request version ('Íi\x15Ä')
+2025-12-19 18:10:15,503 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:15] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03Eî\x08ôÍ\x19Ô\x8cáàPâãÿð×gl\x0cæm\x99æ\x88ô\x1eüÑ\x11\x81\x0b\x9b ù\x00\x1cä\x17%L*»\x8d]\x05ª\x8drr®\x8eºxöê!Ã±¢q0±Û\x92ß\x00 ÊÊ\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063\x8a\x8a\x00\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00#\x00\x00\x00-\x00\x02\x01\x01\x003\x04ï\x04íúú\x00\x01\x00\x11ì\x04ÀÊ\x01©6g2\x80¸vÚ:\x7f\x00\x84\\Ë¨\x120"§Pø2Ã2w\x02\x931\x01FÌ\x1bÆ^\\û\\ûÙ\x04Q\x86\x8b\x7fS±Ò\\8%V\x07§\x19\x99\x14X\x97ÌÐWÖ'D\x0bÐ0\x82\x84s C^\x8bqk?\x00>Ã\x81\x7fs\x00\x1eP´Å\x9dùÍÿ\x1a\x11|s²\x14U²R\x92IÕH&,ò>*·\x82\x9aS\x0d§×\x1aæ\x1b!÷±\x0eÀ\x00\x86;\x15s<i\x9dk×c\x09\x94\x0e")Ã-;Ä\x8fÆ\x11\x9aÜdÒ\x0bI¤\x80A\x88\x80´!ÄV~\x09§[\x12\x1aüxj¿\x81zßi³5tGä\x06\x1a\x0dåµ¤u\\8ðF>¬\x15\\F¯OÇ\x15ñ\x81\x1cÍi\x15Ä[0m" 400 -
+2025-12-19 18:10:19,041 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:19] "GET / HTTP/1.1" 200 -
+2025-12-19 18:10:19,072 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:19] "GET /script.js HTTP/1.1" 200 -
+2025-12-19 18:10:19,074 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:19] "GET /style.css HTTP/1.1" 200 -
+2025-12-19 18:10:21,507 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-19 18:10:45,822 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:45] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 18:10:45,841 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:45] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 18:10:45,844 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:45] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 18:10:59,190 - INFO - 192.168.18.5 - - [19/Dec/2025 18:10:59] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2025-12-19 18:12:06,175 - INFO - 192.168.18.5 - - [19/Dec/2025 18:12:06] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-19 18:12:11,139 - INFO - 192.168.18.5 - - [19/Dec/2025 18:12:11] "GET /get_file_content/megasena_resultados_2025-11-11_17-50-39.csv HTTP/1.1" 200 -
+2025-12-19 18:13:20,782 - INFO - 192.168.18.5 - - [19/Dec/2025 18:13:20] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2025-12-19 18:18:22,268 - INFO - 192.168.18.5 - - [19/Dec/2025 18:18:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 18:18:22,326 - INFO - 192.168.18.5 - - [19/Dec/2025 18:18:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 18:18:22,343 - INFO - 192.168.18.5 - - [19/Dec/2025 18:18:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 18:22:55,129 - INFO - 192.168.18.5 - - [19/Dec/2025 18:22:55] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-19 18:22:56,839 - INFO - 192.168.18.5 - - [19/Dec/2025 18:22:56] "GET /get_file_content/megasena_resultados_2025-11-11_17-50-39.csv HTTP/1.1" 200 -
+2025-12-19 18:22:59,789 - INFO - 192.168.18.5 - - [19/Dec/2025 18:22:59] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-19 18:23:01,337 - INFO - 192.168.18.5 - - [19/Dec/2025 18:23:01] "GET /get_file_content/megasena_resultados_2025-11-11_17-24-58.csv HTTP/1.1" 200 -
+2025-12-19 22:29:12,401 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-12-19 22:29:12,401 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-19 22:29:12,404 - INFO -  * Restarting with stat
+2025-12-19 22:29:13,684 - WARNING -  * Debugger is active!
+2025-12-19 22:29:13,700 - INFO -  * Debugger PIN: 415-545-082
+2025-12-19 22:29:16,880 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:16] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:29:17,054 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:17] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:29:17,060 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:17] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:29:19,407 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-19 22:29:47,106 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:47] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:29:47,133 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:47] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:29:47,135 - INFO - 192.168.18.5 - - [19/Dec/2025 22:29:47] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:31:22,285 - INFO - 192.168.18.5 - - [19/Dec/2025 22:31:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:31:22,345 - INFO - 192.168.18.5 - - [19/Dec/2025 22:31:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:31:22,348 - INFO - 192.168.18.5 - - [19/Dec/2025 22:31:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:32:21,166 - INFO - 192.168.18.5 - - [19/Dec/2025 22:32:21] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:32:21,199 - INFO - 192.168.18.5 - - [19/Dec/2025 22:32:21] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:32:21,201 - INFO - 192.168.18.5 - - [19/Dec/2025 22:32:21] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:32:50,889 - INFO - 3 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2025-12-19_22-32-49.csv'
+2025-12-19 22:32:50,895 - INFO - 192.168.18.5 - - [19/Dec/2025 22:32:50] "GET /gerar_jogos/megasena?num_games=3 HTTP/1.1" 200 -
+2025-12-19 22:35:22,302 - INFO - 192.168.18.5 - - [19/Dec/2025 22:35:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:35:22,349 - INFO - 192.168.18.5 - - [19/Dec/2025 22:35:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:35:22,351 - INFO - 192.168.18.5 - - [19/Dec/2025 22:35:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:36:22,284 - INFO - 192.168.18.5 - - [19/Dec/2025 22:36:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:36:22,325 - INFO - 192.168.18.5 - - [19/Dec/2025 22:36:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:36:22,329 - INFO - 192.168.18.5 - - [19/Dec/2025 22:36:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:37:22,267 - INFO - 192.168.18.5 - - [19/Dec/2025 22:37:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:37:22,321 - INFO - 192.168.18.5 - - [19/Dec/2025 22:37:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:37:22,326 - INFO - 192.168.18.5 - - [19/Dec/2025 22:37:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:38:22,280 - INFO - 192.168.18.5 - - [19/Dec/2025 22:38:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:38:22,320 - INFO - 192.168.18.5 - - [19/Dec/2025 22:38:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:38:22,323 - INFO - 192.168.18.5 - - [19/Dec/2025 22:38:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:39:22,283 - INFO - 192.168.18.5 - - [19/Dec/2025 22:39:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:39:22,324 - INFO - 192.168.18.5 - - [19/Dec/2025 22:39:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:39:22,331 - INFO - 192.168.18.5 - - [19/Dec/2025 22:39:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:40:22,257 - INFO - 192.168.18.5 - - [19/Dec/2025 22:40:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:40:22,305 - INFO - 192.168.18.5 - - [19/Dec/2025 22:40:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:40:22,310 - INFO - 192.168.18.5 - - [19/Dec/2025 22:40:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:41:22,283 - INFO - 192.168.18.5 - - [19/Dec/2025 22:41:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:41:22,335 - INFO - 192.168.18.5 - - [19/Dec/2025 22:41:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:41:22,337 - INFO - 192.168.18.5 - - [19/Dec/2025 22:41:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:42:22,269 - INFO - 192.168.18.5 - - [19/Dec/2025 22:42:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:42:22,313 - INFO - 192.168.18.5 - - [19/Dec/2025 22:42:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:42:22,315 - INFO - 192.168.18.5 - - [19/Dec/2025 22:42:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:43:22,253 - INFO - 192.168.18.5 - - [19/Dec/2025 22:43:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:43:22,294 - INFO - 192.168.18.5 - - [19/Dec/2025 22:43:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:43:22,303 - INFO - 192.168.18.5 - - [19/Dec/2025 22:43:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:44:22,268 - INFO - 192.168.18.5 - - [19/Dec/2025 22:44:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:44:22,324 - INFO - 192.168.18.5 - - [19/Dec/2025 22:44:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:44:22,325 - INFO - 192.168.18.5 - - [19/Dec/2025 22:44:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:45:22,303 - INFO - 192.168.18.5 - - [19/Dec/2025 22:45:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:45:22,361 - INFO - 192.168.18.5 - - [19/Dec/2025 22:45:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:45:22,365 - INFO - 192.168.18.5 - - [19/Dec/2025 22:45:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:46:22,320 - INFO - 192.168.18.5 - - [19/Dec/2025 22:46:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:46:22,372 - INFO - 192.168.18.5 - - [19/Dec/2025 22:46:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:46:22,377 - INFO - 192.168.18.5 - - [19/Dec/2025 22:46:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-19 22:47:22,263 - INFO - 192.168.18.5 - - [19/Dec/2025 22:47:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-19 22:47:22,310 - INFO - 192.168.18.5 - - [19/Dec/2025 22:47:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-19 22:47:22,311 - INFO - 192.168.18.5 - - [19/Dec/2025 22:47:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-30 20:29:36,305 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2025-12-30 20:29:36,305 - INFO - [33mPress CTRL+C to quit[0m
+2025-12-30 20:29:36,308 - INFO -  * Restarting with stat
+2025-12-30 20:29:37,658 - WARNING -  * Debugger is active!
+2025-12-30 20:29:37,676 - INFO -  * Debugger PIN: 415-545-082
+2025-12-30 20:29:40,603 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:40] "GET / HTTP/1.1" 200 -
+2025-12-30 20:29:40,849 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:40] "GET /style.css HTTP/1.1" 200 -
+2025-12-30 20:29:40,850 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:40] "GET /script.js HTTP/1.1" 200 -
+2025-12-30 20:29:41,811 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:41] "[36mGET / HTTP/1.1[0m" 304 -
+2025-12-30 20:29:42,604 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:42] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2025-12-30 20:29:42,605 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:42] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2025-12-30 20:29:43,863 - INFO - 192.168.18.5 - - [30/Dec/2025 20:29:43] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-30 20:31:33,484 - INFO - 192.168.18.5 - - [30/Dec/2025 20:31:33] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-30 20:31:37,008 - INFO - 192.168.18.5 - - [30/Dec/2025 20:31:37] "GET /get_file_content/megasena_resultados_2025-11-11_17-24-58.csv HTTP/1.1" 200 -
+2025-12-30 20:31:40,595 - INFO - 192.168.18.5 - - [30/Dec/2025 20:31:40] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-30 20:31:41,750 - INFO - 192.168.18.5 - - [30/Dec/2025 20:31:41] "GET /get_file_content/megasena_resultados_2025-11-11_17-50-39.csv HTTP/1.1" 200 -
+2025-12-30 20:31:50,444 - INFO - 192.168.18.5 - - [30/Dec/2025 20:31:50] "GET /get_file_content/megasena_resultados_2025-12-19_22-32-49.csv HTTP/1.1" 200 -
+2025-12-30 20:32:18,964 - INFO - 192.168.18.5 - - [30/Dec/2025 20:32:18] "GET /get_file_content/megasena_resultados_2025-11-11_17-24-58.csv HTTP/1.1" 200 -
+2025-12-30 20:32:25,331 - INFO - 192.168.18.5 - - [30/Dec/2025 20:32:25] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2025-12-30 20:47:34,587 - INFO - 192.168.18.5 - - [30/Dec/2025 20:47:34] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2025-12-30 20:47:35,932 - INFO - 192.168.18.5 - - [30/Dec/2025 20:47:35] "GET /get_file_content/megasena_resultados_2025-12-19_22-32-49.csv HTTP/1.1" 200 -
+2025-12-30 20:49:08,812 - INFO - 192.168.18.5 - - [30/Dec/2025 20:49:08] "GET /get_file_content/megasena_resultados_2025-11-11_17-24-58.csv HTTP/1.1" 200 -
+2025-12-30 20:49:54,263 - INFO - 192.168.18.5 - - [30/Dec/2025 20:49:54] "GET /get_file_content/megasena_resultados_2025-12-19_22-32-49.csv HTTP/1.1" 200 -
+2026-02-24 18:24:34,141 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-02-24 18:24:34,142 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-24 18:24:34,145 - INFO -  * Restarting with stat
+2026-02-24 18:24:35,330 - WARNING -  * Debugger is active!
+2026-02-24 18:24:35,350 - INFO -  * Debugger PIN: 415-545-082
+2026-02-24 18:24:38,492 - ERROR - 192.168.18.5 - - [24/Feb/2026 18:24:38] code 400, message Bad request version ('\x02h2\x08http/1.1\x003\x04ï\x04í\x9a\x9a\x00\x01\x00\x11ì\x04À¦(¹\x83\x96ËýÄ\x90¡¬\x7f~kVÒT£\x14\x05\x95Ô\x1a\x17ÕaÌ\x89³\x11Dq¡¸ù{\x92|0Éø\x84\x14')
+2026-02-24 18:24:38,492 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:38] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03?F\x9aýBðµ\x83g5\x8bhÉ\x7f\x1f '¼Ö\x99*Ñ:ç\x8c¿°.Å*f® Uð\x970\x16\x1a÷\x85áßKý¬ªZï^|£>\x8d¡úb\x0cÁ\x1dO7èÓF\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06Sºº\x00\x00\x00\x17\x00\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x003\x04ï\x04í\x9a\x9a\x00\x01\x00\x11ì\x04À¦(¹\x83\x96ËýÄ\x90¡¬\x7f~kVÒT£\x14\x05\x95Ô\x1a\x17ÕaÌ\x89³\x11Dq¡¸ù{\x92|0Éø\x84\x14[0m" 400 -
+2026-02-24 18:24:38,493 - ERROR - 192.168.18.5 - - [24/Feb/2026 18:24:38] code 400, message Bad request version ('\x02h2\x08http/1.1\x00')
+2026-02-24 18:24:38,494 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:38] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03\\\x85Îqd\x1e\x15ò¢Þ$\x9f\x08¿í«á\x1c®ôXJ¢W:ÑîÏL5VH \x9c;VÍ\x1e\x95HM°zñw¤\x04\x86Õú\x9a\x9d\x13Ö\x03o\x8f)\\MÜ\x15\x09\x8aÔ\x00 ªª\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06Sºº\x00\x00DÍ\x00\x05\x00\x03\x02h2\x00\x17\x00\x00\x00\x1b\x00\x03\x02\x00\x02\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00[0m" 400 -
+2026-02-24 18:24:42,402 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:42] "GET / HTTP/1.1" 200 -
+2026-02-24 18:24:42,447 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:42] "GET /style.css HTTP/1.1" 200 -
+2026-02-24 18:24:42,448 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:42] "GET /script.js HTTP/1.1" 200 -
+2026-02-24 18:24:42,934 - INFO - 192.168.18.5 - - [24/Feb/2026 18:24:42] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-24 18:25:08,707 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:08] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-24 18:25:08,788 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:08] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-24 18:25:08,790 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:08] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-24 18:25:12,816 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:12] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-02-24 18:25:25,791 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-02-24_18-25-24.csv'
+2026-02-24 18:25:25,792 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:25] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-02-24 18:25:46,306 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:46] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-24 18:25:46,340 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:46] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-24 18:25:46,342 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:46] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-24 18:25:48,716 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:48] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-02-24 18:25:52,218 - INFO - 192.168.18.5 - - [24/Feb/2026 18:25:52] "GET /get_file_content/megasena_resultados_2026-02-24_18-25-24.csv HTTP/1.1" 200 -
+2026-02-24 18:27:39,412 - INFO - 2 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-02-24_18-27-39.csv'
+2026-02-24 18:27:39,413 - INFO - 192.168.18.5 - - [24/Feb/2026 18:27:39] "GET /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-02-24 18:32:45,242 - INFO - 192.168.18.5 - - [24/Feb/2026 18:32:45] "GET /get_history_files/lotofacil HTTP/1.1" 200 -
+2026-02-24 18:32:55,676 - INFO - 192.168.18.5 - - [24/Feb/2026 18:32:55] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-02-24 18:33:27,980 - INFO - 192.168.18.5 - - [24/Feb/2026 18:33:27] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2026-02-24 18:33:34,279 - INFO - 192.168.18.5 - - [24/Feb/2026 18:33:34] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-02-24 18:33:41,736 - INFO - 192.168.18.5 - - [24/Feb/2026 18:33:41] "GET /get_hot_cold_numbers/quina HTTP/1.1" 200 -
+2026-02-24 18:33:46,137 - INFO - 192.168.18.5 - - [24/Feb/2026 18:33:46] "GET /get_history_files/quina HTTP/1.1" 200 -
+2026-02-25 18:41:17,836 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-02-25 18:41:17,836 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-25 18:41:17,838 - INFO -  * Restarting with stat
+2026-02-25 18:41:19,010 - WARNING -  * Debugger is active!
+2026-02-25 18:41:19,025 - INFO -  * Debugger PIN: 415-545-082
+2026-02-25 18:41:22,414 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:22] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-25 18:41:22,652 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:22] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-25 18:41:22,653 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:22] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-25 18:41:23,069 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:23] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-25 18:41:48,673 - INFO - 2 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-02-25_18-41-48.csv'
+2026-02-25 18:41:48,675 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:48] "GET /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-02-25 18:41:52,520 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:52] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-25 18:41:52,559 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:52] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-25 18:41:52,562 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:52] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-25 18:41:59,250 - INFO - 192.168.18.5 - - [25/Feb/2026 18:41:59] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-02-25 18:42:10,686 - INFO - 192.168.18.5 - - [25/Feb/2026 18:42:10] "GET /get_history_files/lotofacil HTTP/1.1" 200 -
+2026-02-25 18:42:14,178 - INFO - 192.168.18.5 - - [25/Feb/2026 18:42:14] "GET /get_file_content/lotofacil_resultados_2026-02-25_18-41-48.csv HTTP/1.1" 200 -
+2026-02-28 16:07:16,307 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-02-28 16:07:16,308 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-28 16:07:16,310 - INFO -  * Restarting with stat
+2026-02-28 16:07:17,541 - WARNING -  * Debugger is active!
+2026-02-28 16:07:17,559 - INFO -  * Debugger PIN: 415-545-082
+2026-02-28 16:07:19,435 - INFO - 192.168.18.5 - - [28/Feb/2026 16:07:19] "GET / HTTP/1.1" 200 -
+2026-02-28 16:07:19,462 - INFO - 192.168.18.5 - - [28/Feb/2026 16:07:19] "GET /style.css HTTP/1.1" 200 -
+2026-02-28 16:07:19,475 - INFO - 192.168.18.5 - - [28/Feb/2026 16:07:19] "GET /script.js HTTP/1.1" 200 -
+2026-02-28 16:07:19,819 - INFO - 192.168.18.5 - - [28/Feb/2026 16:07:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-28 16:09:20,930 - INFO - 192.168.18.5 - - [28/Feb/2026 16:09:20] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-02-28 16:11:33,924 - INFO - 192.168.18.5 - - [28/Feb/2026 16:11:33] "GET /get_history_files/lotofacil HTTP/1.1" 200 -
+2026-02-28 16:11:37,599 - INFO - 192.168.18.5 - - [28/Feb/2026 16:11:37] "GET /get_file_content/lotofacil_resultados_2026-02-24_18-27-39.csv HTTP/1.1" 200 -
+2026-02-28 16:11:40,321 - INFO - 192.168.18.5 - - [28/Feb/2026 16:11:40] "GET /get_history_files/lotofacil HTTP/1.1" 200 -
+2026-02-28 16:11:41,691 - INFO - 192.168.18.5 - - [28/Feb/2026 16:11:41] "GET /get_file_content/lotofacil_resultados_2026-02-25_18-41-48.csv HTTP/1.1" 200 -
+2026-02-28 16:11:52,848 - INFO - 192.168.18.5 - - [28/Feb/2026 16:11:52] "GET /get_history_files/lotofacil HTTP/1.1" 200 -
+2026-02-28 16:12:14,028 - INFO - 192.168.18.5 - - [28/Feb/2026 16:12:14] "GET /get_file_content/lotofacil_resultados_2026-02-24_18-27-39.csv HTTP/1.1" 200 -
+2026-02-28 16:23:48,160 - INFO - 4 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-02-28_16-23-48.csv'
+2026-02-28 16:23:48,161 - INFO - 192.168.18.5 - - [28/Feb/2026 16:23:48] "GET /gerar_jogos/lotofacil?num_games=4 HTTP/1.1" 200 -
+2026-02-28 16:26:37,773 - INFO - 192.168.18.5 - - [28/Feb/2026 16:26:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:26:37,824 - INFO - 192.168.18.5 - - [28/Feb/2026 16:26:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:26:37,826 - INFO - 192.168.18.5 - - [28/Feb/2026 16:26:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:28:37,759 - INFO - 192.168.18.5 - - [28/Feb/2026 16:28:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:28:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 16:28:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:28:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 16:28:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:30:37,747 - INFO - 192.168.18.5 - - [28/Feb/2026 16:30:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:30:37,797 - INFO - 192.168.18.5 - - [28/Feb/2026 16:30:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:30:37,799 - INFO - 192.168.18.5 - - [28/Feb/2026 16:30:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:32:37,751 - INFO - 192.168.18.5 - - [28/Feb/2026 16:32:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:32:37,807 - INFO - 192.168.18.5 - - [28/Feb/2026 16:32:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:32:37,809 - INFO - 192.168.18.5 - - [28/Feb/2026 16:32:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:34:37,753 - INFO - 192.168.18.5 - - [28/Feb/2026 16:34:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:34:37,812 - INFO - 192.168.18.5 - - [28/Feb/2026 16:34:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:34:37,815 - INFO - 192.168.18.5 - - [28/Feb/2026 16:34:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:36:37,758 - INFO - 192.168.18.5 - - [28/Feb/2026 16:36:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:36:37,817 - INFO - 192.168.18.5 - - [28/Feb/2026 16:36:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:36:37,820 - INFO - 192.168.18.5 - - [28/Feb/2026 16:36:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:38:37,754 - INFO - 192.168.18.5 - - [28/Feb/2026 16:38:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:38:37,812 - INFO - 192.168.18.5 - - [28/Feb/2026 16:38:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:38:37,814 - INFO - 192.168.18.5 - - [28/Feb/2026 16:38:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:40:37,757 - INFO - 192.168.18.5 - - [28/Feb/2026 16:40:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:40:37,820 - INFO - 192.168.18.5 - - [28/Feb/2026 16:40:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:40:37,823 - INFO - 192.168.18.5 - - [28/Feb/2026 16:40:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:42:37,760 - INFO - 192.168.18.5 - - [28/Feb/2026 16:42:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:42:37,826 - INFO - 192.168.18.5 - - [28/Feb/2026 16:42:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:42:37,828 - INFO - 192.168.18.5 - - [28/Feb/2026 16:42:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:44:37,754 - INFO - 192.168.18.5 - - [28/Feb/2026 16:44:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:44:37,969 - INFO - 192.168.18.5 - - [28/Feb/2026 16:44:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:44:37,974 - INFO - 192.168.18.5 - - [28/Feb/2026 16:44:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:46:37,762 - INFO - 192.168.18.5 - - [28/Feb/2026 16:46:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:46:37,816 - INFO - 192.168.18.5 - - [28/Feb/2026 16:46:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:46:37,818 - INFO - 192.168.18.5 - - [28/Feb/2026 16:46:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:48:37,760 - INFO - 192.168.18.5 - - [28/Feb/2026 16:48:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:48:37,814 - INFO - 192.168.18.5 - - [28/Feb/2026 16:48:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:48:37,816 - INFO - 192.168.18.5 - - [28/Feb/2026 16:48:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:50:37,745 - INFO - 192.168.18.5 - - [28/Feb/2026 16:50:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:50:37,795 - INFO - 192.168.18.5 - - [28/Feb/2026 16:50:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:50:37,797 - INFO - 192.168.18.5 - - [28/Feb/2026 16:50:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 16:52:11,643 - INFO - 192.168.18.5 - - [28/Feb/2026 16:52:11] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 16:52:11,694 - INFO - 192.168.18.5 - - [28/Feb/2026 16:52:11] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 16:52:11,696 - INFO - 192.168.18.5 - - [28/Feb/2026 16:52:11] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:20:34,212 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-02-28 17:20:34,213 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-28 17:20:34,215 - INFO -  * Restarting with stat
+2026-02-28 17:20:35,473 - WARNING -  * Debugger is active!
+2026-02-28 17:20:35,492 - INFO -  * Debugger PIN: 415-545-082
+2026-02-28 17:20:37,401 - INFO - 192.168.18.5 - - [28/Feb/2026 17:20:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:20:37,443 - INFO - 192.168.18.5 - - [28/Feb/2026 17:20:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:20:37,444 - INFO - 192.168.18.5 - - [28/Feb/2026 17:20:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:20:56,792 - INFO - 192.168.18.5 - - [28/Feb/2026 17:20:56] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-02-28 17:24:59,166 - INFO - 4 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-02-28_17-24-59.csv'
+2026-02-28 17:24:59,167 - INFO - 192.168.18.5 - - [28/Feb/2026 17:24:59] "GET /gerar_jogos/lotofacil?num_games=4 HTTP/1.1" 200 -
+2026-02-28 17:27:37,754 - INFO - 192.168.18.5 - - [28/Feb/2026 17:27:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:27:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 17:27:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:27:37,813 - INFO - 192.168.18.5 - - [28/Feb/2026 17:27:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:29:37,764 - INFO - 192.168.18.5 - - [28/Feb/2026 17:29:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:29:37,829 - INFO - 192.168.18.5 - - [28/Feb/2026 17:29:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:29:37,833 - INFO - 192.168.18.5 - - [28/Feb/2026 17:29:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:31:37,750 - INFO - 192.168.18.5 - - [28/Feb/2026 17:31:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:31:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 17:31:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:31:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 17:31:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:33:37,762 - INFO - 192.168.18.5 - - [28/Feb/2026 17:33:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:33:37,817 - INFO - 192.168.18.5 - - [28/Feb/2026 17:33:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:33:37,820 - INFO - 192.168.18.5 - - [28/Feb/2026 17:33:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:35:37,752 - INFO - 192.168.18.5 - - [28/Feb/2026 17:35:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:35:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 17:35:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:35:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 17:35:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:37:37,753 - INFO - 192.168.18.5 - - [28/Feb/2026 17:37:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:37:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 17:37:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:37:37,810 - INFO - 192.168.18.5 - - [28/Feb/2026 17:37:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:39:37,762 - INFO - 192.168.18.5 - - [28/Feb/2026 17:39:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:39:37,810 - INFO - 192.168.18.5 - - [28/Feb/2026 17:39:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:39:37,822 - INFO - 192.168.18.5 - - [28/Feb/2026 17:39:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:41:37,774 - INFO - 192.168.18.5 - - [28/Feb/2026 17:41:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:41:37,818 - INFO - 192.168.18.5 - - [28/Feb/2026 17:41:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:41:37,820 - INFO - 192.168.18.5 - - [28/Feb/2026 17:41:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:43:37,748 - INFO - 192.168.18.5 - - [28/Feb/2026 17:43:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:43:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 17:43:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:43:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 17:43:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:45:37,755 - INFO - 192.168.18.5 - - [28/Feb/2026 17:45:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:45:37,810 - INFO - 192.168.18.5 - - [28/Feb/2026 17:45:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:45:37,812 - INFO - 192.168.18.5 - - [28/Feb/2026 17:45:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:47:37,772 - INFO - 192.168.18.5 - - [28/Feb/2026 17:47:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:47:37,821 - INFO - 192.168.18.5 - - [28/Feb/2026 17:47:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:47:37,824 - INFO - 192.168.18.5 - - [28/Feb/2026 17:47:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:49:37,743 - INFO - 192.168.18.5 - - [28/Feb/2026 17:49:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:49:37,796 - INFO - 192.168.18.5 - - [28/Feb/2026 17:49:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:49:37,799 - INFO - 192.168.18.5 - - [28/Feb/2026 17:49:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:51:37,785 - INFO - 192.168.18.5 - - [28/Feb/2026 17:51:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:51:37,831 - INFO - 192.168.18.5 - - [28/Feb/2026 17:51:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:51:37,835 - INFO - 192.168.18.5 - - [28/Feb/2026 17:51:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:53:37,750 - INFO - 192.168.18.5 - - [28/Feb/2026 17:53:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:53:37,808 - INFO - 192.168.18.5 - - [28/Feb/2026 17:53:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:53:37,811 - INFO - 192.168.18.5 - - [28/Feb/2026 17:53:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:55:37,755 - INFO - 192.168.18.5 - - [28/Feb/2026 17:55:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:55:37,803 - INFO - 192.168.18.5 - - [28/Feb/2026 17:55:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:55:37,805 - INFO - 192.168.18.5 - - [28/Feb/2026 17:55:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:57:37,760 - INFO - 192.168.18.5 - - [28/Feb/2026 17:57:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:57:37,816 - INFO - 192.168.18.5 - - [28/Feb/2026 17:57:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:57:37,818 - INFO - 192.168.18.5 - - [28/Feb/2026 17:57:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 17:59:37,756 - INFO - 192.168.18.5 - - [28/Feb/2026 17:59:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 17:59:37,812 - INFO - 192.168.18.5 - - [28/Feb/2026 17:59:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 17:59:37,815 - INFO - 192.168.18.5 - - [28/Feb/2026 17:59:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-28 18:01:37,752 - INFO - 192.168.18.5 - - [28/Feb/2026 18:01:37] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-28 18:01:37,818 - INFO - 192.168.18.5 - - [28/Feb/2026 18:01:37] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-28 18:01:37,821 - INFO - 192.168.18.5 - - [28/Feb/2026 18:01:37] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-03-05 19:26:18,766 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-03-05 19:26:18,766 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-05 19:26:18,769 - INFO -  * Restarting with stat
+2026-03-05 19:26:20,069 - WARNING -  * Debugger is active!
+2026-03-05 19:26:20,086 - INFO -  * Debugger PIN: 415-545-082
+2026-03-05 19:26:21,974 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:21] "GET / HTTP/1.1" 200 -
+2026-03-05 19:26:22,001 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:22] "GET /style.css HTTP/1.1" 200 -
+2026-03-05 19:26:22,002 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:22] "GET /script.js HTTP/1.1" 200 -
+2026-03-05 19:26:22,386 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:22] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-05 19:26:23,079 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:23] "[36mGET / HTTP/1.1[0m" 304 -
+2026-03-05 19:26:23,110 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:23] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-03-05 19:26:23,111 - INFO - 192.168.18.5 - - [05/Mar/2026 19:26:23] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-03-05 19:27:01,321 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-03-05_19-27-01.csv'
+2026-03-05 19:27:01,323 - INFO - 192.168.18.5 - - [05/Mar/2026 19:27:01] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-03-31 17:15:12,127 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-03-31 17:15:12,127 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-31 17:15:12,129 - INFO -  * Restarting with stat
+2026-03-31 17:15:13,382 - WARNING -  * Debugger is active!
+2026-03-31 17:15:13,399 - INFO -  * Debugger PIN: 415-545-082
+2026-03-31 17:15:15,229 - ERROR - 192.168.18.5 - - [31/Mar/2026 17:15:15] code 400, message Bad request version ('ý¯*L\x13n\x83\x8b\x0f\x06iU\x9b\x19\x97\x14Í')
+2026-03-31 17:15:15,229 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:15] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03\x0d\x86ãÕh?z\x1e¡í\x8b!Ýa%pö;\x935ÏÏ«\x91LE\x14Þ"¤½ª ì\x0d2Ø·.\x96æ2=#?\x1b÷^\x09h\x03£aC\x97æRÐÚuBn\x93ú-\x00 \x9a\x9a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06SÚÚ\x00\x00\x00-\x00\x02\x01\x01\x00\x1b\x00\x03\x02\x00\x02þ\x0d\x00Ú\x00\x00\x01\x00\x01\x0b\x00 ¨uªm\x92ÆQö\x1aÀï\x9cxTÊÕËüÙä³Ò#52Ð\x00 ÐÊ$X\x00°íÏ\x09Ñáµ\x85Rþ¯×¥ñ\x07D\x17\x87¯is\x8e6Y\x8an\x11Ê#E²4ã÷J7Ø'\x14û×\x09Ä·H¾-¶>º[äwìWfj\x8aß\x88³¡Ü[3@Ü\x86\x95É\x85ý¯*L\x13n\x83\x8b\x0f\x06iU\x9b\x19\x97\x14Í[0m" 400 -
+2026-03-31 17:15:15,231 - ERROR - 192.168.18.5 - - [31/Mar/2026 17:15:15] code 400, message Bad request version ('qÊò\x882{\x06HYè\x87vÍÔ\x83~\x15©øÊ\x00\\m°Ì=\x00')
+2026-03-31 17:15:15,231 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:15] "[31m[1m\x16\x03\x01\x06à\x01\x00\x06Ü\x03\x03ín\x14òÑ\x94[AÓÍÁ\x9fúÿÇ\x1a2Ø\x97\x14Ç}w\x9dÇ}á^\x95\x88\x12¸ \x9e1âb\x82\x1fqÊò\x882{\x06HYè\x87vÍÔ\x83~\x15©øÊ\x00\\m°Ì=\x00 [0m" 400 -
+2026-03-31 17:15:17,878 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:17] "GET / HTTP/1.1" 200 -
+2026-03-31 17:15:17,957 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:17] "GET /style.css HTTP/1.1" 200 -
+2026-03-31 17:15:17,957 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:17] "GET /script.js HTTP/1.1" 200 -
+2026-03-31 17:15:18,485 - INFO - 192.168.18.5 - - [31/Mar/2026 17:15:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-31 17:16:03,984 - INFO - 5 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-03-31_17-16-03.csv'
+2026-03-31 17:16:03,985 - INFO - 192.168.18.5 - - [31/Mar/2026 17:16:03] "GET /gerar_jogos/lotofacil?num_games=5 HTTP/1.1" 200 -
+2026-03-31 18:17:40,275 - INFO - 5 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-03-31_18-17-40.csv'
+2026-03-31 18:17:40,277 - INFO - 192.168.18.5 - - [31/Mar/2026 18:17:40] "GET /gerar_jogos/lotofacil?num_games=5 HTTP/1.1" 200 -
+2026-04-04 17:14:40,888 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-04-04 17:14:40,888 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-04 17:14:40,891 - INFO -  * Restarting with stat
+2026-04-04 17:14:42,166 - WARNING -  * Debugger is active!
+2026-04-04 17:14:42,182 - INFO -  * Debugger PIN: 415-545-082
+2026-04-04 17:14:44,659 - INFO - 192.168.18.5 - - [04/Apr/2026 17:14:44] "GET / HTTP/1.1" 200 -
+2026-04-04 17:14:44,903 - INFO - 192.168.18.5 - - [04/Apr/2026 17:14:44] "GET /style.css HTTP/1.1" 200 -
+2026-04-04 17:14:44,903 - INFO - 192.168.18.5 - - [04/Apr/2026 17:14:44] "GET /script.js HTTP/1.1" 200 -
+2026-04-04 17:14:45,343 - INFO - 192.168.18.5 - - [04/Apr/2026 17:14:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-04-04 17:15:36,995 - INFO - 1 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-04-04_17-15-36.csv'
+2026-04-04 17:15:36,995 - INFO - 192.168.18.5 - - [04/Apr/2026 17:15:36] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-04-04 17:16:34,493 - INFO - 2 jogos de lotofacil gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-04-04_17-16-34.csv'
+2026-04-04 17:16:34,493 - INFO - 192.168.18.5 - - [04/Apr/2026 17:16:34] "GET /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-04-25 18:07:11,545 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-04-25 18:07:11,547 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-25 18:07:11,549 - INFO -  * Restarting with stat
+2026-04-25 18:07:12,717 - WARNING -  * Debugger is active!
+2026-04-25 18:07:12,732 - INFO -  * Debugger PIN: 415-545-082
+2026-04-25 18:07:15,816 - ERROR - 192.168.18.5 - - [25/Apr/2026 18:07:15] code 400, message Bad request version ('\x8f"^\x83Vú\x01G¶9âÝ\x06³ìM2A0K\x88')
+2026-04-25 18:07:15,816 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:15] "[31m[1m\x16\x03\x01\x06 \x01\x00\x06\x9c\x03\x03+÷©ÃAú®\x12\x9fy\x8bg\x0b\x07°]Ì÷\x96«Ùôâ\x939\x0d0\x0e½­ÇÇ Æ\x00Ë(n/z¢\x96ý\x88>£¶6º\x07p4ü\x0fÛæ¬ÿsòÛ7æÔI\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x063\x9a\x9a\x00\x00\x00\x17\x00\x00þ\x0d\x00º\x00\x00\x01\x00\x01¼\x00 \x8f"^\x83Vú\x01G¶9âÝ\x06³ìM2A0K\x88[0m" 400 -
+2026-04-25 18:07:15,817 - ERROR - 192.168.18.5 - - [25/Apr/2026 18:07:15] code 400, message Bad request version ('\x02Æ&/G\x9eã\x0e\x0f\x00\x8d\x8eÛå\x01l\x15)µ\x03Îµr¦§\x00')
+2026-04-25 18:07:15,817 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:15] "[31m[1m\x16\x03\x01\x06à\x01\x00\x06Ü\x03\x03\x0e\x88ßÖ\x9d¨Ú\x097:ã­ÂïI*Ièî¥ª;óÃI<+¾o×\x00¶ b\x09\x17¡,\x92 \x02Æ&/G\x9eã\x0e\x0f\x00\x8d\x8eÛå\x01l\x15)µ\x03Îµr¦§\x00 [0m" 400 -
+2026-04-25 18:07:19,054 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:19] "GET / HTTP/1.1" 200 -
+2026-04-25 18:07:19,092 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:19] "GET /style.css HTTP/1.1" 200 -
+2026-04-25 18:07:19,135 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:19] "GET /script.js HTTP/1.1" 200 -
+2026-04-25 18:07:19,434 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-04-25 18:07:39,916 - INFO - 5 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-04-25_18-07-39.csv'
+2026-04-25 18:07:39,917 - INFO - 192.168.18.5 - - [25/Apr/2026 18:07:39] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2026-04-25 18:08:44,833 - INFO - 5 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-04-25_18-08-44.csv'
+2026-04-25 18:08:44,833 - INFO - 192.168.18.5 - - [25/Apr/2026 18:08:44] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2026-05-12 18:25:12,555 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-05-12 18:25:12,556 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 18:25:12,559 - INFO -  * Restarting with stat
+2026-05-12 18:25:13,723 - WARNING -  * Debugger is active!
+2026-05-12 18:25:13,738 - INFO -  * Debugger PIN: 415-545-082
+2026-05-12 18:25:15,500 - ERROR - 192.168.18.5 - - [12/May/2026 18:25:15] code 400, message Bad request version ('èUMæã&Ó\x98\x06Âj£Ñ½')
+2026-05-12 18:25:15,500 - INFO - 192.168.18.5 - - [12/May/2026 18:25:15] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03G¨MÎó\x01Ì>\x0e_{B-º{EÅ×±\x86hÔÎ¼Ã\x9esÀGU\x19\x13 \x04®'½ \x04V×\x04 Ö\x0cèUMæã&Ó\x98\x06Âj£Ñ½[0m" 400 -
+2026-05-12 18:25:15,502 - ERROR - 192.168.18.5 - - [12/May/2026 18:25:15] code 400, message Bad request version ('5ªC\x965¥Ég6æ\x92°\x9b¿Î%:RÚzë§(\x97')
+2026-05-12 18:25:15,502 - INFO - 192.168.18.5 - - [12/May/2026 18:25:15] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03\x92\x08;`LK÷ÙU\x15¡\x9b4\x9a\x91°Òãë\x9c\x0cçq5µ{\x86\x14vX\x1fæ ü³¢RMÍþyíÑ\x9du\x0cv\x17\x1d`áò)Ø×\x11°"àØ\x97ÑæÙ¼\x00 ªª\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06S\x1a\x1a\x00\x00\x00\x0b\x00\x02\x01\x00\x00#\x00\x00\x00\x17\x00\x00\x00\x1b\x00\x03\x02\x00\x02þ\x0d\x00Ú\x00\x00\x01\x00\x01\x90\x00 5ªC\x965¥Ég6æ\x92°\x9b¿Î%:RÚzë§(\x97[0m" 400 -
+2026-05-12 18:25:31,349 - INFO - 192.168.18.5 - - [12/May/2026 18:25:31] "GET / HTTP/1.1" 200 -
+2026-05-12 18:25:31,393 - INFO - 192.168.18.5 - - [12/May/2026 18:25:31] "GET /style.css HTTP/1.1" 200 -
+2026-05-12 18:25:31,421 - INFO - 192.168.18.5 - - [12/May/2026 18:25:31] "GET /script.js HTTP/1.1" 200 -
+2026-05-12 18:25:31,779 - INFO - 192.168.18.5 - - [12/May/2026 18:25:31] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-12 18:25:56,859 - INFO - 2 jogos de megasena gerados e salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-05-12_18-25-56.csv'
+2026-05-12 18:25:56,860 - INFO - 192.168.18.5 - - [12/May/2026 18:25:56] "GET /gerar_jogos/megasena?num_games=2 HTTP/1.1" 200 -
+2026-05-22 21:51:42,438 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-05-22 21:51:42,440 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-22 21:51:42,443 - INFO -  * Restarting with stat
+2026-05-22 21:51:43,697 - WARNING -  * Debugger is active!
+2026-05-22 21:51:43,713 - INFO -  * Debugger PIN: 415-545-082
+2026-05-22 21:51:45,595 - INFO - 192.168.18.5 - - [22/May/2026 21:51:45] "GET / HTTP/1.1" 200 -
+2026-05-22 21:51:45,635 - INFO - 192.168.18.5 - - [22/May/2026 21:51:45] "GET /style.css HTTP/1.1" 200 -
+2026-05-22 21:51:45,636 - INFO - 192.168.18.5 - - [22/May/2026 21:51:45] "GET /script.js HTTP/1.1" 200 -
+2026-05-22 21:51:46,029 - INFO - 192.168.18.5 - - [22/May/2026 21:51:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-22 21:51:55,925 - WARNING - Modelo não encontrado para megasena: H:\docs\ChatGPT\Loterias projeto\megasena_model.pkl
+2026-05-22 21:51:55,950 - INFO - 2 jogos de megasena salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-05-22_21-51-55.csv'
+2026-05-22 21:51:55,951 - INFO - 192.168.18.5 - - [22/May/2026 21:51:55] "GET /gerar_jogos/megasena?num_games=2 HTTP/1.1" 200 -
+2026-05-22 22:53:48,002 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-05-22 22:53:48,002 - INFO - [33mPress CTRL+C to quit[0m
+2026-05-22 22:53:48,004 - INFO -  * Restarting with stat
+2026-05-22 22:53:49,302 - WARNING -  * Debugger is active!
+2026-05-22 22:53:49,318 - INFO -  * Debugger PIN: 415-545-082
+2026-05-22 22:53:51,225 - INFO - 192.168.18.5 - - [22/May/2026 22:53:51] "[36mGET / HTTP/1.1[0m" 304 -
+2026-05-22 22:53:51,265 - INFO - 192.168.18.5 - - [22/May/2026 22:53:51] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-05-22 22:53:51,267 - INFO - 192.168.18.5 - - [22/May/2026 22:53:51] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-05-22 22:53:54,867 - WARNING - Modelo não encontrado para megasena: H:\docs\ChatGPT\Loterias projeto\models\megasena_model.pkl
+2026-05-22 22:53:54,892 - INFO - 5 jogos de megasena salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-05-22_22-53-54.csv'
+2026-05-22 22:53:54,893 - INFO - 192.168.18.5 - - [22/May/2026 22:53:54] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2026-06-18 19:34:04,106 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-06-18 19:34:04,107 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-18 19:34:04,110 - INFO -  * Restarting with stat
+2026-06-18 19:34:05,588 - WARNING -  * Debugger is active!
+2026-06-18 19:34:05,607 - INFO -  * Debugger PIN: 415-545-082
+2026-06-18 19:34:07,370 - ERROR - 192.168.18.5 - - [18/Jun/2026 19:34:07] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03\x18Æî=\x00©Htûa/cGIÎ\x92À1I\x12YyiÎ@\x81\x8cX=*\x12ü')
+2026-06-18 19:34:07,371 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:07] "[31m[1m\x16\x03\x01\x06À\x01\x00\x06¼\x03\x03\x18Æî=\x00©Htûa/cGIÎ\x92À1I\x12YyiÎ@\x81\x8cX=*\x12ü ñÔá\x9d£ÃJ[0m" 400 -
+2026-06-18 19:34:07,372 - ERROR - 192.168.18.5 - - [18/Jun/2026 19:34:07] code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x12\x00\x00\x00\x1b\x00\x03\x02\x00\x02DÍ\x00\x05\x00\x03\x02h2ÿ\x01\x00\x01\x00\x00')
+2026-06-18 19:34:07,373 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:07] "[31m[1m\x16\x03\x01\x06à\x01\x00\x06Ü\x03\x03üJc1\x91û}¨¾WP\x97!%V»/ü«8\x9e4Ö\x09\x19{ò¡P«­> «\x18\x05Wd2\x87×ø¸\x89×%]cM¨­.RqJÚRL\x88}\x13h\x97ä3\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06s\x8a\x8a\x00\x00þ\x0d\x00ú\x00\x00\x01\x00\x01\\\x00 Ò«ì\x86\x98\x1cª>¡+x\x90§rÅ­~g&\x86<±ýÝ\x84#A(´¶\x1be\x00Ð\x88\x94s(\x91Ó×û¡a¾ÓÈ\x8d\x82¶õ@Îõ¾\x10\x16ãîë¦]:\x86\x07ÿ\x19Ñ-à\x1cµ3è«\x96.\x89\x9eÕ\x7fzTân³\x805iè¸[áí¡,t³8\x1e<AðñK\x96þÿ\x1e¥Lï¡Î\x8d`â\x0b\x06E½\x15B\x06ÌçL×*H+¨å\x16\x84,\x9eE\x14@\x9cFu\x0bù©³u\x0ct(«ÊkÞÎ\x87Mºî\x13î{OA\x9f\x9a\x9a.\x95\x0e\x1b\x01LT;\x09BN\x1f¹ã4ISëÈ\x88\x0dí\x1cÅç!Ð+\x83¯`¸K¬f\x09Vþ\x0bi<Û\x96ÍòÂ\x91\x98C@³\x0eFL0´9øp&¹\x10\x91Tqa\x80¹11\x83\x9a\x8fø\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x12\x00\x00\x00\x1b\x00\x03\x02\x00\x02DÍ\x00\x05\x00\x03\x02h2ÿ\x01\x00\x01\x00\x00[0m" 400 -
+2026-06-18 19:34:10,538 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:10] "GET / HTTP/1.1" 200 -
+2026-06-18 19:34:10,571 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:10] "GET /style.css HTTP/1.1" 200 -
+2026-06-18 19:34:10,577 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:10] "GET /script.js HTTP/1.1" 200 -
+2026-06-18 19:34:11,086 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:11] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-18 19:34:55,486 - ERROR - Arquivo não encontrado: H:\docs\ChatGPT\Loterias projeto\mega_sena_asloterias_ate_concurso_3019_crescente - mega_sena_www.asloterias.com.br.csv
+2026-06-18 19:34:55,486 - ERROR - Nenhum jogo pôde ser gerado para megasena. Verifique o log do servidor.
+2026-06-18 19:34:55,487 - INFO - 192.168.18.5 - - [18/Jun/2026 19:34:55] "[35m[1mGET /gerar_jogos/megasena?num_games=1 HTTP/1.1[0m" 500 -
+2026-06-18 19:37:50,243 - INFO -  * Detected change in 'H:\\docs\\ChatGPT\\Loterias projeto\\src\\gerador_loterias.py', reloading
+2026-06-18 19:37:50,400 - INFO -  * Restarting with stat
+2026-06-18 19:37:51,832 - WARNING -  * Debugger is active!
+2026-06-18 19:37:51,847 - INFO -  * Debugger PIN: 415-545-082
+2026-06-18 19:37:53,702 - INFO - 192.168.18.5 - - [18/Jun/2026 19:37:53] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-18 19:37:53,734 - INFO - 192.168.18.5 - - [18/Jun/2026 19:37:53] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-18 19:37:53,735 - INFO - 192.168.18.5 - - [18/Jun/2026 19:37:53] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-06-18 19:38:35,198 - INFO -  * Detected change in 'H:\\docs\\ChatGPT\\Loterias projeto\\src\\gerador_loterias.py', reloading
+2026-06-18 19:38:35,348 - INFO -  * Restarting with stat
+2026-06-18 19:38:36,695 - WARNING -  * Debugger is active!
+2026-06-18 19:38:36,711 - INFO -  * Debugger PIN: 415-545-082
+2026-06-18 19:38:38,578 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:38] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-18 19:38:38,597 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:38] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-18 19:38:38,598 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:38] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-06-18 19:38:46,801 - INFO -  * Detected change in 'H:\\docs\\ChatGPT\\Loterias projeto\\src\\gerador_loterias.py', reloading
+2026-06-18 19:38:46,946 - INFO -  * Restarting with stat
+2026-06-18 19:38:48,308 - WARNING -  * Debugger is active!
+2026-06-18 19:38:48,323 - INFO -  * Debugger PIN: 415-545-082
+2026-06-18 19:38:50,198 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:50] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-18 19:38:50,230 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:50] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-18 19:38:50,231 - INFO - 192.168.18.5 - - [18/Jun/2026 19:38:50] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-06-18 19:39:27,893 - WARNING - Modelo não encontrado para megasena: H:\docs\ChatGPT\Loterias projeto\models\megasena_model.pkl
+2026-06-18 19:39:27,917 - INFO - 1 jogos de megasena salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-06-18_19-39-27.csv'
+2026-06-18 19:39:27,917 - INFO - 192.168.18.5 - - [18/Jun/2026 19:39:27] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-06-18 19:40:25,153 - WARNING - Modelo não encontrado para lotofacil: H:\docs\ChatGPT\Loterias projeto\models\lotofacil_model.pkl
+2026-06-18 19:40:25,169 - INFO - 1 jogos de lotofacil salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-06-18_19-40-25.csv'
+2026-06-18 19:40:25,169 - INFO - 192.168.18.5 - - [18/Jun/2026 19:40:25] "GET /gerar_jogos/lotofacil?num_games=1 HTTP/1.1" 200 -
+2026-06-19 20:29:45,074 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+2026-06-19 20:29:45,075 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-19 20:29:45,077 - INFO -  * Restarting with stat
+2026-06-19 20:29:46,260 - WARNING -  * Debugger is active!
+2026-06-19 20:29:46,274 - INFO -  * Debugger PIN: 415-545-082
+2026-06-19 20:29:48,338 - INFO - 192.168.18.5 - - [19/Jun/2026 20:29:48] "GET / HTTP/1.1" 200 -
+2026-06-19 20:29:48,382 - INFO - 192.168.18.5 - - [19/Jun/2026 20:29:48] "GET /style.css HTTP/1.1" 200 -
+2026-06-19 20:29:48,409 - INFO - 192.168.18.5 - - [19/Jun/2026 20:29:48] "GET /script.js HTTP/1.1" 200 -
+2026-06-19 20:29:48,745 - INFO - 192.168.18.5 - - [19/Jun/2026 20:29:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-19 20:30:05,358 - WARNING - Modelo não encontrado para lotofacil: H:\docs\ChatGPT\Loterias projeto\models\lotofacil_model.pkl
+2026-06-19 20:30:05,383 - INFO - 2 jogos de lotofacil salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-06-19_20-30-05.csv'
+2026-06-19 20:30:05,383 - INFO - 192.168.18.5 - - [19/Jun/2026 20:30:05] "GET /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-06-19 20:31:31,944 - WARNING - Modelo não encontrado para megasena: H:\docs\ChatGPT\Loterias projeto\models\megasena_model.pkl
+2026-06-19 20:31:31,959 - INFO - 1 jogos de megasena salvos em 'H:\docs\ChatGPT\Loterias projeto\resultados_Loterias\megasena_resultados_2026-06-19_20-31-31.csv'
+2026-06-19 20:31:31,959 - INFO - 192.168.18.5 - - [19/Jun/2026 20:31:31] "GET /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-06-26 11:52:36,000 - WARNING - Modelo não encontrado para megasena: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\models\megasena_model.pkl
+2026-06-26 11:52:36,019 - WARNING - Modelo não encontrado para megasena: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\models\megasena_model.pkl
+2026-06-26 11:52:56,371 - ERROR - Requisição para tipo de loteria inválido: invalida
+2026-06-26 11:52:56,464 - WARNING - Modelo não encontrado para megasena: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\models\megasena_model.pkl
+2026-06-26 11:52:56,473 - INFO - 1 jogos de megasena salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\megasena_resultados_2026-06-26_11-52-56.csv'
+2026-06-26 12:17:51,604 - WARNING - Tipo de loteria invalido recebido: invalida
+2026-06-26 12:18:14,057 - WARNING - Tentativa de exclusao de arquivo invalido ou fora do diretorio permitido: not_history.csv
+2026-06-26 12:18:14,058 - WARNING - Tipo de loteria invalido recebido: invalida
+2026-06-26 12:18:29,758 - INFO - Modelo carregado para megasena. Treinado em: 2026-05-22 23:11:14
+2026-06-26 12:20:22,830 - WARNING - Tipo de loteria invalido recebido: invalida
+2026-06-26 12:20:36,585 - INFO - Modelo carregado para megasena. Treinado em: 2026-05-22 23:11:14
+2026-06-26 12:21:18,360 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 12:21:18,360 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 12:21:20,951 - INFO - 127.0.0.1 - - [26/Jun/2026 12:21:20] "GET / HTTP/1.1" 200 -
+2026-06-26 12:37:46,231 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 12:37:46,231 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 12:37:48,500 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:48] "GET / HTTP/1.1" 200 -
+2026-06-26 12:37:48,625 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:48] "GET /style.css HTTP/1.1" 200 -
+2026-06-26 12:37:48,626 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:48] "GET /js/main.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,101 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "GET /js/api.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,104 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "GET /js/dom.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,105 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "GET /js/preferences.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,109 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "GET /js/render.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,110 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "GET /js/ui.js HTTP/1.1" 200 -
+2026-06-26 12:37:49,247 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-26 12:37:57,102 - INFO - 127.0.0.1 - - [26/Jun/2026 12:37:57] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2026-06-26 12:38:07,480 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:07] "GET /get_hot_cold_numbers/megasena HTTP/1.1" 200 -
+2026-06-26 12:38:23,728 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:23] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-06-26 12:38:29,920 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:29] "GET /get_hot_cold_numbers/lotofacil HTTP/1.1" 200 -
+2026-06-26 12:38:37,675 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:37] "GET /get_hot_cold_numbers/quina HTTP/1.1" 200 -
+2026-06-26 12:38:45,850 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:45] "GET /get_history_files/quina HTTP/1.1" 200 -
+2026-06-26 12:38:58,551 - INFO - 127.0.0.1 - - [26/Jun/2026 12:38:58] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-06-26 12:39:04,435 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:04] "GET /get_file_content/megasena_resultados_2026-06-19_20-31-31.csv HTTP/1.1" 200 -
+2026-06-26 12:39:09,258 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:09] "GET /get_file_content/megasena_resultados_2026-06-18_19-39-27.csv HTTP/1.1" 200 -
+2026-06-26 12:39:12,682 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:12] "GET /get_file_content/megasena_resultados_2026-06-19_20-31-31.csv HTTP/1.1" 200 -
+2026-06-26 12:39:15,178 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:15] "GET /get_file_content/megasena_resultados_2026-05-22_21-51-55.csv HTTP/1.1" 200 -
+2026-06-26 12:39:19,193 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:19] "GET /get_file_content/megasena_resultados_2025-11-11_17-24-58.csv HTTP/1.1" 200 -
+2026-06-26 12:39:25,457 - INFO - 127.0.0.1 - - [26/Jun/2026 12:39:25] "GET /get_file_content/megasena_resultados_2025-12-19_22-32-49.csv HTTP/1.1" 200 -
+2026-06-26 12:43:38,486 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 12:43:38,486 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 12:43:40,654 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:40] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 12:43:40,820 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:40] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 12:43:40,822 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:40] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,119 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,119 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,120 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,120 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,122 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 12:43:41,263 - INFO - 127.0.0.1 - - [26/Jun/2026 12:43:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-26 12:44:38,473 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 12:44:38,473 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 12:44:40,714 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:40] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 12:44:40,842 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:40] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 12:44:40,843 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:40] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,129 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,130 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,131 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,131 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,133 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 12:44:41,262 - INFO - 127.0.0.1 - - [26/Jun/2026 12:44:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-26 12:45:00,999 - INFO - Modelo carregado para megasena. Treinado em: 2026-05-22 23:11:14
+2026-06-26 12:46:50,733 - INFO - 5 jogos de megasena salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\megasena_resultados_2026-06-26_12-46-50.csv'
+2026-06-26 12:46:50,734 - INFO - 127.0.0.1 - - [26/Jun/2026 12:46:50] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -

@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# Ambientes locais
+.env
+.env.*
+!.env.example
+venv/
+env/
+ENV/
+.venv/
+
+# Logs e temporarios
+*.log
+*.tmp
+*.bak
+
+# Resultados gerados pela aplicacao
+resultados_Loterias/*.csv
+!resultados_Loterias/.gitkeep
+
+# Modelos treinados grandes
+models/*.pkl
+src/models/*.pkl
+*.joblib
+
+# Graficos e imagens gerados
+*.png
+
+# Editor configs
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

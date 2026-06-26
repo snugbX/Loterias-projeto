@@ -1,0 +1,27 @@
+{
+    "model_path": "models\\megasena_model.pkl",
+    "source_file": "H:\\docs\\ChatGPT\\Loterias projeto\\mega_sena_asloterias_ate_concurso_3009_crescente - mega_sena_www.asloterias.com.br.csv",
+    "max_number": 60,
+    "columns_prefix": "bola ",
+    "number_columns": [
+        "bola 1",
+        "bola 2",
+        "bola 3",
+        "bola 4",
+        "bola 5",
+        "bola 6"
+    ],
+    "total_original_rows": 3009,
+    "total_valid_draws": 3009,
+    "removed_rows": 0,
+    "train_size": 2406,
+    "test_size": 602,
+    "test_size_percent": 0.2,
+    "random_state": 42,
+    "hamming_loss": 0.10755813953488372,
+    "exact_match": 0.0,
+    "f1_score": 0.015209125475285171,
+    "data_hash_sha256": "f54685c35b4bf6cb6db7a76d6099e0f0f44f5f62d2581e03961eed4519f97102",
+    "trained_at": "2026-05-22 23:11:14",
+    "elapsed_seconds": 108.57
+}

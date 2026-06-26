@@ -1,0 +1,26 @@
+{
+    "model_path": "models\\quina_model.pkl",
+    "source_file": "H:\\docs\\ChatGPT\\Loterias projeto\\quina_asloterias_ate_concurso_6759_sorteio - quina_www.asloterias.com.br.csv",
+    "max_number": 80,
+    "columns_prefix": "bola ",
+    "number_columns": [
+        "bola 1",
+        "bola 2",
+        "bola 3",
+        "bola 4",
+        "bola 5"
+    ],
+    "total_original_rows": 6759,
+    "total_valid_draws": 6759,
+    "removed_rows": 0,
+    "train_size": 5406,
+    "test_size": 1352,
+    "test_size_percent": 0.2,
+    "random_state": 42,
+    "hamming_loss": 0.08648298816568048,
+    "exact_match": 0.0,
+    "f1_score": 0.03963039014373717,
+    "data_hash_sha256": "2ae082ef851462b40eb2f40ec00a7b209fd3f8fdefd6681041f750f54e923569",
+    "trained_at": "2026-05-22 23:27:54",
+    "elapsed_seconds": 841.6
+}
