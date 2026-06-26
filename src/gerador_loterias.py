@@ -23,6 +23,15 @@ def resolve_project_path(path):
     return os.path.join(PROJECT_ROOT, path)
 
 
+def env_flag(name, default=False):
+    value = os.environ.get(name)
+
+    if value is None:
+        return default
+
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 OUTPUT_DIR = resolve_project_path(
     os.environ.get(
         "LOTTERY_OUTPUT_DIR",
@@ -35,6 +44,7 @@ MODEL_DIR = resolve_project_path(
         os.path.join(BASE_DIR, "models")
     )
 )
+USE_ML_MODELS = env_flag("LOTTERY_USE_ML", default=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 _MODEL_CACHE = {}
@@ -196,6 +206,10 @@ def generate_single_set(probabilidades, num_to_draw, min_num, max_num):
 
 
 def load_trained_model(lottery_type):
+    if not USE_ML_MODELS:
+        logging.info("Modelos ML desativados por LOTTERY_USE_ML=0.")
+        return None
+
     if lottery_type in _MODEL_CACHE:
         return _MODEL_CACHE[lottery_type]
 

@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     LOTTERY_MODEL_DIR=/app/src/models \
     LOTTERY_OUTPUT_DIR=/app/resultados_Loterias \
-    LOTTERY_HISTORY_DB=/app/data/loterias_history.sqlite3
+    LOTTERY_HISTORY_DB=/app/data/loterias_history.sqlite3 \
+    LOTTERY_USE_ML=0
 
 WORKDIR /app/src
 
