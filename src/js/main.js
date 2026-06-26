@@ -1,10 +1,14 @@
 import {
     clearHistory,
+    clearSavedAdminToken,
     deleteHistoryFile,
     generateGames,
+    getAdminStatus,
     getHistoryFileContent,
     getHotColdNumbers,
+    getSavedAdminToken,
     listHistoryFiles,
+    setSavedAdminToken,
 } from './api.js';
 import { elements, selectedLotteryType, state } from './dom.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
@@ -27,6 +31,8 @@ import {
     showSuccessMessageModal,
 } from './ui.js';
 
+let adminTokenRequired = false;
+
 
 function validateNumGames() {
     const numGames = Number.parseInt(elements.numGamesInput.value, 10);
@@ -37,6 +43,49 @@ function validateNumGames() {
     }
 
     return numGames;
+}
+
+
+async function loadAdminStatus() {
+    try {
+        const data = await getAdminStatus();
+        adminTokenRequired = Boolean(data.admin_token_required);
+    } catch (error) {
+        adminTokenRequired = true;
+        console.error('Erro ao verificar protecao admin:', error);
+    }
+}
+
+
+function ensureAdminToken() {
+    if (!adminTokenRequired) {
+        return true;
+    }
+
+    if (getSavedAdminToken()) {
+        return true;
+    }
+
+    const token = window.prompt('Digite o token admin para continuar:');
+
+    if (!token) {
+        showError('Ação cancelada. Token admin não informado.');
+        return false;
+    }
+
+    setSavedAdminToken(token.trim());
+    return true;
+}
+
+
+function handleAdminError(error) {
+    if (error.status === 401) {
+        clearSavedAdminToken();
+        showError('Token admin inválido ou ausente. Tente novamente.');
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -166,6 +215,10 @@ async function fetchFilesAndDisplayHistory(lotteryType, options = {}) {
 
 
 async function confirmDeleteFileAction(filename, lotteryType) {
+    if (!ensureAdminToken()) {
+        return;
+    }
+
     showLoading(`Apagando ${filename}...`);
     setActionButtonsDisabled(true);
 
@@ -174,6 +227,10 @@ async function confirmDeleteFileAction(filename, lotteryType) {
         await fetchFilesAndDisplayHistory(lotteryType, { reset: false });
         showSuccessMessageModal(data.message);
     } catch (error) {
+        if (handleAdminError(error)) {
+            return;
+        }
+
         showError(`Erro: ${error.message}`);
         console.error(`Erro ao apagar o arquivo ${filename}:`, error);
     } finally {
@@ -251,6 +308,10 @@ function confirmClearHistory(lotteryType) {
         'Limpar Historico',
         `Tem certeza que deseja DELETAR TODOS os arquivos de historico para ${formatLotteryName(lotteryType)}? Esta acao e irreversivel!`,
         async () => {
+            if (!ensureAdminToken()) {
+                return;
+            }
+
             showLoading(`Limpando historico para ${formatLotteryName(lotteryType)}...`);
             setActionButtonsDisabled(true);
 
@@ -259,6 +320,10 @@ function confirmClearHistory(lotteryType) {
                 await fetchFilesAndDisplayHistory(lotteryType);
                 showSuccessMessageModal(data.message);
             } catch (error) {
+                if (handleAdminError(error)) {
+                    return;
+                }
+
                 showError(`Erro: ${error.message}`);
                 console.error('Erro ao limpar historico:', error);
             } finally {
@@ -326,6 +391,14 @@ function bindEvents() {
     });
 }
 
+function setFooterYear() {
+    if (elements.footerYear) {
+        elements.footerYear.textContent = String(new Date().getFullYear());
+    }
+}
 
+
+setFooterYear();
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
+loadAdminStatus();

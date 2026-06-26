@@ -32,6 +32,31 @@ def env_flag(name, default=False):
 
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
+
+def admin_token_configured():
+    return bool(os.environ.get("ADMIN_TOKEN", "").strip())
+
+
+def validate_admin_request():
+    expected_token = os.environ.get("ADMIN_TOKEN", "").strip()
+
+    if not expected_token:
+        return True
+
+    provided_token = request.headers.get("X-Admin-Token", "").strip()
+
+    if not provided_token:
+        provided_token = request.form.get("admin_token", "").strip()
+
+    return provided_token == expected_token
+
+
+def require_admin_token():
+    if validate_admin_request():
+        return None
+
+    return jsonify({"error": "Token admin inválido ou ausente."}), 401
+
 @app.route('/')
 def home():
     """
@@ -147,6 +172,10 @@ def get_hot_cold_numbers_api(lottery_type):
         gerador_loterias.logging.error(f"Erro ao obter números quentes/frios para {lottery_type}: {e}")
         return jsonify({"error": "Erro ao obter números quentes e frios"}), 500
 
+@app.route('/admin_status')
+def admin_status():
+    return jsonify({"admin_token_required": admin_token_configured()})
+
 @app.route('/clear_history/<lottery_type>', methods=['POST'])
 def clear_history(lottery_type):
     """
@@ -156,6 +185,11 @@ def clear_history(lottery_type):
 
     if lottery_type is None:
         return jsonify({"error": "Tipo de loteria inválido"}), 400
+
+    admin_error = require_admin_token()
+
+    if admin_error is not None:
+        return admin_error
 
     try:
         deleted_files_count = history_storage.clear_history(lottery_type)
@@ -169,6 +203,11 @@ def delete_single_file(filename):
     """
     Deleta um único arquivo CSV de histórico.
     """
+    admin_error = require_admin_token()
+
+    if admin_error is not None:
+        return admin_error
+
     result = history_storage.delete_history_file(filename)
 
     if result == "invalid":

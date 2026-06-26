@@ -17,7 +17,7 @@
     - pt-[100px]: Adiciona padding top para compensar o cabeçalho fixo. Ajustado para garantir espaço.
     As cores de fundo agora são gerenciadas pelas variáveis CSS em style.css.
 -->
-<body class="flex items-center justify-center min-h-screen p-4 pt-[100px]">
+<body class="flex flex-col items-center justify-center min-h-screen p-4 pt-[100px] gap-4">
 
     <!-- Controles de Tema e Fonte (Movidos para o canto superior direito e fixos) -->
     <div class="fixed top-4 right-4 z-[1004] flex items-center gap-4 bg-gray-700 p-2 rounded-lg shadow-lg">
@@ -102,6 +102,10 @@
         <!-- REMOVIDA DA TELA PRINCIPAL E MOVIDA PARA O MODAL ABAIXO -->
 
     </div>
+
+    <footer class="app-footer text-center text-sm">
+        &copy; <span id="footer-year"></span> Everlan (SnugbX). Todos os direitos reservados.
+    </footer>
 
     <!-- Modal Personalizado para Confirmação -->
     <div id="custom-confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">

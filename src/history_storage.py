@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 import gerador_loterias
+import history_database
 
 
 HISTORY_FILENAME_PATTERN = re.compile(
@@ -34,25 +35,35 @@ def history_file_path(filename):
 
 def list_history_files(lottery_type):
     history_dir = Path(gerador_loterias.OUTPUT_DIR)
+    files = set(history_database.list_history_files(lottery_type))
 
     if not history_dir.exists():
         gerador_loterias.logging.warning(
             f"Diretorio de historico nao encontrado: {history_dir}"
         )
-        return []
-
-    files = []
+        return sorted(files, reverse=True)
 
     for filename in os.listdir(history_dir):
         match = HISTORY_FILENAME_PATTERN.match(filename)
 
         if match and match.group(1).lower() == lottery_type:
-            files.append(filename)
+            files.add(filename)
 
     return sorted(files, reverse=True)
 
 
 def read_history_file(filename):
+    if history_file_path(filename) is None:
+        gerador_loterias.logging.warning(
+            f"Tentativa de acesso nao autorizado ou arquivo invalido: {filename}"
+        )
+        return None
+
+    db_data = history_database.read_history_file(filename)
+
+    if db_data is not None:
+        return db_data
+
     file_path = history_file_path(filename)
 
     if file_path is None or not file_path.exists() or not file_path.is_file():
@@ -67,11 +78,10 @@ def read_history_file(filename):
 
 def clear_history(lottery_type):
     history_dir = Path(gerador_loterias.OUTPUT_DIR)
+    deleted_filenames = set(history_database.clear_history(lottery_type))
 
     if not history_dir.exists():
-        return 0
-
-    deleted_files_count = 0
+        return len(deleted_filenames)
 
     for filename in os.listdir(history_dir):
         match = HISTORY_FILENAME_PATTERN.match(filename)
@@ -79,12 +89,12 @@ def clear_history(lottery_type):
 
         if match and match.group(1).lower() == lottery_type and file_path is not None:
             file_path.unlink()
-            deleted_files_count += 1
+            deleted_filenames.add(filename)
             gerador_loterias.logging.info(
                 f"Arquivo de historico deletado: {file_path}"
             )
 
-    return deleted_files_count
+    return len(deleted_filenames)
 
 
 def delete_history_file(filename):
@@ -96,10 +106,14 @@ def delete_history_file(filename):
         )
         return "invalid"
 
-    if not file_path.exists() or not file_path.is_file():
+    deleted_from_db = history_database.delete_history_file(filename)
+    file_exists = file_path.exists() and file_path.is_file()
+
+    if not deleted_from_db and not file_exists:
         return "missing"
 
-    file_path.unlink()
-    gerador_loterias.logging.info(f"Arquivo deletado: {file_path}")
+    if file_exists:
+        file_path.unlink()
+        gerador_loterias.logging.info(f"Arquivo deletado: {file_path}")
 
     return "deleted"

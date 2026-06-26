@@ -22,6 +22,11 @@ ENV/
 # Resultados gerados pela aplicacao
 resultados_Loterias/*.csv
 !resultados_Loterias/.gitkeep
+data/*
+!data/.gitkeep
+*.sqlite
+*.sqlite3
+*.db
 
 # Modelos treinados grandes
 models/*.pkl

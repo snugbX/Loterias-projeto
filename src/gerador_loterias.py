@@ -7,13 +7,33 @@ import joblib
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
-OUTPUT_DIR = os.environ.get(
-    "LOTTERY_OUTPUT_DIR",
-    os.path.join(PROJECT_ROOT, "resultados_Loterias")
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+except Exception:
+    pass
+
+
+def resolve_project_path(path):
+    if os.path.isabs(path):
+        return path
+
+    return os.path.join(PROJECT_ROOT, path)
+
+
+OUTPUT_DIR = resolve_project_path(
+    os.environ.get(
+        "LOTTERY_OUTPUT_DIR",
+        os.path.join(PROJECT_ROOT, "resultados_Loterias")
+    )
 )
-MODEL_DIR = os.environ.get(
-    "LOTTERY_MODEL_DIR",
-    os.path.join(BASE_DIR, "models")
+MODEL_DIR = resolve_project_path(
+    os.environ.get(
+        "LOTTERY_MODEL_DIR",
+        os.path.join(BASE_DIR, "models")
+    )
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -495,6 +515,18 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
         df_jogos = pd.DataFrame(jogos, columns=columns)
         os.makedirs(output_dir, exist_ok=True)
         df_jogos.to_csv(file_path, index=False, encoding='utf-8')
+
+        try:
+            import history_database
+
+            history_database.save_history_record(
+                file_name,
+                lottery_type,
+                [[int(num) for num in jogo] for jogo in jogos],
+                now.isoformat(timespec="seconds")
+            )
+        except Exception as e:
+            logging.error(f"Erro ao salvar histórico no banco SQLite: {e}")
 
         logging.info(
             f"{len(jogos)} jogos de {lottery_type} salvos em '{file_path}'"

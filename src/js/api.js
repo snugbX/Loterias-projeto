@@ -8,10 +8,36 @@ async function parseResponse(response, fallbackMessage) {
     }
 
     if (!response.ok) {
-        throw new Error(payload?.error || fallbackMessage);
+        const error = new Error(payload?.error || fallbackMessage);
+        error.status = response.status;
+        throw error;
     }
 
     return payload;
+}
+
+export async function getAdminStatus() {
+    const response = await fetch('/admin_status');
+
+    return parseResponse(response, 'Erro ao verificar protecao admin');
+}
+
+export function getSavedAdminToken() {
+    return sessionStorage.getItem('adminToken') || '';
+}
+
+export function setSavedAdminToken(token) {
+    sessionStorage.setItem('adminToken', token);
+}
+
+export function clearSavedAdminToken() {
+    sessionStorage.removeItem('adminToken');
+}
+
+function adminHeaders() {
+    const token = getSavedAdminToken();
+
+    return token ? { 'X-Admin-Token': token } : {};
 }
 
 export async function generateGames(lotteryType, numGames) {
@@ -50,7 +76,10 @@ export async function getHotColdNumbers(lotteryType) {
 export async function clearHistory(lotteryType) {
     const response = await fetch(
         `/clear_history/${encodeURIComponent(lotteryType)}`,
-        { method: 'POST' }
+        {
+            method: 'POST',
+            headers: adminHeaders(),
+        }
     );
 
     return parseResponse(response, 'Erro ao limpar historico');
@@ -59,7 +88,10 @@ export async function clearHistory(lotteryType) {
 export async function deleteHistoryFile(filename) {
     const response = await fetch(
         `/delete_file/${encodeURIComponent(filename)}`,
-        { method: 'POST' }
+        {
+            method: 'POST',
+            headers: adminHeaders(),
+        }
     );
 
     return parseResponse(response, 'Erro ao apagar arquivo');

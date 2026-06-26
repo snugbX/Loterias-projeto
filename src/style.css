@@ -46,6 +46,10 @@ body {
     background-color: var(--bg-secondary);
     color: var(--text-primary);
 }
+.app-footer {
+    color: var(--text-secondary);
+    width: 100%;
+}
 .hidden {
     display: none !important;
 }
