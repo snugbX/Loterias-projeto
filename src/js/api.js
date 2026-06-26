@@ -20,10 +20,35 @@ async function parseResponse(response, fallbackMessage) {
     return payload || {};
 }
 
-export async function getAdminStatus() {
-    const response = await fetch('/admin_status');
 
-    return parseResponse(response, 'Erro ao verificar protecao admin');
+async function requestJson(resource, fallbackMessage, options) {
+    try {
+        const response = await fetch(resource, options);
+
+        return parseResponse(response, fallbackMessage);
+    } catch (error) {
+        const isNetworkError = (
+            error instanceof TypeError
+            || error.message === 'Failed to fetch'
+            || error.message === 'NetworkError when attempting to fetch resource.'
+        );
+
+        if (isNetworkError) {
+            const openedDirectly = window.location.protocol === 'file:';
+            const message = openedDirectly
+                ? 'O app foi aberto direto pelo arquivo HTML. Abra pelo "Abrir Loterias.cmd" ou rode "py app.py" e mantenha a janela do servidor aberta.'
+                : 'O servidor local nao esta respondendo. Abra novamente pelo "Abrir Loterias.cmd" ou rode "py app.py" e mantenha a janela do servidor aberta.';
+
+            throw new Error(message);
+        }
+
+        throw error;
+    }
+}
+
+
+export async function getAdminStatus() {
+    return requestJson('/admin_status', 'Erro ao verificar protecao admin');
 }
 
 export function getSavedAdminToken() {
@@ -46,63 +71,56 @@ function adminHeaders() {
 
 export async function generateGames(lotteryType, numGames) {
     const params = new URLSearchParams({ num_games: numGames });
-    const response = await fetch(
-        `/gerar_jogos/${encodeURIComponent(lotteryType)}?${params.toString()}`
-    );
 
-    return parseResponse(response, 'Erro desconhecido ao gerar jogos');
+    return requestJson(
+        `/gerar_jogos/${encodeURIComponent(lotteryType)}?${params.toString()}`,
+        'Erro desconhecido ao gerar jogos'
+    );
 }
 
 export async function listHistoryFiles(lotteryType) {
-    const response = await fetch(
-        `/get_history_files/${encodeURIComponent(lotteryType)}`
+    return requestJson(
+        `/get_history_files/${encodeURIComponent(lotteryType)}`,
+        'Erro ao carregar historico'
     );
-
-    return parseResponse(response, 'Erro ao carregar historico');
 }
 
 export async function getHistoryFileContent(filename) {
-    const response = await fetch(
-        `/get_file_content/${encodeURIComponent(filename)}`
+    return requestJson(
+        `/get_file_content/${encodeURIComponent(filename)}`,
+        'Erro ao carregar conteudo do arquivo'
     );
-
-    return parseResponse(response, 'Erro ao carregar conteudo do arquivo');
 }
 
 export async function getHotColdNumbers(lotteryType) {
-    const response = await fetch(
-        `/get_hot_cold_numbers/${encodeURIComponent(lotteryType)}`
+    return requestJson(
+        `/get_hot_cold_numbers/${encodeURIComponent(lotteryType)}`,
+        'Erro ao obter numeros de assistencia'
     );
-
-    return parseResponse(response, 'Erro ao obter numeros de assistencia');
 }
 
 export async function getLatestResults() {
-    const response = await fetch('/latest_results');
-
-    return parseResponse(response, 'Erro ao carregar ultimos resultados');
+    return requestJson('/latest_results', 'Erro ao carregar ultimos resultados');
 }
 
 export async function clearHistory(lotteryType) {
-    const response = await fetch(
+    return requestJson(
         `/clear_history/${encodeURIComponent(lotteryType)}`,
+        'Erro ao limpar historico',
         {
             method: 'POST',
             headers: adminHeaders(),
         }
     );
-
-    return parseResponse(response, 'Erro ao limpar historico');
 }
 
 export async function deleteHistoryFile(filename) {
-    const response = await fetch(
+    return requestJson(
         `/delete_file/${encodeURIComponent(filename)}`,
+        'Erro ao apagar arquivo',
         {
             method: 'POST',
             headers: adminHeaders(),
         }
     );
-
-    return parseResponse(response, 'Erro ao apagar arquivo');
 }
