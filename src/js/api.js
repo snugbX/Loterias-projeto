@@ -1,19 +1,23 @@
 async function parseResponse(response, fallbackMessage) {
     let payload = null;
+    const contentType = response.headers.get('content-type') || '';
 
-    try {
-        payload = await response.json();
-    } catch {
-        payload = null;
+    if (contentType.includes('application/json')) {
+        try {
+            payload = await response.json();
+        } catch {
+            payload = null;
+        }
     }
 
     if (!response.ok) {
-        const error = new Error(payload?.error || fallbackMessage);
+        const statusSuffix = response.status ? ` (HTTP ${response.status})` : '';
+        const error = new Error(payload?.error || `${fallbackMessage}${statusSuffix}`);
         error.status = response.status;
         throw error;
     }
 
-    return payload;
+    return payload || {};
 }
 
 export async function getAdminStatus() {
