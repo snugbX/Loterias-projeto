@@ -46,6 +46,7 @@
         - text-center: Alinha o texto ao centro
         As cores de fundo e texto agora são gerenciadas pelas variáveis CSS em style.css.
     -->
+    <main class="app-layout">
     <div class="container p-8 rounded-lg shadow-xl w-full text-center">
         <!-- Título da aplicação -->
         <h1 class="text-5xl font-bold mb-6" id="main-title">Gerador de Jogos de Loterias</h1>
@@ -111,6 +112,16 @@
         <!-- REMOVIDA DA TELA PRINCIPAL E MOVIDA PARA O MODAL ABAIXO -->
 
     </div>
+
+    <aside class="draw-calendar-panel" aria-labelledby="draw-calendar-title">
+        <div class="draw-calendar-header">
+            <span>Sorteios</span>
+            <h2 id="draw-calendar-title">Calendário Semanal</h2>
+            <p>Dias regulares</p>
+        </div>
+        <div id="draw-calendar-grid" class="draw-calendar-grid" aria-live="polite"></div>
+    </aside>
+    </main>
 
     <footer class="app-footer text-center text-sm">
         &copy; <span id="footer-year"></span> Everlan (SnugbX). Todos os direitos reservados.

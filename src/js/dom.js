@@ -41,6 +41,7 @@ export const elements = {
     generatedGamesModalTitle: document.getElementById('generated-games-modal-title'),
     jogosGeradosMainDisplay: document.getElementById('jogos-gerados-main-display'),
     footerYear: document.getElementById('footer-year'),
+    drawCalendarGrid: document.getElementById('draw-calendar-grid'),
 };
 
 export const lotteryColors = {
@@ -87,5 +88,6 @@ export function adjustableFontElements() {
         elements.jogosGeradosModalDisplay,
         elements.generatedGamesModalTitle,
         elements.footerYear,
+        elements.drawCalendarGrid,
     ].filter(Boolean);
 }

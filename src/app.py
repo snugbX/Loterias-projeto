@@ -18,6 +18,7 @@ ALLOWED_STATIC_FILES = {
     'style.css',
     'js/api.js',
     'js/dom.js',
+    'js/drawCalendar.js',
     'js/main.js',
     'js/preferences.js',
     'js/render.js',

@@ -12,6 +12,7 @@ import {
     setSavedAdminToken,
 } from './api.js';
 import { elements, selectedLotteryType, state } from './dom.js';
+import { renderDrawCalendar } from './drawCalendar.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
@@ -439,6 +440,7 @@ function setFooterYear() {
 
 
 setFooterYear();
+renderDrawCalendar(elements.drawCalendarGrid);
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
 loadAdminStatus();

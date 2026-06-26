@@ -1014,3 +1014,62 @@
 2026-06-26 19:24:05,291 - WARNING - Modelo não encontrado para diadesorte: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\src\models\diadesorte_model.pkl
 2026-06-26 19:24:05,306 - INFO - 1 jogos de diadesorte salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\diadesorte_resultados_2026-06-26_19-24-05.csv'
 2026-06-26 19:24:05,306 - INFO - 127.0.0.1 - - [26/Jun/2026 19:24:05] "GET /gerar_jogos/diadesorte?num_games=1 HTTP/1.1" 200 -
+2026-06-26 19:30:14,276 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 19:30:14,276 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 19:30:14,355 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,375 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,544 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,655 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,655 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "GET /js/api.js HTTP/1.1" 200 -
+2026-06-26 19:30:14,655 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,666 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,666 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:14,684 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 19:30:14,741 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:14] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 19:30:15,922 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:15] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 19:30:15,948 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:15] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 19:30:15,950 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:15] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,416 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,417 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,420 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,425 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,426 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:30:16,438 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 19:30:16,485 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:16] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 19:30:20,191 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:20] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-06-26 19:30:26,719 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:26] "GET /get_history_files/diadesorte HTTP/1.1" 200 -
+2026-06-26 19:30:29,342 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:29] "GET /get_file_content/diadesorte_resultados_2026-06-26_19-24-05.csv HTTP/1.1" 200 -
+2026-06-26 19:30:32,077 - INFO - 127.0.0.1 - - [26/Jun/2026 19:30:32] "GET /get_hot_cold_numbers/diadesorte HTTP/1.1" 200 -
+2026-06-26 19:40:04,493 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "GET / HTTP/1.1" 200 -
+2026-06-26 19:40:04,520 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "GET /style.css HTTP/1.1" 200 -
+2026-06-26 19:40:04,522 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "GET /js/main.js HTTP/1.1" 200 -
+2026-06-26 19:40:04,767 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "[33mGET /js/drawCalendar.js HTTP/1.1[0m" 404 -
+2026-06-26 19:40:04,769 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:04,773 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "GET /js/dom.js HTTP/1.1" 200 -
+2026-06-26 19:40:04,776 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:04,778 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:04,779 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:04] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:34,962 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:34] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 19:40:34,987 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:34] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 19:40:34,988 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:34] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:35,145 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:35,146 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[33mGET /js/drawCalendar.js HTTP/1.1[0m" 404 -
+2026-06-26 19:40:35,148 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:35,153 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:35,158 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 19:40:35,159 - INFO - 127.0.0.1 - - [26/Jun/2026 19:40:35] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:31,913 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 19:41:31,914 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 19:41:33,629 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,648 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,649 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,944 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,947 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,947 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "GET /js/drawCalendar.js HTTP/1.1" 200 -
+2026-06-26 19:41:33,951 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,953 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,957 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 19:41:33,972 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:33] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 19:41:34,046 - INFO - 127.0.0.1 - - [26/Jun/2026 19:41:34] "GET /latest_results HTTP/1.1" 200 -

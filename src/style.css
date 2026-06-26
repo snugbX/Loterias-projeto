@@ -53,6 +53,16 @@ body {
 .hidden {
     display: none !important;
 }
+.app-layout {
+    align-items: start;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    width: min(1180px, 100%);
+}
+.container {
+    min-width: 0;
+}
 
 /* Headings */
 h1 {
@@ -66,6 +76,100 @@ h2 {
 h3 {
     color: var(--text-secondary);
     font-size: var(--h3-font-size);
+}
+
+/* Draw Calendar */
+.draw-calendar-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    color: var(--text-primary);
+    padding: 16px;
+    position: sticky;
+    top: 92px;
+}
+.draw-calendar-header {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+}
+.draw-calendar-header span {
+    color: var(--text-secondary);
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+.draw-calendar-header h2 {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 900;
+    margin: 2px 0;
+}
+.draw-calendar-header p {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    margin: 0;
+}
+.draw-calendar-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.draw-calendar-day {
+    align-items: flex-start;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 64px minmax(0, 1fr);
+    padding: 10px;
+}
+.draw-calendar-day.is-today {
+    border-color: #2563eb;
+    box-shadow: inset 3px 0 0 #2563eb;
+}
+.draw-calendar-day-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.draw-calendar-day-short {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+}
+.draw-calendar-day-label {
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.draw-calendar-lotteries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-start;
+    min-width: 0;
+}
+.draw-calendar-pill,
+.draw-calendar-empty {
+    border: 1px solid;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1.15;
+    padding: 5px 8px;
+    white-space: nowrap;
+}
+.draw-calendar-empty {
+    border-color: var(--border-color);
+    color: var(--text-secondary);
 }
 
 /* Latest Results */
@@ -156,6 +260,13 @@ h3 {
 }
 
 @media (max-width: 900px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+    }
+    .draw-calendar-panel {
+        position: static;
+        width: 100%;
+    }
     .latest-results-grid {
         grid-template-columns: 1fr;
     }
