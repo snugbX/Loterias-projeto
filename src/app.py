@@ -172,6 +172,14 @@ def get_hot_cold_numbers_api(lottery_type):
         gerador_loterias.logging.error(f"Erro ao obter números quentes/frios para {lottery_type}: {e}")
         return jsonify({"error": "Erro ao obter números quentes e frios"}), 500
 
+@app.route('/latest_results')
+def latest_results():
+    try:
+        return jsonify({"results": gerador_loterias.get_latest_results()})
+    except Exception as e:
+        gerador_loterias.logging.error(f"Erro ao obter últimos resultados: {e}")
+        return jsonify({"error": "Erro ao obter últimos resultados"}), 500
+
 @app.route('/admin_status')
 def admin_status():
     return jsonify({"admin_token_required": admin_token_configured()})

@@ -105,6 +105,61 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
 }
 
 
+export function displayLatestResults(results, targetElement) {
+    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina'];
+    targetElement.innerHTML = '';
+
+    if (!results || Object.keys(results).length === 0) {
+        targetElement.textContent = 'Ultimos resultados indisponiveis.';
+        targetElement.classList.add('text-gray-500');
+        return;
+    }
+
+    targetElement.classList.remove('text-gray-500');
+
+    orderedLotteryTypes.forEach(lotteryType => {
+        const result = results[lotteryType];
+
+        if (!result) {
+            return;
+        }
+
+        const card = document.createElement('article');
+        card.classList.add('latest-result-card');
+        card.style.borderColor = result.color_primary;
+        card.style.background = `linear-gradient(180deg, ${result.color_secondary}33, var(--bg-secondary) 58%)`;
+
+        const header = document.createElement('div');
+        header.classList.add('latest-result-card-header');
+
+        const name = document.createElement('h3');
+        name.textContent = result.name;
+        name.style.color = result.color_primary;
+
+        const meta = document.createElement('p');
+        meta.textContent = `Concurso ${result.contest} • ${result.date}`;
+
+        header.appendChild(name);
+        header.appendChild(meta);
+
+        const balls = document.createElement('div');
+        balls.classList.add('latest-result-balls');
+
+        result.numbers.forEach(number => {
+            const ball = document.createElement('span');
+            ball.classList.add('latest-result-ball');
+            ball.textContent = String(number).padStart(2, '0');
+            ball.style.backgroundColor = result.color_primary;
+            balls.appendChild(ball);
+        });
+
+        card.appendChild(header);
+        card.appendChild(balls);
+        targetElement.appendChild(card);
+    });
+}
+
+
 function iconButton(label, svgMarkup, onClick) {
     const button = document.createElement('button');
     button.type = 'button';

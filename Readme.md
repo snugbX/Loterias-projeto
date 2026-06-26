@@ -34,6 +34,38 @@ Os dados históricos utilizados para a análise de números e a geração de jog
 
 ---
 
+### **Atualização automática dos resultados:**
+
+Para baixar os resultados mais recentes da Mega Sena, Lotofácil e Quina, execute o arquivo:
+
+```bat
+Atualizar Dados.cmd
+```
+
+O script acessa as páginas de download do site As Loterias, baixa as planilhas em ordem de sorteio, converte para CSV e substitui os arquivos que a aplicação já usa. Antes de substituir, ele cria um backup em `backups_loterias/`.
+
+Também é possível rodar manualmente:
+
+```bat
+py -3 src\update_lottery_data.py
+```
+
+Para testar sem alterar os CSVs:
+
+```bat
+py -3 src\update_lottery_data.py --dry-run
+```
+
+Se algum link do site mudar no futuro, você pode informar uma URL direta de download usando uma destas variáveis:
+
+```bat
+set ASLOTERIAS_MEGASENA_URL=https://...
+set ASLOTERIAS_LOTOFACIL_URL=https://...
+set ASLOTERIAS_QUINA_URL=https://...
+```
+
+---
+
 ### **Tecnologias Utilizadas:**
 
 * **Backend:** **Python com Flask**

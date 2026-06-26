@@ -77,6 +77,12 @@ export async function getHotColdNumbers(lotteryType) {
     return parseResponse(response, 'Erro ao obter numeros de assistencia');
 }
 
+export async function getLatestResults() {
+    const response = await fetch('/latest_results');
+
+    return parseResponse(response, 'Erro ao carregar ultimos resultados');
+}
+
 export async function clearHistory(lotteryType) {
     const response = await fetch(
         `/clear_history/${encodeURIComponent(lotteryType)}`,

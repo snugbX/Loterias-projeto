@@ -6,6 +6,7 @@ import {
     getAdminStatus,
     getHistoryFileContent,
     getHotColdNumbers,
+    getLatestResults,
     getSavedAdminToken,
     listHistoryFiles,
     setSavedAdminToken,
@@ -14,6 +15,7 @@ import { elements, selectedLotteryType, state } from './dom.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
+    displayLatestResults,
     displayGamesAsBalls,
     displayNumberBalls,
     formatHistoryFilename,
@@ -53,6 +55,24 @@ async function loadAdminStatus() {
     } catch (error) {
         adminTokenRequired = true;
         console.error('Erro ao verificar protecao admin:', error);
+    }
+}
+
+
+async function loadLatestResults() {
+    if (!elements.latestResultsGrid) {
+        return;
+    }
+
+    elements.latestResultsGrid.textContent = 'Carregando últimos resultados...';
+
+    try {
+        const data = await getLatestResults();
+        displayLatestResults(data.results, elements.latestResultsGrid);
+    } catch (error) {
+        elements.latestResultsGrid.textContent = 'Últimos resultados indisponíveis no momento.';
+        elements.latestResultsGrid.classList.add('text-gray-500');
+        console.error('Erro ao carregar últimos resultados:', error);
     }
 }
 
@@ -402,3 +422,4 @@ setFooterYear();
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
 loadAdminStatus();
+loadLatestResults();

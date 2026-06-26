@@ -18,6 +18,7 @@ ENV/
 *.log
 *.tmp
 *.bak
+backups_loterias/
 
 # Resultados gerados pela aplicacao
 resultados_Loterias/*.csv

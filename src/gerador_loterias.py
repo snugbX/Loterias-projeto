@@ -91,6 +91,20 @@ LOTTERY_CONFIGS = {
     }
 }
 
+LOTTERY_DISPLAY_NAMES = {
+    "megasena": "Mega Sena",
+    "lotofacil": "Lotofácil",
+    "quina": "Quina",
+}
+
+
+def sort_number_columns(columns):
+    def extract_number(column_name):
+        digits = "".join(filter(str.isdigit, column_name))
+        return int(digits) if digits else 0
+
+    return sorted(columns, key=extract_number)
+
 
 def load_data(file_path, skiprows):
     try:
@@ -155,6 +169,74 @@ def calculate_probabilities(df, columns_prefix, min_num, max_num):
     probabilidades = value_counts / len(bolas_df)
 
     return probabilidades.sort_values(ascending=False)
+
+
+def get_latest_result(lottery_type):
+    if lottery_type not in LOTTERY_CONFIGS:
+        logging.error(f"Tipo de loteria inválido: {lottery_type}")
+        return None
+
+    config = LOTTERY_CONFIGS[lottery_type]
+    df = load_data(config['FILE_PATH'], config['SKIP_ROWS'])
+
+    if df is None or df.empty:
+        return None
+
+    number_cols = [
+        col for col in df.columns
+        if col.startswith(config['CSV_COLUMNS_PREFIX'])
+    ]
+    number_cols = sort_number_columns(number_cols)
+
+    if not number_cols:
+        logging.error(f"Nenhuma coluna de bola encontrada para {lottery_type}")
+        return None
+
+    latest_df = df.copy()
+
+    if "Concurso" in latest_df.columns:
+        latest_df["_sort_concurso"] = pd.to_numeric(
+            latest_df["Concurso"],
+            errors="coerce"
+        )
+        latest_df = latest_df.sort_values(
+            "_sort_concurso",
+            ascending=False,
+            na_position="last"
+        )
+
+    latest_row = latest_df.iloc[0]
+    numbers = (
+        pd.to_numeric(latest_row[number_cols], errors="coerce")
+        .dropna()
+        .astype(int)
+        .tolist()
+    )
+
+    concurso = latest_row.get("Concurso", "")
+    date_value = latest_row.get("Data", latest_row.get("Data Sorteio", ""))
+
+    return {
+        "lottery_type": lottery_type,
+        "name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
+        "contest": int(concurso) if pd.notna(concurso) and str(concurso).isdigit() else str(concurso),
+        "date": str(date_value),
+        "numbers": [int(number) for number in numbers],
+        "color_primary": config["COLOR_PRIMARY"],
+        "color_secondary": config["COLOR_SECONDARY"],
+    }
+
+
+def get_latest_results():
+    results = {}
+
+    for lottery_type in LOTTERY_CONFIGS:
+        latest_result = get_latest_result(lottery_type)
+
+        if latest_result is not None:
+            results[lottery_type] = latest_result
+
+    return results
 
 
 def generate_single_set(probabilidades, num_to_draw, min_num, max_num):

@@ -961,3 +961,20 @@
 2026-06-26 12:45:00,999 - INFO - Modelo carregado para megasena. Treinado em: 2026-05-22 23:11:14
 2026-06-26 12:46:50,733 - INFO - 5 jogos de megasena salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\megasena_resultados_2026-06-26_12-46-50.csv'
 2026-06-26 12:46:50,734 - INFO - 127.0.0.1 - - [26/Jun/2026 12:46:50] "GET /gerar_jogos/megasena?num_games=5 HTTP/1.1" 200 -
+2026-06-26 17:37:13,726 - INFO - Modelos ML desativados por LOTTERY_USE_ML=0.
+2026-06-26 17:37:13,755 - INFO - Modelos ML desativados por LOTTERY_USE_ML=0.
+2026-06-26 17:56:42,371 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 17:56:42,371 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 17:56:44,102 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET / HTTP/1.1" 200 -
+2026-06-26 17:56:44,127 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /style.css HTTP/1.1" 200 -
+2026-06-26 17:56:44,128 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /js/main.js HTTP/1.1" 200 -
+2026-06-26 17:56:44,526 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /js/api.js HTTP/1.1" 200 -
+2026-06-26 17:56:44,527 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /js/dom.js HTTP/1.1" 200 -
+2026-06-26 17:56:44,529 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 17:56:44,532 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /js/render.js HTTP/1.1" 200 -
+2026-06-26 17:56:44,533 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 17:56:44,548 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 17:56:44,602 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 17:56:44,668 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-26 18:24:43,015 - INFO - 127.0.0.1 - - [26/Jun/2026 18:24:43] "GET /get_history_files/megasena HTTP/1.1" 200 -

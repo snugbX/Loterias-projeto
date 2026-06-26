@@ -36,6 +36,7 @@ export const elements = {
     assistenciaModalCloseBtn: document.getElementById('assistencia-modal-close-btn'),
     assistenciaModalTitle: document.getElementById('assistencia-modal-title'),
     mainTitle: document.getElementById('main-title'),
+    latestResultsGrid: document.getElementById('latest-results-grid'),
     historyModalTitle: document.getElementById('history-modal-title'),
     generatedGamesModalTitle: document.getElementById('generated-games-modal-title'),
     jogosGeradosMainDisplay: document.getElementById('jogos-gerados-main-display'),
@@ -68,6 +69,7 @@ export function selectedLotteryType() {
 export function adjustableFontElements() {
     return [
         elements.mainTitle,
+        elements.latestResultsGrid,
         elements.lotterySelect,
         elements.numGamesInput,
         ...Array.from(document.querySelectorAll('label')),
