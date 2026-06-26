@@ -1,6 +1,6 @@
 # Gerador de Jogos de Loterias
 
-Este repositório contém o código-fonte de um aplicativo web interativo projetado para auxiliar entusiastas de loterias na geração de jogos. A aplicação oferece uma interface amigável para criar apostas para as principais loterias brasileiras, como Mega Sena, Lotofácil e Quina, além de fornecer ferramentas de análise e um histórico organizado.
+Este repositório contém o código-fonte de um aplicativo web interativo projetado para auxiliar entusiastas de loterias na geração de jogos. A aplicação oferece uma interface amigável para criar apostas para as principais loterias brasileiras, como Mega Sena, Lotofácil, Quina e Dia de Sorte, além de fornecer ferramentas de análise e um histórico organizado.
 
 ---
 
@@ -36,7 +36,7 @@ Os dados históricos utilizados para a análise de números e a geração de jog
 
 ### **Atualização automática dos resultados:**
 
-Para baixar os resultados mais recentes da Mega Sena, Lotofácil e Quina, execute o arquivo:
+Para baixar os resultados mais recentes da Mega Sena, Lotofácil, Quina e Dia de Sorte, execute o arquivo:
 
 ```bat
 Atualizar Dados.cmd
@@ -62,6 +62,7 @@ Se algum link do site mudar no futuro, você pode informar uma URL direta de dow
 set ASLOTERIAS_MEGASENA_URL=https://...
 set ASLOTERIAS_LOTOFACIL_URL=https://...
 set ASLOTERIAS_QUINA_URL=https://...
+set ASLOTERIAS_DIADESORTE_URL=https://...
 ```
 
 ---

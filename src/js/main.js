@@ -157,6 +157,26 @@ function copyWithFallback(text) {
 }
 
 
+function formatGameForCopy(game) {
+    const numbers = [];
+    const extras = [];
+
+    game.forEach(value => {
+        if (Number.isFinite(Number(value))) {
+            numbers.push(String(value).padStart(2, '0'));
+        } else {
+            extras.push(value);
+        }
+    });
+
+    if (extras.length === 0) {
+        return numbers.join(' ');
+    }
+
+    return `${numbers.join(' ')} | Mês da Sorte: ${extras.join(', ')}`;
+}
+
+
 async function handleCopyGames() {
     if (state.currentGeneratedGames.length === 0) {
         showError('Nenhum jogo para copiar.');
@@ -164,7 +184,7 @@ async function handleCopyGames() {
     }
 
     const formattedGames = state.currentGeneratedGames
-        .map(game => game.join(' '))
+        .map(formatGameForCopy)
         .join('\n');
 
     try {

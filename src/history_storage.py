@@ -8,11 +8,27 @@ import gerador_loterias
 import history_database
 
 
+LOTTERY_TYPES_PATTERN = "|".join(
+    re.escape(lottery_type)
+    for lottery_type in gerador_loterias.LOTTERY_CONFIGS
+)
 HISTORY_FILENAME_PATTERN = re.compile(
-    r"^(megasena|lotofacil|quina)_resultados_"
+    rf"^({LOTTERY_TYPES_PATTERN})_resultados_"
     r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.csv$",
     re.IGNORECASE
 )
+
+
+def parse_history_value(value):
+    if pd.isna(value):
+        return ""
+
+    value = str(value).strip()
+
+    if value.isdigit():
+        return int(value)
+
+    return value
 
 
 def history_file_path(filename):
@@ -73,7 +89,10 @@ def read_history_file(filename):
         return None
 
     df = pd.read_csv(file_path)
-    return df.apply(lambda x: x.astype(int)).values.tolist()
+    return [
+        [parse_history_value(value) for value in row]
+        for row in df.itertuples(index=False, name=None)
+    ]
 
 
 def clear_history(lottery_type):

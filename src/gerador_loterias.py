@@ -88,6 +88,34 @@ LOTTERY_CONFIGS = {
         'NUM_GAMES_DEFAULT': 5,
         'COLOR_PRIMARY': '#260085',
         'COLOR_SECONDARY': '#927FC1'
+    },
+    'diadesorte': {
+        'FILE_PATH': os.path.join(PROJECT_ROOT, "dia_sorte_asloterias_ate_concurso_1230_sorteio - dia_de_sorte_www.asloterias.com.br.csv"),
+        'NUM_BALLS_TO_DRAW': 7,
+        'MIN_NUMBER': 1,
+        'MAX_NUMBER': 31,
+        'CSV_COLUMNS_PREFIX': 'bola ',
+        'SKIP_ROWS': 6,
+        'NUM_GAMES_DEFAULT': 5,
+        'COLOR_PRIMARY': '#C76A00',
+        'COLOR_SECONDARY': '#F4C56A',
+        'EXTRA_COLUMNS': ['Mês da Sorte'],
+        'EXTRA_CHOICES': {
+            'Mês da Sorte': [
+                'Janeiro',
+                'Fevereiro',
+                'Março',
+                'Abril',
+                'Maio',
+                'Junho',
+                'Julho',
+                'Agosto',
+                'Setembro',
+                'Outubro',
+                'Novembro',
+                'Dezembro',
+            ]
+        }
     }
 }
 
@@ -95,6 +123,7 @@ LOTTERY_DISPLAY_NAMES = {
     "megasena": "Mega Sena",
     "lotofacil": "Lotofácil",
     "quina": "Quina",
+    "diadesorte": "Dia de Sorte",
 }
 
 
@@ -215,8 +244,13 @@ def get_latest_result(lottery_type):
 
     concurso = latest_row.get("Concurso", "")
     date_value = latest_row.get("Data", latest_row.get("Data Sorteio", ""))
+    extras = {}
 
-    return {
+    for column in config.get("EXTRA_COLUMNS", []):
+        if column in latest_row.index and pd.notna(latest_row[column]):
+            extras[column] = str(latest_row[column])
+
+    result = {
         "lottery_type": lottery_type,
         "name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
         "contest": int(concurso) if pd.notna(concurso) and str(concurso).isdigit() else str(concurso),
@@ -225,6 +259,11 @@ def get_latest_result(lottery_type):
         "color_primary": config["COLOR_PRIMARY"],
         "color_secondary": config["COLOR_SECONDARY"],
     }
+
+    if extras:
+        result["extras"] = extras
+
+    return result
 
 
 def get_latest_results():
@@ -285,6 +324,57 @@ def generate_single_set(probabilidades, num_to_draw, min_num, max_num):
         chosen_numbers.update(int(n) for n in random_fill)
 
     return sorted(chosen_numbers)
+
+
+def choose_weighted_extra_value(df, column_name, fallback_values):
+    values = []
+
+    if column_name in df.columns:
+        values = (
+            df[column_name]
+            .dropna()
+            .astype(str)
+            .str.strip()
+            .replace("", np.nan)
+            .dropna()
+            .tolist()
+        )
+
+    if values:
+        counts = pd.Series(values).value_counts()
+        probabilities = counts / counts.sum()
+
+        try:
+            return str(
+                np.random.choice(
+                    probabilities.index.tolist(),
+                    p=probabilities.values.tolist()
+                )
+            )
+        except Exception as e:
+            logging.warning(f"Erro ao sortear valor extra '{column_name}': {e}")
+
+    if fallback_values:
+        return str(np.random.choice(fallback_values))
+
+    return ""
+
+
+def generate_extra_values(df, config):
+    extra_values = []
+    extra_choices = config.get("EXTRA_CHOICES", {})
+
+    for column_name in config.get("EXTRA_COLUMNS", []):
+        value = choose_weighted_extra_value(
+            df,
+            column_name,
+            extra_choices.get(column_name, [])
+        )
+
+        if value:
+            extra_values.append(value)
+
+    return extra_values
 
 
 def load_trained_model(lottery_type):
@@ -580,9 +670,27 @@ def generate_n_lottery_games(lottery_type, num_games_to_generate=None):
                 max_num=config['MAX_NUMBER']
             )
 
-        all_generated_games.append([int(num) for num in main_numbers])
+        game = [int(num) for num in main_numbers]
+        game.extend(generate_extra_values(df, config))
+        all_generated_games.append(game)
 
     return all_generated_games
+
+
+def serialize_game_value(value):
+    if pd.isna(value):
+        return ""
+
+    try:
+        numeric_value = float(value)
+
+        if numeric_value.is_integer():
+            return int(numeric_value)
+
+    except (TypeError, ValueError):
+        pass
+
+    return str(value)
 
 
 def save_generated_games_to_csv(jogos, lottery_type, output_dir):
@@ -607,6 +715,7 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
             f"{config['CSV_COLUMNS_PREFIX'].strip()}{i + 1}"
             for i in range(config['NUM_BALLS_TO_DRAW'])
         ]
+        columns.extend(config.get("EXTRA_COLUMNS", []))
 
         df_jogos = pd.DataFrame(jogos, columns=columns)
         os.makedirs(output_dir, exist_ok=True)
@@ -618,7 +727,10 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
             history_database.save_history_record(
                 file_name,
                 lottery_type,
-                [[int(num) for num in jogo] for jogo in jogos],
+                [
+                    [serialize_game_value(value) for value in jogo]
+                    for jogo in jogos
+                ],
                 now.isoformat(timespec="seconds")
             )
         except Exception as e:

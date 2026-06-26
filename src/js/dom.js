@@ -56,6 +56,10 @@ export const lotteryColors = {
         primary: '#260085',
         secondary: '#927FC1',
     },
+    diadesorte: {
+        primary: '#C76A00',
+        secondary: '#F4C56A',
+    },
 };
 
 export const state = {

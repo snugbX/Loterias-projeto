@@ -20,9 +20,42 @@ export function formatLotteryName(lotteryType) {
         megasena: 'Mega Sena',
         lotofacil: 'Lotofacil',
         quina: 'Quina',
+        diadesorte: 'Dia de Sorte',
     };
 
     return names[lotteryType] || lotteryType;
+}
+
+
+function isNumericValue(value) {
+    return Number.isFinite(Number(value));
+}
+
+
+function appendNumberBall(container, value, color) {
+    const span = document.createElement('span');
+    span.classList.add(
+        'number-ball',
+        'transition',
+        'duration-200',
+        'ease-in-out',
+        'hover:scale-110',
+        'hover:shadow-lg'
+    );
+    span.textContent = String(value).padStart(2, '0');
+    span.style.backgroundColor = color;
+    span.style.fontSize = getComputedStyle(document.body).getPropertyValue('--ball-font-size');
+    container.appendChild(span);
+}
+
+
+function appendExtraBadge(container, value, color) {
+    const badge = document.createElement('span');
+    badge.classList.add('game-extra-badge');
+    badge.textContent = `Mês da Sorte: ${value}`;
+    badge.style.borderColor = color;
+    badge.style.color = color;
+    container.appendChild(badge);
 }
 
 
@@ -55,20 +88,12 @@ export function displayGamesAsBalls(games, targetContainer, lotteryType) {
         jogoLineDiv.style.backgroundColor = colors.secondary;
         jogoLineDiv.style.animationDelay = `${index * 0.05}s`;
 
-        jogo.forEach(numero => {
-            const span = document.createElement('span');
-            span.classList.add(
-                'number-ball',
-                'transition',
-                'duration-200',
-                'ease-in-out',
-                'hover:scale-110',
-                'hover:shadow-lg'
-            );
-            span.textContent = String(numero).padStart(2, '0');
-            span.style.backgroundColor = colors.primary;
-            span.style.fontSize = getComputedStyle(document.body).getPropertyValue('--ball-font-size');
-            jogoLineDiv.appendChild(span);
+        jogo.forEach(value => {
+            if (isNumericValue(value)) {
+                appendNumberBall(jogoLineDiv, value, colors.primary);
+            } else {
+                appendExtraBadge(jogoLineDiv, value, colors.primary);
+            }
         });
 
         targetContainer.appendChild(jogoLineDiv);
@@ -106,7 +131,7 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
 
 
 export function displayLatestResults(results, targetElement) {
-    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina'];
+    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
     targetElement.innerHTML = '';
 
     if (!results || Object.keys(results).length === 0) {
@@ -155,6 +180,22 @@ export function displayLatestResults(results, targetElement) {
 
         card.appendChild(header);
         card.appendChild(balls);
+
+        if (result.extras) {
+            const extras = document.createElement('div');
+            extras.classList.add('latest-result-extras');
+
+            Object.entries(result.extras).forEach(([label, value]) => {
+                const extra = document.createElement('span');
+                extra.textContent = `${label}: ${value}`;
+                extra.style.borderColor = result.color_primary;
+                extra.style.color = result.color_primary;
+                extras.appendChild(extra);
+            });
+
+            card.appendChild(extras);
+        }
+
         targetElement.appendChild(card);
     });
 }

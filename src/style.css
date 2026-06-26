@@ -87,7 +87,7 @@ h3 {
 }
 .latest-results-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 12px;
     color: var(--text-secondary);
 }
@@ -133,6 +133,26 @@ h3 {
     min-width: 28px;
     padding: 0 7px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.latest-result-extras {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.latest-result-extras span,
+.game-extra-badge {
+    background-color: var(--bg-secondary);
+    border: 1px solid;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.2;
+    padding: 6px 10px;
+}
+.game-extra-badge {
+    margin: 2px;
+    white-space: nowrap;
 }
 
 @media (max-width: 900px) {

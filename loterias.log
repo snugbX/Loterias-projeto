@@ -978,3 +978,39 @@
 2026-06-26 17:56:44,602 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "GET /latest_results HTTP/1.1" 200 -
 2026-06-26 17:56:44,668 - INFO - 127.0.0.1 - - [26/Jun/2026 17:56:44] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
 2026-06-26 18:24:43,015 - INFO - 127.0.0.1 - - [26/Jun/2026 18:24:43] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-06-26 18:29:13,091 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET / HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,144 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,164 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/main.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,368 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,387 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,395 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/dom.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,398 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,399 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 18:29:13,410 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 18:29:13,452 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:13] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 18:29:21,780 - INFO - 127.0.0.1 - - [26/Jun/2026 18:29:21] "GET /get_history_files/megasena HTTP/1.1" 200 -
+2026-06-26 19:01:07,722 - WARNING - Modelo não encontrado para diadesorte: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\src\models\diadesorte_model.pkl
+2026-06-26 19:01:45,308 - WARNING - Modelo não encontrado para diadesorte: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\src\models\diadesorte_model.pkl
+2026-06-26 19:01:45,345 - INFO - 1 jogos de diadesorte salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\data\route_test_diadesorte\diadesorte_resultados_2026-06-26_19-01-45.csv'
+2026-06-26 19:03:11,650 - WARNING - Modelo não encontrado para diadesorte: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\src\models\diadesorte_model.pkl
+2026-06-26 19:05:16,330 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 19:05:16,330 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 19:05:47,285 - INFO - 127.0.0.1 - - [26/Jun/2026 19:05:47] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 19:05:59,668 - INFO - 127.0.0.1 - - [26/Jun/2026 19:05:59] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 19:23:43,023 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-26 19:23:43,023 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 19:23:44,761 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:44] "GET / HTTP/1.1" 200 -
+2026-06-26 19:23:44,781 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:44] "GET /style.css HTTP/1.1" 200 -
+2026-06-26 19:23:44,782 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:44] "GET /js/main.js HTTP/1.1" 200 -
+2026-06-26 19:23:45,075 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "GET /js/dom.js HTTP/1.1" 200 -
+2026-06-26 19:23:45,077 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-06-26 19:23:45,079 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "GET /js/render.js HTTP/1.1" 200 -
+2026-06-26 19:23:45,084 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "[36mGET /js/ui.js HTTP/1.1[0m" 304 -
+2026-06-26 19:23:45,115 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "[36mGET /js/api.js HTTP/1.1[0m" 304 -
+2026-06-26 19:23:45,129 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "GET /admin_status HTTP/1.1" 200 -
+2026-06-26 19:23:45,177 - INFO - 127.0.0.1 - - [26/Jun/2026 19:23:45] "GET /latest_results HTTP/1.1" 200 -
+2026-06-26 19:24:05,291 - WARNING - Modelo não encontrado para diadesorte: C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\src\models\diadesorte_model.pkl
+2026-06-26 19:24:05,306 - INFO - 1 jogos de diadesorte salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\diadesorte_resultados_2026-06-26_19-24-05.csv'
+2026-06-26 19:24:05,306 - INFO - 127.0.0.1 - - [26/Jun/2026 19:24:05] "GET /gerar_jogos/diadesorte?num_games=1 HTTP/1.1" 200 -

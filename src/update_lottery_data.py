@@ -47,6 +47,12 @@ DOWNLOAD_CONFIGS = {
         "fallback_payload": {"l": "qi", "t": "t", "o": "s", "f1": "", "f2": ""},
         "override_env": "ASLOTERIAS_QUINA_URL",
     },
+    "diadesorte": {
+        "name": "Dia de Sorte",
+        "page_url": "https://asloterias.com.br/download-todos-resultados-dia-de-sorte",
+        "fallback_payload": {"l": "dd", "t": "t", "o": "s", "f1": "", "f2": ""},
+        "override_env": "ASLOTERIAS_DIADESORTE_URL",
+    },
 }
 
 
