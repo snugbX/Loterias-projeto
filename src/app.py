@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 import history_storage
 import gerador_loterias # Importa o módulo de geração de loterias
 import os
+import subprocess
+import sys
 import threading
 import webbrowser
 import time
@@ -32,6 +34,18 @@ def env_flag(name, default=False):
         return default
 
     return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_int(name, default):
+    value = os.environ.get(name)
+
+    if value is None:
+        return default
+
+    try:
+        return int(value)
+    except ValueError:
+        return default
 
 
 def admin_token_configured():
@@ -181,9 +195,69 @@ def latest_results():
         gerador_loterias.logging.error(f"Erro ao obter últimos resultados: {e}")
         return jsonify({"error": "Erro ao obter últimos resultados"}), 500
 
+@app.route('/data_status')
+def data_status():
+    try:
+        return jsonify({"status": gerador_loterias.get_data_status()})
+    except Exception as e:
+        gerador_loterias.logging.error(f"Erro ao obter status dos dados: {e}")
+        return jsonify({"error": "Erro ao obter status dos dados"}), 500
+
 @app.route('/admin_status')
 def admin_status():
     return jsonify({"admin_token_required": admin_token_configured()})
+
+@app.route('/admin/update_data', methods=['POST'])
+def admin_update_data():
+    admin_error = require_admin_token()
+
+    if admin_error is not None:
+        return admin_error
+
+    timeout = env_int("LOTTERY_UPDATE_TIMEOUT", 240)
+    script_path = os.path.join(gerador_loterias.BASE_DIR, "update_lottery_data.py")
+    command = [
+        sys.executable,
+        script_path,
+        "--no-publish",
+    ]
+
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=gerador_loterias.PROJECT_ROOT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return jsonify({
+            "error": "Atualizacao demorou demais e foi interrompida.",
+        }), 504
+    except Exception as e:
+        gerador_loterias.logging.error(f"Erro ao executar atualizador: {e}")
+        return jsonify({"error": "Erro ao executar atualizador"}), 500
+
+    output = completed.stdout.strip()
+    error_output = completed.stderr.strip()
+
+    if completed.returncode != 0:
+        gerador_loterias.logging.error(
+            f"Atualizador retornou erro {completed.returncode}: {error_output or output}"
+        )
+        return jsonify({
+            "error": "Falha ao atualizar dados.",
+            "output": output,
+            "error_output": error_output,
+        }), 500
+
+    return jsonify({
+        "message": "Atualizacao concluida.",
+        "output": output,
+        "status": gerador_loterias.get_data_status(),
+    })
 
 @app.route('/clear_history/<lottery_type>', methods=['POST'])
 def clear_history(lottery_type):

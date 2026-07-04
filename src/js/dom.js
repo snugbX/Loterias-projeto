@@ -37,6 +37,12 @@ export const elements = {
     assistenciaModalTitle: document.getElementById('assistencia-modal-title'),
     mainTitle: document.getElementById('main-title'),
     latestResultsGrid: document.getElementById('latest-results-grid'),
+    dataStatusGrid: document.getElementById('data-status-grid'),
+    dataStatusUpdatedAt: document.getElementById('data-status-updated-at'),
+    updateDataButton: document.getElementById('update-data-btn'),
+    lotteryOptionGrid: document.getElementById('lottery-option-grid'),
+    selectedLotteryName: document.getElementById('selected-lottery-name'),
+    selectedLotteryMeta: document.getElementById('selected-lottery-meta'),
     historyModalTitle: document.getElementById('history-modal-title'),
     generatedGamesModalTitle: document.getElementById('generated-games-modal-title'),
     jogosGeradosMainDisplay: document.getElementById('jogos-gerados-main-display'),
@@ -63,6 +69,29 @@ export const lotteryColors = {
     },
 };
 
+export const lotteryDetails = {
+    megasena: {
+        name: 'Mega Sena',
+        summary: '6 dezenas de 1 a 60',
+        accent: '#157347',
+    },
+    lotofacil: {
+        name: 'Lotofácil',
+        summary: '15 dezenas de 1 a 25',
+        accent: '#7A006F',
+    },
+    quina: {
+        name: 'Quina',
+        summary: '5 dezenas de 1 a 80',
+        accent: '#1D006B',
+    },
+    diadesorte: {
+        name: 'Dia de Sorte',
+        summary: '7 dezenas de 1 a 31 + mês',
+        accent: '#9A5200',
+    },
+};
+
 export const state = {
     currentGeneratedGames: [],
 };
@@ -75,6 +104,11 @@ export function adjustableFontElements() {
     return [
         elements.mainTitle,
         elements.latestResultsGrid,
+        elements.dataStatusGrid,
+        elements.dataStatusUpdatedAt,
+        elements.lotteryOptionGrid,
+        elements.selectedLotteryName,
+        elements.selectedLotteryMeta,
         elements.lotterySelect,
         elements.numGamesInput,
         ...Array.from(document.querySelectorAll('label')),

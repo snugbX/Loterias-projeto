@@ -60,16 +60,94 @@
             </div>
         </section>
 
-        <!-- Dropdown para seleção do tipo de loteria -->
-        <div class="mb-4">
-            <label for="lottery-select" class="block text-sm font-bold mb-2">Selecione a Loteria:</label>
-            <select id="lottery-select" class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" aria-label="Selecione o tipo de loteria">
+        <!-- Seletor visual do tipo de loteria -->
+        <section id="data-status-section" class="data-status-section mb-6">
+            <div class="data-status-heading">
+                <div>
+                    <h2>Status dos Dados</h2>
+                    <p id="data-status-updated-at">Verificando arquivos locais...</p>
+                </div>
+                <button id="update-data-btn" type="button" class="data-status-update-btn" aria-label="Atualizar resultados das loterias">
+                    Atualizar Resultados
+                </button>
+            </div>
+            <div id="data-status-grid" class="data-status-grid" aria-live="polite">
+                Carregando status dos dados...
+            </div>
+        </section>
+
+        <section class="lottery-picker mb-5" aria-labelledby="lottery-picker-title">
+            <div class="lottery-picker-heading">
+                <div>
+                    <span class="lottery-picker-eyebrow">Seleção rápida</span>
+                    <h2 id="lottery-picker-title">Escolha a Loteria</h2>
+                </div>
+                <div class="lottery-selected-summary" aria-live="polite">
+                    <span id="selected-lottery-name">Mega Sena</span>
+                    <strong id="selected-lottery-meta">6 dezenas de 1 a 60</strong>
+                </div>
+            </div>
+            <select id="lottery-select" class="lottery-native-select" aria-label="Selecione o tipo de loteria" tabindex="-1">
                 <option value="megasena">Mega Sena</option>
                 <option value="lotofacil">Lotofácil</option>
                 <option value="quina">Quina</option>
                 <option value="diadesorte">Dia de Sorte</option>
             </select>
-        </div>
+
+            <div id="lottery-option-grid" class="lottery-option-grid" role="radiogroup" aria-labelledby="lottery-picker-title">
+                <button type="button" class="lottery-option is-selected" data-lottery="megasena" role="radio" aria-checked="true" style="--lottery-primary: #209869; --lottery-secondary: #8FCBB3;">
+                    <span class="lottery-option-topline">
+                        <span class="lottery-option-kicker">6 dezenas</span>
+                        <span class="lottery-option-check" aria-hidden="true"></span>
+                    </span>
+                    <span class="lottery-option-name">Mega Sena</span>
+                    <span class="lottery-option-meta">1 a 60</span>
+                    <span class="lottery-option-balls" aria-hidden="true">
+                        <span>06</span><span>12</span><span>24</span><span>33</span><span>45</span><span>58</span>
+                    </span>
+                    <span class="lottery-option-days">Ter, Qui, Sab</span>
+                </button>
+
+                <button type="button" class="lottery-option" data-lottery="lotofacil" role="radio" aria-checked="false" style="--lottery-primary: #930089; --lottery-secondary: #C87FC3;">
+                    <span class="lottery-option-topline">
+                        <span class="lottery-option-kicker">15 dezenas</span>
+                        <span class="lottery-option-check" aria-hidden="true"></span>
+                    </span>
+                    <span class="lottery-option-name">Lotofácil</span>
+                    <span class="lottery-option-meta">1 a 25</span>
+                    <span class="lottery-option-balls" aria-hidden="true">
+                        <span>01</span><span>03</span><span>07</span><span>11</span><span>19</span><span>25</span>
+                    </span>
+                    <span class="lottery-option-days">Seg a Sab</span>
+                </button>
+
+                <button type="button" class="lottery-option" data-lottery="quina" role="radio" aria-checked="false" style="--lottery-primary: #260085; --lottery-secondary: #927FC1;">
+                    <span class="lottery-option-topline">
+                        <span class="lottery-option-kicker">5 dezenas</span>
+                        <span class="lottery-option-check" aria-hidden="true"></span>
+                    </span>
+                    <span class="lottery-option-name">Quina</span>
+                    <span class="lottery-option-meta">1 a 80</span>
+                    <span class="lottery-option-balls" aria-hidden="true">
+                        <span>05</span><span>17</span><span>32</span><span>48</span><span>66</span><span>80</span>
+                    </span>
+                    <span class="lottery-option-days">Seg a Sab</span>
+                </button>
+
+                <button type="button" class="lottery-option" data-lottery="diadesorte" role="radio" aria-checked="false" style="--lottery-primary: #C76A00; --lottery-secondary: #F4C56A;">
+                    <span class="lottery-option-topline">
+                        <span class="lottery-option-kicker">7 dezenas + mês</span>
+                        <span class="lottery-option-check" aria-hidden="true"></span>
+                    </span>
+                    <span class="lottery-option-name">Dia de Sorte</span>
+                    <span class="lottery-option-meta">1 a 31</span>
+                    <span class="lottery-option-balls" aria-hidden="true">
+                        <span>04</span><span>09</span><span>14</span><span>18</span><span>23</span><span>31</span>
+                    </span>
+                    <span class="lottery-option-days">Ter, Qui, Sab</span>
+                </button>
+            </div>
+        </section>
 
         <!-- Campo para a quantidade de jogos -->
         <div class="mb-6">

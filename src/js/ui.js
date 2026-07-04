@@ -29,6 +29,16 @@ export function setActionButtonsDisabled(disabled) {
     elements.visualizarHistoricoButton.disabled = disabled;
     elements.assistenciaBtn.disabled = disabled;
     elements.limparHistoricoBtn.disabled = disabled;
+
+    if (elements.updateDataButton) {
+        elements.updateDataButton.disabled = disabled;
+    }
+
+    if (elements.lotteryOptionGrid) {
+        elements.lotteryOptionGrid.querySelectorAll('button').forEach(button => {
+            button.disabled = disabled;
+        });
+    }
 }
 
 

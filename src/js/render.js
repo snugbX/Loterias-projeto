@@ -201,6 +201,62 @@ export function displayLatestResults(results, targetElement) {
 }
 
 
+export function displayDataStatus(status, targetElement, updatedAtElement) {
+    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
+    targetElement.innerHTML = '';
+
+    if (!status || Object.keys(status).length === 0) {
+        targetElement.textContent = 'Status dos dados indisponivel.';
+        targetElement.classList.add('text-gray-500');
+        return;
+    }
+
+    targetElement.classList.remove('text-gray-500');
+
+    orderedLotteryTypes.forEach(lotteryType => {
+        const item = status[lotteryType];
+
+        if (!item) {
+            return;
+        }
+
+        const card = document.createElement('article');
+        card.classList.add('data-status-card');
+        card.style.borderColor = item.file_exists ? item.color_primary : '#EF4444';
+        card.style.background = `linear-gradient(180deg, ${item.color_secondary || '#E5E7EB'}22, var(--bg-secondary) 62%)`;
+
+        const title = document.createElement('h3');
+        title.textContent = item.name;
+        title.style.color = item.color_primary;
+
+        const contest = document.createElement('p');
+        contest.classList.add('data-status-contest');
+        contest.textContent = item.contest
+            ? `Concurso ${item.contest}`
+            : 'CSV nao encontrado';
+
+        const date = document.createElement('p');
+        date.textContent = item.date ? `Sorteio: ${item.date}` : 'Sem data local';
+
+        const fileInfo = document.createElement('p');
+        fileInfo.classList.add('data-status-file');
+        fileInfo.textContent = item.modified_at
+            ? `Arquivo atualizado: ${new Date(item.modified_at).toLocaleString('pt-BR')}`
+            : 'Arquivo ainda nao carregado';
+
+        card.appendChild(title);
+        card.appendChild(contest);
+        card.appendChild(date);
+        card.appendChild(fileInfo);
+        targetElement.appendChild(card);
+    });
+
+    if (updatedAtElement) {
+        updatedAtElement.textContent = `Verificado em ${new Date().toLocaleString('pt-BR')}`;
+    }
+}
+
+
 function iconButton(label, svgMarkup, onClick) {
     const button = document.createElement('button');
     button.type = 'button';

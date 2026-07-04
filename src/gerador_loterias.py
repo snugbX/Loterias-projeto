@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import logging
 import joblib
+from logging.handlers import RotatingFileHandler
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
@@ -32,6 +33,18 @@ def env_flag(name, default=False):
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def env_int(name, default):
+    value = os.environ.get(name)
+
+    if value is None:
+        return default
+
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 OUTPUT_DIR = resolve_project_path(
     os.environ.get(
         "LOTTERY_OUTPUT_DIR",
@@ -45,14 +58,30 @@ MODEL_DIR = resolve_project_path(
     )
 )
 USE_ML_MODELS = env_flag("LOTTERY_USE_ML", default=True)
+LOG_FILE = resolve_project_path(
+    os.environ.get(
+        "LOTTERY_LOG_FILE",
+        os.path.join(PROJECT_ROOT, "loterias.log")
+    )
+)
+LOG_MAX_BYTES = env_int("LOTTERY_LOG_MAX_BYTES", 512 * 1024)
+LOG_BACKUP_COUNT = env_int("LOTTERY_LOG_BACKUP_COUNT", 3)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 _MODEL_CACHE = {}
 
+_log_handler = RotatingFileHandler(
+    LOG_FILE,
+    maxBytes=LOG_MAX_BYTES,
+    backupCount=LOG_BACKUP_COUNT,
+    encoding="utf-8"
+)
 logging.basicConfig(
-    filename=os.path.join(PROJECT_ROOT, "loterias.log"),
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[_log_handler],
+    force=True
 )
 
 LOTTERY_CONFIGS = {
@@ -276,6 +305,38 @@ def get_latest_results():
             results[lottery_type] = latest_result
 
     return results
+
+
+def get_data_status():
+    status = {}
+
+    for lottery_type, config in LOTTERY_CONFIGS.items():
+        file_path = config["FILE_PATH"]
+        file_exists = os.path.exists(file_path)
+        latest_result = get_latest_result(lottery_type) if file_exists else None
+        modified_at = None
+        file_size = None
+
+        if file_exists:
+            modified_at = datetime.datetime.fromtimestamp(
+                os.path.getmtime(file_path)
+            ).isoformat(timespec="seconds")
+            file_size = os.path.getsize(file_path)
+
+        status[lottery_type] = {
+            "lottery_type": lottery_type,
+            "name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
+            "file_exists": file_exists,
+            "file_name": os.path.basename(file_path),
+            "file_size": file_size,
+            "modified_at": modified_at,
+            "contest": latest_result.get("contest") if latest_result else None,
+            "date": latest_result.get("date") if latest_result else None,
+            "color_primary": config["COLOR_PRIMARY"],
+            "color_secondary": config["COLOR_SECONDARY"],
+        }
+
+    return status
 
 
 def generate_single_set(probabilidades, num_to_draw, min_num, max_num):

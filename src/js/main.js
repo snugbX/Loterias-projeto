@@ -4,18 +4,21 @@ import {
     deleteHistoryFile,
     generateGames,
     getAdminStatus,
+    getDataStatus,
     getHistoryFileContent,
     getHotColdNumbers,
     getLatestResults,
     getSavedAdminToken,
     listHistoryFiles,
     setSavedAdminToken,
+    updateData,
 } from './api.js';
-import { elements, selectedLotteryType, state } from './dom.js';
+import { elements, lotteryColors, lotteryDetails, selectedLotteryType, state } from './dom.js';
 import { renderDrawCalendar } from './drawCalendar.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
+    displayDataStatus,
     displayLatestResults,
     displayGamesAsBalls,
     displayNumberBalls,
@@ -35,6 +38,99 @@ import {
 } from './ui.js';
 
 let adminTokenRequired = false;
+
+
+function getLotteryOptionButtons() {
+    if (!elements.lotteryOptionGrid) {
+        return [];
+    }
+
+    return Array.from(elements.lotteryOptionGrid.querySelectorAll('[data-lottery]'));
+}
+
+
+function setSelectedLottery(lotteryType) {
+    const colors = lotteryColors[lotteryType];
+    const details = lotteryDetails[lotteryType];
+
+    if (!colors || !details) {
+        return;
+    }
+
+    elements.lotterySelect.value = lotteryType;
+    document.body.style.setProperty('--active-lottery-primary', colors.primary);
+    document.body.style.setProperty('--active-lottery-secondary', colors.secondary);
+
+    if (elements.selectedLotteryName) {
+        elements.selectedLotteryName.textContent = details.name;
+    }
+
+    if (elements.selectedLotteryMeta) {
+        elements.selectedLotteryMeta.textContent = details.summary;
+    }
+
+    if (elements.gerarJogosButton) {
+        elements.gerarJogosButton.style.background = `linear-gradient(135deg, ${colors.primary}, ${details.accent})`;
+        elements.gerarJogosButton.style.boxShadow = `0 10px 22px ${colors.secondary}66`;
+    }
+
+    getLotteryOptionButtons().forEach(button => {
+        const selected = button.dataset.lottery === lotteryType;
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-checked', String(selected));
+        button.tabIndex = selected ? 0 : -1;
+    });
+}
+
+
+function selectLotteryOption(button) {
+    if (!button?.dataset?.lottery) {
+        return;
+    }
+
+    setSelectedLottery(button.dataset.lottery);
+}
+
+
+function handleLotteryOptionKeydown(event) {
+    const buttons = getLotteryOptionButtons();
+    const currentIndex = buttons.indexOf(event.currentTarget);
+
+    if (currentIndex === -1) {
+        return;
+    }
+
+    const keyActions = {
+        ArrowRight: 1,
+        ArrowDown: 1,
+        ArrowLeft: -1,
+        ArrowUp: -1,
+    };
+
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectLotteryOption(event.currentTarget);
+        return;
+    }
+
+    let nextIndex = null;
+
+    if (event.key in keyActions) {
+        nextIndex = (currentIndex + keyActions[event.key] + buttons.length) % buttons.length;
+    } else if (event.key === 'Home') {
+        nextIndex = 0;
+    } else if (event.key === 'End') {
+        nextIndex = buttons.length - 1;
+    }
+
+    if (nextIndex === null) {
+        return;
+    }
+
+    event.preventDefault();
+    selectLotteryOption(buttons[nextIndex]);
+    buttons[nextIndex].focus();
+}
 
 
 function validateNumGames() {
@@ -74,6 +170,28 @@ async function loadLatestResults() {
         elements.latestResultsGrid.textContent = 'Últimos resultados indisponíveis no momento.';
         elements.latestResultsGrid.classList.add('text-gray-500');
         console.error('Erro ao carregar últimos resultados:', error);
+    }
+}
+
+
+async function loadDataStatus() {
+    if (!elements.dataStatusGrid) {
+        return;
+    }
+
+    elements.dataStatusGrid.textContent = 'Carregando status dos dados...';
+
+    try {
+        const data = await getDataStatus();
+        displayDataStatus(
+            data.status,
+            elements.dataStatusGrid,
+            elements.dataStatusUpdatedAt
+        );
+    } catch (error) {
+        elements.dataStatusGrid.textContent = 'Status dos dados indisponivel no momento.';
+        elements.dataStatusGrid.classList.add('text-gray-500');
+        console.error('Erro ao carregar status dos dados:', error);
     }
 }
 
@@ -136,6 +254,37 @@ async function handleGenerateGames() {
     } catch (error) {
         showError(`Erro: ${error.message}`);
         console.error('Erro ao buscar jogos:', error);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleUpdateData() {
+    if (!ensureAdminToken()) {
+        return;
+    }
+
+    showLoading('Atualizando resultados. Isso pode levar alguns instantes...');
+    setActionButtonsDisabled(true);
+
+    try {
+        const data = await updateData();
+        displayDataStatus(
+            data.status,
+            elements.dataStatusGrid,
+            elements.dataStatusUpdatedAt
+        );
+        await loadLatestResults();
+        showSuccessMessageModal(data.message || 'Dados atualizados com sucesso.');
+    } catch (error) {
+        if (handleAdminError(error)) {
+            return;
+        }
+
+        showError(`Erro: ${error.message}`);
+        console.error('Erro ao atualizar dados:', error);
     } finally {
         hideLoading();
         setActionButtonsDisabled(false);
@@ -390,6 +539,15 @@ function handleFontChanged() {
 
 
 function bindEvents() {
+    getLotteryOptionButtons().forEach(button => {
+        button.addEventListener('click', () => selectLotteryOption(button));
+        button.addEventListener('keydown', handleLotteryOptionKeydown);
+    });
+
+    elements.lotterySelect.addEventListener('change', () => {
+        setSelectedLottery(selectedLotteryType());
+    });
+
     elements.gerarJogosButton.addEventListener('click', handleGenerateGames);
     elements.visualizarHistoricoButton.addEventListener('click', () => {
         fetchFilesAndDisplayHistory(selectedLotteryType());
@@ -402,6 +560,10 @@ function bindEvents() {
         closeModal(elements.historyModalOverlay);
         confirmClearHistory(selectedLotteryType());
     });
+
+    if (elements.updateDataButton) {
+        elements.updateDataButton.addEventListener('click', handleUpdateData);
+    }
 
     elements.copyGamesButtonModal.addEventListener('click', handleCopyGames);
     elements.generatedGamesModalCloseBtn.addEventListener('click', () => {
@@ -441,7 +603,9 @@ function setFooterYear() {
 
 setFooterYear();
 renderDrawCalendar(elements.drawCalendarGrid);
+setSelectedLottery(selectedLotteryType());
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
 loadAdminStatus();
 loadLatestResults();
+loadDataStatus();

@@ -56,6 +56,33 @@ Para testar sem alterar os CSVs:
 py -3 src\update_lottery_data.py --dry-run
 ```
 
+O atualizador verifica o concurso salvo localmente antes de substituir os CSVs. Se o site informar o mesmo concurso que ja esta no projeto, ele pula a loteria e evita criar backup, alterar arquivo ou abrir publicacao sem necessidade.
+
+Para atualizar e enviar os CSVs alterados ao GitHub em seguida, use:
+
+```bat
+Atualizar Dados e GitHub.cmd
+```
+
+Ou rode manualmente:
+
+```bat
+py -3 src\update_lottery_data.py --publish
+```
+
+Esse fluxo chama `src\publish_lottery_data.py`, que faz commit e push apenas dos CSVs que realmente foram atualizados. Para simular sem commitar nem enviar:
+
+```bat
+py -3 src\update_lottery_data.py --publish --publish-dry-run
+```
+
+Na interface web tambem existe o painel **Status dos Dados**, que mostra o concurso salvo localmente de cada loteria e permite acionar a atualizacao pelo botao **Atualizar Resultados**. Essa acao usa protecao admin quando `ADMIN_TOKEN` estiver configurado.
+
+O sistema tambem faz manutencao automatica:
+
+* o log `loterias.log` usa rotacao por tamanho;
+* os backups antigos em `backups_loterias/` sao limpos pelo atualizador, mantendo por padrao as ultimas 5 pastas.
+
 Se algum link do site mudar no futuro, você pode informar uma URL direta de download usando uma destas variáveis:
 
 ```bat

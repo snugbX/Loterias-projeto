@@ -4,6 +4,7 @@ import io
 import os
 import re
 import shutil
+import subprocess
 import sys
 import time
 import urllib.parse
@@ -56,6 +57,27 @@ DOWNLOAD_CONFIGS = {
 }
 
 
+def env_flag(name, default=False):
+    value = os.environ.get(name)
+
+    if value is None:
+        return default
+
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_int(name, default):
+    value = os.environ.get(name)
+
+    if value is None:
+        return default
+
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 @dataclass
 class DownloadResult:
     lottery_type: str
@@ -63,6 +85,9 @@ class DownloadResult:
     filename: str
     content_type: str
     data: bytes
+    remote_contest: int = None
+    skipped: bool = False
+    skip_reason: str = ""
 
 
 class DownloadFormParser(HTMLParser):
@@ -120,12 +145,124 @@ def fetch_bytes(url, timeout, data=None, referer=None):
         )
 
 
+def fetch_download(
+    lottery_type,
+    url,
+    timeout,
+    data=None,
+    referer=None,
+    fallback_filename=None,
+    local_contest=None,
+    skip_current=True,
+):
+    request = build_request(url, data=data, referer=referer)
+
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        content_type = response.headers.get("content-type", "")
+        disposition = response.headers.get("content-disposition", "")
+        final_url = response.geturl()
+        fallback = (
+            fallback_filename
+            or Path(urllib.parse.urlparse(final_url).path).name
+            or f"{lottery_type}.xlsx"
+        )
+        filename = filename_from_disposition(disposition, fallback)
+        remote_contest = contest_from_filename(filename)
+
+        if (
+            skip_current
+            and local_contest is not None
+            and remote_contest is not None
+            and int(local_contest) >= remote_contest
+        ):
+            return DownloadResult(
+                lottery_type=lottery_type,
+                source_url=final_url,
+                filename=filename,
+                content_type=content_type,
+                data=b"",
+                remote_contest=remote_contest,
+                skipped=True,
+                skip_reason=(
+                    f"local no concurso {local_contest}; "
+                    f"site informa concurso {remote_contest}"
+                ),
+            )
+
+        return DownloadResult(
+            lottery_type=lottery_type,
+            source_url=final_url,
+            filename=filename,
+            content_type=content_type,
+            data=response.read(),
+            remote_contest=remote_contest,
+        )
+
+
 def filename_from_disposition(content_disposition, fallback):
     match = re.search(r'filename="?([^";]+)"?', content_disposition or "", re.I)
     if match:
         return match.group(1).strip()
 
     return fallback
+
+
+def contest_from_filename(filename):
+    match = re.search(r"_ate_concurso_(\d+)", filename or "", re.I)
+
+    if not match:
+        return None
+
+    return int(match.group(1))
+
+
+def latest_contest_from_rows(rows, skip_rows):
+    if len(rows) <= skip_rows + 1:
+        return None
+
+    header = rows[skip_rows]
+    if "Concurso" not in header:
+        return None
+
+    contest_index = header.index("Concurso")
+    date_index = header.index("Data") if "Data" in header else None
+    latest = None
+
+    for row in rows[skip_rows + 1:]:
+        if contest_index >= len(row):
+            continue
+
+        contest = str(row[contest_index]).strip()
+        if not contest.isdigit():
+            continue
+
+        contest_number = int(contest)
+        date_value = ""
+
+        if date_index is not None and date_index < len(row):
+            date_value = str(row[date_index]).strip()
+
+        if latest is None or contest_number > latest["contest"]:
+            latest = {
+                "contest": contest_number,
+                "date": date_value,
+            }
+
+    return latest
+
+
+def local_latest_contest(lottery_type):
+    target_path = Path(LOTTERY_CONFIGS[lottery_type]["FILE_PATH"])
+
+    if not target_path.exists():
+        return None
+
+    rows = csv_to_rows(target_path.read_bytes())
+
+    return latest_contest_from_rows(
+        rows,
+        int(LOTTERY_CONFIGS[lottery_type]["SKIP_ROWS"])
+    )
 
 
 def find_download_form(page_url, order_code, timeout):
@@ -148,20 +285,25 @@ def find_download_form(page_url, order_code, timeout):
     return None
 
 
-def download_lottery_file(lottery_type, order, timeout):
+def download_lottery_file(
+    lottery_type,
+    order,
+    timeout,
+    local_contest=None,
+    skip_current=True,
+):
     download_config = DOWNLOAD_CONFIGS[lottery_type]
     override_url = os.environ.get(download_config["override_env"])
 
     if override_url:
-        data, content_type, disposition, final_url = fetch_bytes(
+        return fetch_download(
+            lottery_type,
             override_url,
             timeout,
+            local_contest=local_contest,
+            skip_current=skip_current,
+            fallback_filename=f"{lottery_type}.xlsx",
         )
-        filename = filename_from_disposition(
-            disposition,
-            Path(urllib.parse.urlparse(final_url).path).name or f"{lottery_type}.xlsx",
-        )
-        return DownloadResult(lottery_type, final_url, filename, content_type, data)
 
     order_code = ORDER_CODES[order]
     page_url = download_config["page_url"]
@@ -176,15 +318,16 @@ def download_lottery_file(lottery_type, order, timeout):
         payload["o"] = order_code
 
     encoded_payload = urllib.parse.urlencode(payload).encode("utf-8")
-    data, content_type, disposition, final_url = fetch_bytes(
+    return fetch_download(
+        lottery_type,
         action,
         timeout,
         data=encoded_payload,
         referer=page_url,
+        fallback_filename=f"{lottery_type}.xlsx",
+        local_contest=local_contest,
+        skip_current=skip_current,
     )
-    filename = filename_from_disposition(disposition, f"{lottery_type}.xlsx")
-
-    return DownloadResult(lottery_type, final_url, filename, content_type, data)
 
 
 def local_name(tag):
@@ -396,13 +539,52 @@ def replace_csv(lottery_type, rows, make_backup):
     return target_path, backup_path
 
 
+def cleanup_old_backups(retention_count):
+    if retention_count < 0 or not BACKUP_DIR.exists():
+        return 0
+
+    backup_dirs = [
+        path for path in BACKUP_DIR.iterdir()
+        if path.is_dir()
+    ]
+    backup_dirs.sort(
+        key=lambda path: path.stat().st_mtime,
+        reverse=True
+    )
+    deleted_count = 0
+
+    for old_dir in backup_dirs[retention_count:]:
+        shutil.rmtree(old_dir)
+        deleted_count += 1
+
+    return deleted_count
+
+
 def update_lottery(lottery_type, args):
     name = DOWNLOAD_CONFIGS[lottery_type]["name"]
     print(f"\n== {name} ==")
-    print("Baixando dados atualizados...")
+    local_summary = local_latest_contest(lottery_type)
 
-    download = download_lottery_file(lottery_type, args.order, args.timeout)
+    if local_summary:
+        print(
+            "Local atual: concurso "
+            f"{local_summary['contest']} em {local_summary['date'] or 'data nao informada'}."
+        )
+
+    print("Verificando dados no site...")
+
+    download = download_lottery_file(
+        lottery_type,
+        args.order,
+        args.timeout,
+        local_contest=local_summary["contest"] if local_summary else None,
+        skip_current=not args.force,
+    )
     print(f"Arquivo recebido: {download.filename}")
+
+    if download.skipped:
+        print(f"Sem atualizacao necessaria: {download.skip_reason}.")
+        return None
 
     rows = downloaded_data_to_rows(download)
     summary = validate_rows(lottery_type, rows)
@@ -412,9 +594,20 @@ def update_lottery(lottery_type, args):
         f"({summary['ball_count']} dezenas)."
     )
 
+    if (
+        not args.force
+        and local_summary
+        and int(summary["contest"]) <= int(local_summary["contest"])
+    ):
+        print(
+            "Sem atualizacao necessaria: "
+            f"CSV local ja esta no concurso {local_summary['contest']}."
+        )
+        return None
+
     if args.dry_run:
         print("Simulacao concluida. Nenhum CSV foi alterado.")
-        return
+        return None
 
     target_path, backup_path = replace_csv(
         lottery_type,
@@ -426,6 +619,7 @@ def update_lottery(lottery_type, args):
         print(f"Backup criado: {backup_path}")
 
     print(f"CSV atualizado: {target_path}")
+    return target_path
 
 
 def list_config():
@@ -435,6 +629,38 @@ def list_config():
         print(f"  pagina: {download_config['page_url']}")
         print(f"  destino: {target}")
         print(f"  override: {download_config['override_env']}")
+
+
+def publish_updated_files(updated_paths, args):
+    if not args.publish:
+        return
+
+    if args.dry_run:
+        print("Publicacao ignorada em modo de simulacao.")
+        return
+
+    if not updated_paths:
+        print("Nenhum CSV foi alterado. Publicacao no GitHub nao sera acionada.")
+        return
+
+    publish_script = Path(__file__).with_name("publish_lottery_data.py")
+    command = [
+        sys.executable,
+        str(publish_script),
+        "--message",
+        args.publish_message,
+    ]
+
+    if args.publish_dry_run:
+        command.append("--dry-run")
+
+    command.extend(str(path) for path in updated_paths)
+
+    print("\nChamando publicacao no GitHub...")
+    completed = subprocess.run(command, cwd=PROJECT_ROOT)
+
+    if completed.returncode != 0:
+        raise RuntimeError("Falha ao publicar atualizacao no GitHub.")
 
 
 def parse_args(argv):
@@ -460,9 +686,25 @@ def parse_args(argv):
         help="Baixa e valida, mas nao substitui os CSVs.",
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Substitui os CSVs mesmo quando o concurso local ja parece atualizado.",
+    )
+    parser.add_argument(
         "--no-backup",
         action="store_true",
         help="Substitui os CSVs sem salvar copia anterior.",
+    )
+    parser.add_argument(
+        "--backup-retention",
+        type=int,
+        default=env_int("LOTTERY_BACKUP_RETENTION", 5),
+        help="Quantidade de pastas de backup que devem ser mantidas.",
+    )
+    parser.add_argument(
+        "--no-clean-backups",
+        action="store_true",
+        help="Nao remove backups antigos ao final da atualizacao.",
     )
     parser.add_argument(
         "--timeout",
@@ -474,6 +716,28 @@ def parse_args(argv):
         "--list-config",
         action="store_true",
         help="Mostra as paginas e os arquivos de destino, sem baixar nada.",
+    )
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        default=env_flag("LOTTERY_PUBLISH_AFTER_UPDATE", default=False),
+        help="Depois de atualizar CSVs, chama o script de publicacao no GitHub.",
+    )
+    parser.add_argument(
+        "--no-publish",
+        action="store_false",
+        dest="publish",
+        help="Desativa publicacao no GitHub mesmo se LOTTERY_PUBLISH_AFTER_UPDATE=1.",
+    )
+    parser.add_argument(
+        "--publish-dry-run",
+        action="store_true",
+        help="Simula a publicacao no GitHub sem commit nem push.",
+    )
+    parser.add_argument(
+        "--publish-message",
+        default=f"Atualiza dados das loterias {time.strftime('%Y-%m-%d')}",
+        help="Mensagem de commit usada quando --publish estiver ativo.",
     )
 
     return parser.parse_args(argv)
@@ -487,9 +751,13 @@ def main(argv=None):
         return 0
 
     failed = []
+    updated_paths = []
     for lottery_type in args.lottery:
         try:
-            update_lottery(lottery_type, args)
+            updated_path = update_lottery(lottery_type, args)
+
+            if updated_path is not None:
+                updated_paths.append(updated_path)
         except Exception as exc:
             failed.append(lottery_type)
             print(f"Erro ao atualizar {lottery_type}: {exc}")
@@ -497,6 +765,19 @@ def main(argv=None):
     if failed:
         print("\nAlgumas loterias nao foram atualizadas:", ", ".join(failed))
         return 1
+
+    if not args.dry_run and not args.no_clean_backups:
+        deleted_backups = cleanup_old_backups(args.backup_retention)
+
+        if deleted_backups:
+            print(f"\nBackups antigos removidos: {deleted_backups}.")
+
+    publish_updated_files(updated_paths, args)
+
+    if not updated_paths and args.dry_run:
+        print("\nSimulacao finalizada. Nenhum CSV foi alterado.")
+    elif not updated_paths:
+        print("\nTodos os CSVs ja estavam atualizados.")
 
     print("\nAtualizacao finalizada com sucesso.")
     return 0

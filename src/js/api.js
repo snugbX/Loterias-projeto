@@ -103,6 +103,21 @@ export async function getLatestResults() {
     return requestJson('/latest_results', 'Erro ao carregar ultimos resultados');
 }
 
+export async function getDataStatus() {
+    return requestJson('/data_status', 'Erro ao carregar status dos dados');
+}
+
+export async function updateData() {
+    return requestJson(
+        '/admin/update_data',
+        'Erro ao atualizar dados',
+        {
+            method: 'POST',
+            headers: adminHeaders(),
+        }
+    );
+}
+
 export async function clearHistory(lotteryType) {
     return requestJson(
         `/clear_history/${encodeURIComponent(lotteryType)}`,
