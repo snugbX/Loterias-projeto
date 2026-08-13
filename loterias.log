@@ -1204,3 +1204,140 @@
 2026-07-04 20:50:43,330 - INFO - 127.0.0.1 - - [04/Jul/2026 20:50:43] "GET /admin_status HTTP/1.1" 200 -
 2026-07-04 20:50:43,395 - INFO - 127.0.0.1 - - [04/Jul/2026 20:50:43] "GET /latest_results HTTP/1.1" 200 -
 2026-07-04 20:50:43,402 - INFO - 127.0.0.1 - - [04/Jul/2026 20:50:43] "GET /data_status HTTP/1.1" 200 -
+2026-07-04 22:24:19,750 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5051
+2026-07-04 22:24:19,750 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-04 22:24:20,040 - INFO - 127.0.0.1 - - [04/Jul/2026 22:24:20] "GET / HTTP/1.1" 200 -
+2026-07-04 22:24:20,101 - INFO - 127.0.0.1 - - [04/Jul/2026 22:24:20] "GET /auth/me HTTP/1.1" 200 -
+2026-07-04 22:26:51,008 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5052
+2026-07-04 22:26:51,009 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-04 22:26:51,373 - INFO - 127.0.0.1 - - [04/Jul/2026 22:26:51] "GET / HTTP/1.1" 200 -
+2026-07-04 22:26:51,432 - INFO - 127.0.0.1 - - [04/Jul/2026 22:26:51] "GET /auth/me HTTP/1.1" 200 -
+2026-07-04 22:26:51,460 - INFO - 127.0.0.1 - - [04/Jul/2026 22:26:51] "[31m[1mPOST /gerar_jogos/megasena?num_games=1 HTTP/1.1[0m" 401 -
+2026-07-04 22:27:19,480 - WARNING - Tipo de loteria invalido recebido: invalida
+2026-07-04 22:37:15,113 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-07-04 22:37:15,113 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-04 22:37:17,576 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:17] "GET / HTTP/1.1" 200 -
+2026-07-04 22:37:17,685 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:17] "GET /style.css HTTP/1.1" 200 -
+2026-07-04 22:37:17,686 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:17] "GET /js/main.js HTTP/1.1" 200 -
+2026-07-04 22:37:18,017 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /js/api.js HTTP/1.1" 200 -
+2026-07-04 22:37:18,021 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "[36mGET /js/drawCalendar.js HTTP/1.1[0m" 304 -
+2026-07-04 22:37:18,022 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /js/dom.js HTTP/1.1" 200 -
+2026-07-04 22:37:18,023 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "[36mGET /js/preferences.js HTTP/1.1[0m" 304 -
+2026-07-04 22:37:18,024 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "[36mGET /js/render.js HTTP/1.1[0m" 304 -
+2026-07-04 22:37:18,028 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /js/ui.js HTTP/1.1" 200 -
+2026-07-04 22:37:18,056 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /admin_status HTTP/1.1" 200 -
+2026-07-04 22:37:18,062 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /auth/me HTTP/1.1" 200 -
+2026-07-04 22:37:18,137 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /latest_results HTTP/1.1" 200 -
+2026-07-04 22:37:18,139 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "GET /data_status HTTP/1.1" 200 -
+2026-07-04 22:37:18,194 - INFO - 127.0.0.1 - - [04/Jul/2026 22:37:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-04 22:39:50,884 - INFO - 127.0.0.1 - - [04/Jul/2026 22:39:50] "[35m[1mPOST /auth/register HTTP/1.1[0m" 201 -
+2026-07-04 22:40:28,439 - INFO - 127.0.0.1 - - [04/Jul/2026 22:40:28] "POST /admin/update_data HTTP/1.1" 200 -
+2026-07-04 22:40:28,515 - INFO - 127.0.0.1 - - [04/Jul/2026 22:40:28] "GET /latest_results HTTP/1.1" 200 -
+2026-07-04 22:41:34,499 - INFO - 127.0.0.1 - - [04/Jul/2026 22:41:34] "GET /admin/users HTTP/1.1" 200 -
+2026-07-04 22:41:36,976 - INFO - 127.0.0.1 - - [04/Jul/2026 22:41:36] "GET /billing/pix HTTP/1.1" 200 -
+2026-07-04 22:42:31,846 - INFO - 127.0.0.1 - - [04/Jul/2026 22:42:31] "POST /auth/logout HTTP/1.1" 200 -
+2026-07-04 22:42:56,491 - INFO - 127.0.0.1 - - [04/Jul/2026 22:42:56] "[35m[1mPOST /auth/register HTTP/1.1[0m" 201 -
+2026-07-04 22:44:38,424 - INFO - 127.0.0.1 - - [04/Jul/2026 22:44:38] "[31m[1mPOST /admin/update_data HTTP/1.1[0m" 401 -
+2026-07-04 22:45:09,469 - INFO - 127.0.0.1 - - [04/Jul/2026 22:45:09] "POST /auth/logout HTTP/1.1" 200 -
+2026-07-04 22:45:34,124 - INFO - 127.0.0.1 - - [04/Jul/2026 22:45:34] "POST /auth/login HTTP/1.1" 200 -
+2026-07-04 22:45:44,066 - INFO - 127.0.0.1 - - [04/Jul/2026 22:45:44] "GET /admin/users HTTP/1.1" 200 -
+2026-07-04 22:45:49,073 - INFO - 127.0.0.1 - - [04/Jul/2026 22:45:49] "POST /admin/users/2/plan HTTP/1.1" 200 -
+2026-07-04 22:45:49,089 - INFO - 127.0.0.1 - - [04/Jul/2026 22:45:49] "GET /admin/users HTTP/1.1" 200 -
+2026-07-04 22:46:13,817 - INFO - 127.0.0.1 - - [04/Jul/2026 22:46:13] "POST /admin/users/2/plan HTTP/1.1" 200 -
+2026-07-04 22:46:13,831 - INFO - 127.0.0.1 - - [04/Jul/2026 22:46:13] "GET /admin/users HTTP/1.1" 200 -
+2026-07-04 22:46:32,500 - INFO - 127.0.0.1 - - [04/Jul/2026 22:46:32] "POST /auth/logout HTTP/1.1" 200 -
+2026-07-04 22:47:12,932 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:12] "[31m[1mPOST /clear_history/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:20,380 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:20] "[31m[1mPOST /clear_history/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:31,513 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:31] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:32,237 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:32] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:32,828 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:32] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:33,389 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:33] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:34,109 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:34] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:34,701 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:34] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:35,589 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:35] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:41,405 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:41] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:42,532 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:42] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:43,165 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:43] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:43,717 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:43] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:44,052 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:44] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-04 22:47:44,348 - INFO - 127.0.0.1 - - [04/Jul/2026 22:47:44] "[31m[1mGET /get_history_files/megasena HTTP/1.1[0m" 401 -
+2026-07-11 18:17:21,413 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-07-11 18:17:21,413 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-11 18:17:23,919 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:23] "GET / HTTP/1.1" 200 -
+2026-07-11 18:17:24,059 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /style.css HTTP/1.1" 200 -
+2026-07-11 18:17:24,086 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/main.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,878 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/drawCalendar.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,882 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/preferences.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,883 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/ui.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,884 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/dom.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,889 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/render.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,889 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /js/api.js HTTP/1.1" 200 -
+2026-07-11 18:17:24,914 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /admin_status HTTP/1.1" 200 -
+2026-07-11 18:17:24,961 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:24] "GET /auth/me HTTP/1.1" 200 -
+2026-07-11 18:17:25,067 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:25] "GET /data_status HTTP/1.1" 200 -
+2026-07-11 18:17:25,071 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:25] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-11 18:17:25,074 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:25] "GET /latest_results HTTP/1.1" 200 -
+2026-07-11 18:17:47,571 - INFO - 127.0.0.1 - - [11/Jul/2026 18:17:47] "POST /auth/login HTTP/1.1" 200 -
+2026-07-11 18:19:51,894 - INFO - Modelo carregado para lotofacil. Treinado em: 2026-05-22 23:13:13
+2026-07-11 18:19:58,037 - INFO - 2 jogos de lotofacil salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-07-11_18-19-58.csv'
+2026-07-11 18:19:58,062 - INFO - 127.0.0.1 - - [11/Jul/2026 18:19:58] "POST /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-07-11 18:21:22,701 - INFO - Modelo carregado para megasena. Treinado em: 2026-05-22 23:11:14
+2026-07-11 18:21:34,768 - INFO - 1 jogos de megasena salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\megasena_resultados_2026-07-11_18-21-34.csv'
+2026-07-11 18:21:34,806 - INFO - 127.0.0.1 - - [11/Jul/2026 18:21:34] "POST /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-07-11 18:22:16,842 - INFO - 1 jogos de megasena salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\megasena_resultados_2026-07-11_18-22-16.csv'
+2026-07-11 18:22:16,874 - INFO - 127.0.0.1 - - [11/Jul/2026 18:22:16] "POST /gerar_jogos/megasena?num_games=1 HTTP/1.1" 200 -
+2026-07-11 18:26:58,321 - INFO - 127.0.0.1 - - [11/Jul/2026 18:26:58] "POST /admin/update_data HTTP/1.1" 200 -
+2026-07-11 18:26:58,758 - INFO - 127.0.0.1 - - [11/Jul/2026 18:26:58] "GET /latest_results HTTP/1.1" 200 -
+2026-07-11 18:27:16,352 - INFO - 127.0.0.1 - - [11/Jul/2026 18:27:16] "POST /auth/logout HTTP/1.1" 200 -
+2026-07-21 19:20:16,824 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-07-21 19:20:16,825 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-21 19:20:19,360 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:19] "GET / HTTP/1.1" 200 -
+2026-07-21 19:20:19,462 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:19] "GET /style.css HTTP/1.1" 200 -
+2026-07-21 19:20:19,490 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:19] "GET /js/main.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,256 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/dom.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,258 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/drawCalendar.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,262 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/preferences.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,263 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/ui.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,263 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/api.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,265 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /js/render.js HTTP/1.1" 200 -
+2026-07-21 19:20:21,291 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /admin_status HTTP/1.1" 200 -
+2026-07-21 19:20:21,323 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /auth/me HTTP/1.1" 200 -
+2026-07-21 19:20:21,392 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /latest_results HTTP/1.1" 200 -
+2026-07-21 19:20:21,395 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "GET /data_status HTTP/1.1" 200 -
+2026-07-21 19:20:21,451 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-21 19:20:38,445 - INFO - 127.0.0.1 - - [21/Jul/2026 19:20:38] "POST /auth/login HTTP/1.1" 200 -
+2026-07-21 19:22:35,517 - INFO - Modelo carregado para lotofacil. Treinado em: 2026-05-22 23:13:13
+2026-07-21 19:22:41,699 - INFO - 2 jogos de lotofacil salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-07-21_19-22-41.csv'
+2026-07-21 19:22:41,731 - INFO - 127.0.0.1 - - [21/Jul/2026 19:22:41] "POST /gerar_jogos/lotofacil?num_games=2 HTTP/1.1" 200 -
+2026-07-21 19:25:53,566 - INFO - 1 jogos de lotofacil salvos em 'C:\Users\santo\OneDrive\Área de Trabalho\Loterias projeto\resultados_Loterias\lotofacil_resultados_2026-07-21_19-25-53.csv'
+2026-07-21 19:25:53,587 - INFO - 127.0.0.1 - - [21/Jul/2026 19:25:53] "POST /gerar_jogos/lotofacil?num_games=1 HTTP/1.1" 200 -
+2026-07-21 19:30:06,618 - INFO - 127.0.0.1 - - [21/Jul/2026 19:30:06] "POST /auth/logout HTTP/1.1" 200 -
+2026-08-13 19:07:17,825 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-08-13 19:07:17,825 - INFO - [33mPress CTRL+C to quit[0m
+2026-08-13 19:07:19,677 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:19] "GET / HTTP/1.1" 200 -
+2026-08-13 19:07:19,706 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:19] "GET /style.css HTTP/1.1" 200 -
+2026-08-13 19:07:19,707 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:19] "GET /js/main.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,117 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/api.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,120 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/dom.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,123 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/drawCalendar.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,123 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/preferences.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,128 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/render.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,131 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /js/ui.js HTTP/1.1" 200 -
+2026-08-13 19:07:20,145 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /admin_status HTTP/1.1" 200 -
+2026-08-13 19:07:20,164 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /auth/me HTTP/1.1" 200 -
+2026-08-13 19:07:20,264 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-08-13 19:07:20,318 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /latest_results HTTP/1.1" 200 -
+2026-08-13 19:07:20,321 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:20] "GET /data_status HTTP/1.1" 200 -
+2026-08-13 19:07:22,986 - INFO - 127.0.0.1 - - [13/Aug/2026 19:07:22] "POST /auth/guest HTTP/1.1" 200 -
+2026-08-13 19:09:37,298 - INFO - 127.0.0.1 - - [13/Aug/2026 19:09:37] "POST /auth/logout HTTP/1.1" 200 -
+2026-08-13 19:12:22,634 - INFO - 127.0.0.1 - - [13/Aug/2026 19:12:22] "POST /auth/login HTTP/1.1" 200 -
+2026-08-13 19:13:35,637 - INFO - 127.0.0.1 - - [13/Aug/2026 19:13:35] "GET /get_history_files/diadesorte HTTP/1.1" 200 -
+2026-08-13 19:13:39,290 - INFO - 127.0.0.1 - - [13/Aug/2026 19:13:39] "GET /get_hot_cold_numbers/diadesorte HTTP/1.1" 200 -
+2026-08-13 19:14:51,042 - INFO - 127.0.0.1 - - [13/Aug/2026 19:14:51] "POST /auth/logout HTTP/1.1" 200 -
+2026-08-13 19:15:07,057 - INFO - 127.0.0.1 - - [13/Aug/2026 19:15:07] "POST /auth/guest HTTP/1.1" 200 -

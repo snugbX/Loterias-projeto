@@ -65,8 +65,41 @@ export function clearSavedAdminToken() {
 
 function adminHeaders() {
     const token = getSavedAdminToken();
+    const csrfToken = getSavedCsrfToken();
+    const headers = {};
 
-    return token ? { 'X-Admin-Token': token } : {};
+    if (token) {
+        headers['X-Admin-Token'] = token;
+    }
+
+    if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+    }
+
+    return headers;
+}
+
+export function getSavedCsrfToken() {
+    return sessionStorage.getItem('csrfToken') || '';
+}
+
+export function setSavedCsrfToken(token) {
+    if (token) {
+        sessionStorage.setItem('csrfToken', token);
+    }
+}
+
+export function clearSavedCsrfToken() {
+    sessionStorage.removeItem('csrfToken');
+}
+
+function csrfHeaders(extraHeaders = {}) {
+    const csrfToken = getSavedCsrfToken();
+
+    return {
+        ...extraHeaders,
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+    };
 }
 
 export async function generateGames(lotteryType, numGames) {
@@ -74,7 +107,11 @@ export async function generateGames(lotteryType, numGames) {
 
     return requestJson(
         `/gerar_jogos/${encodeURIComponent(lotteryType)}?${params.toString()}`,
-        'Erro desconhecido ao gerar jogos'
+        'Erro desconhecido ao gerar jogos',
+        {
+            method: 'POST',
+            headers: csrfHeaders(),
+        }
     );
 }
 
@@ -105,6 +142,90 @@ export async function getLatestResults() {
 
 export async function getDataStatus() {
     return requestJson('/data_status', 'Erro ao carregar status dos dados');
+}
+
+export async function getAuthSession() {
+    const data = await requestJson('/auth/me', 'Erro ao carregar conta');
+    setSavedCsrfToken(data.csrf_token);
+    return data;
+}
+
+export async function registerAccount({ name, email, password, setupCode }) {
+    const data = await requestJson(
+        '/auth/register',
+        'Erro ao criar conta',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                setup_code: setupCode,
+            }),
+        }
+    );
+    setSavedCsrfToken(data.csrf_token);
+    return data;
+}
+
+export async function loginAccount({ email, password }) {
+    const data = await requestJson(
+        '/auth/login',
+        'Erro ao entrar',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        }
+    );
+    setSavedCsrfToken(data.csrf_token);
+    return data;
+}
+
+export async function enterAsGuest() {
+    const data = await requestJson(
+        '/auth/guest',
+        'Erro ao entrar como visitante',
+        {
+            method: 'POST',
+        }
+    );
+    setSavedCsrfToken(data.csrf_token);
+    return data;
+}
+
+export async function logoutAccount() {
+    const data = await requestJson(
+        '/auth/logout',
+        'Erro ao sair',
+        {
+            method: 'POST',
+            headers: csrfHeaders(),
+        }
+    );
+    clearSavedCsrfToken();
+    return data;
+}
+
+export async function getBillingPix() {
+    return requestJson('/billing/pix', 'Erro ao carregar dados Pix');
+}
+
+export async function listAdminUsers() {
+    return requestJson('/admin/users', 'Erro ao carregar usuarios');
+}
+
+export async function updateUserPlan(userId, plan) {
+    return requestJson(
+        `/admin/users/${encodeURIComponent(userId)}/plan`,
+        'Erro ao atualizar plano',
+        {
+            method: 'POST',
+            headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ plan }),
+        }
+    );
 }
 
 export async function updateData() {

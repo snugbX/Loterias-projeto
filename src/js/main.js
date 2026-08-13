@@ -2,16 +2,24 @@ import {
     clearHistory,
     clearSavedAdminToken,
     deleteHistoryFile,
+    enterAsGuest,
     generateGames,
     getAdminStatus,
+    getAuthSession,
+    getBillingPix,
     getDataStatus,
     getHistoryFileContent,
     getHotColdNumbers,
     getLatestResults,
     getSavedAdminToken,
+    listAdminUsers,
     listHistoryFiles,
+    loginAccount,
+    logoutAccount,
+    registerAccount,
     setSavedAdminToken,
     updateData,
+    updateUserPlan,
 } from './api.js';
 import { elements, lotteryColors, lotteryDetails, selectedLotteryType, state } from './dom.js';
 import { renderDrawCalendar } from './drawCalendar.js';
@@ -38,6 +46,307 @@ import {
 } from './ui.js';
 
 let adminTokenRequired = false;
+
+
+function planLabel(user) {
+    if (!user) {
+        return 'Visitante';
+    }
+
+    if (user.is_guest) {
+        return 'Visitante';
+    }
+
+    if (user.is_admin) {
+        return 'Admin';
+    }
+
+    return user.is_premium ? 'Premium' : 'Gratuito';
+}
+
+
+function usageText(user) {
+    const usage = user?.usage;
+
+    if (!usage) {
+        return 'Uso: carregando...';
+    }
+
+    if (usage.is_unlimited) {
+        return `Uso hoje: ${usage.used_today} jogos gerados sem limite`;
+    }
+
+    return `Uso hoje: ${usage.used_today}/${usage.free_daily_limit} jogos`;
+}
+
+
+function renderAccountState(user) {
+    state.currentUser = user || null;
+
+    const hasAccess = Boolean(user);
+
+    elements.authGate?.classList.toggle('hidden', hasAccess);
+    elements.topNav?.classList.toggle('hidden', !hasAccess);
+    elements.appShell?.classList.toggle('hidden', !hasAccess);
+    elements.appFooter?.classList.toggle('hidden', !hasAccess);
+
+    if (!elements.accountPanel) {
+        return;
+    }
+
+    elements.accountPanel.classList.toggle('hidden', !hasAccess);
+    elements.accountPlanBadge.textContent = planLabel(user);
+    elements.accountPlanBadge.classList.toggle('is-premium', Boolean(user?.is_premium));
+    elements.accountPlanBadge.classList.toggle('is-admin', Boolean(user?.is_admin));
+    elements.accountPlanBadge.classList.toggle('is-guest', Boolean(user?.is_guest));
+
+    if (!hasAccess) {
+        elements.accountUserName.textContent = 'Visitante';
+        elements.accountUserEmail.textContent = 'Acesso gratuito';
+        elements.accountUsage.textContent = 'Uso: carregando...';
+        elements.adminUsersButton.classList.add('hidden');
+        elements.navLoginButton?.classList.add('hidden');
+        elements.logoutButton?.classList.add('hidden');
+        elements.premiumPixButton?.classList.add('hidden');
+        elements.billingPixPanel?.classList.add('hidden');
+        elements.adminUsersPanel?.classList.add('hidden');
+        return;
+    }
+
+    const isGuest = Boolean(user.is_guest);
+    elements.accountUserName.textContent = user.name || 'Visitante';
+    elements.accountUserEmail.textContent = isGuest ? 'Versao gratuita sem cadastro' : user.email;
+    elements.accountUsage.textContent = usageText(user);
+    elements.adminUsersButton.classList.toggle('hidden', !user.is_admin);
+    elements.navLoginButton?.classList.toggle('hidden', !isGuest);
+    elements.logoutButton?.classList.toggle('hidden', isGuest);
+    elements.premiumPixButton?.classList.toggle('hidden', isGuest);
+}
+
+
+async function refreshAuthSession() {
+    try {
+        const data = await getAuthSession();
+        renderAccountState(data.user);
+        adminTokenRequired = Boolean(data.admin_configured || adminTokenRequired);
+    } catch (error) {
+        renderAccountState(null);
+        console.error('Erro ao carregar sessao:', error);
+    }
+}
+
+
+async function handleLogin(event) {
+    event.preventDefault();
+    showLoading('Entrando...');
+    setActionButtonsDisabled(true);
+
+    try {
+        const data = await loginAccount({
+            email: elements.loginEmail.value,
+            password: elements.loginPassword.value,
+        });
+        renderAccountState(data.user);
+        elements.loginForm.reset();
+        showSuccessMessageModal('Login realizado com sucesso.');
+    } catch (error) {
+        showError(`Erro: ${error.message}`);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleRegister(event) {
+    event.preventDefault();
+    showLoading('Criando conta...');
+    setActionButtonsDisabled(true);
+
+    try {
+        const data = await registerAccount({
+            name: elements.registerName.value,
+            email: elements.registerEmail.value,
+            password: elements.registerPassword.value,
+            setupCode: elements.registerSetupCode.value,
+        });
+        renderAccountState(data.user);
+        elements.registerForm.reset();
+        showSuccessMessageModal('Conta criada com sucesso.');
+    } catch (error) {
+        showError(`Erro: ${error.message}`);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleGuestAccess() {
+    showLoading('Liberando acesso visitante...');
+    setActionButtonsDisabled(true);
+
+    try {
+        const data = await enterAsGuest();
+        renderAccountState(data.user);
+        showSuccessMessageModal('Acesso visitante liberado.');
+    } catch (error) {
+        showError(`Erro: ${error.message}`);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleReturnToLogin() {
+    showLoading('Voltando para entrada...');
+    setActionButtonsDisabled(true);
+
+    try {
+        if (state.currentUser?.is_guest) {
+            await logoutAccount();
+        }
+
+        clearAllDisplays();
+        renderAccountState(null);
+        requestAnimationFrame(() => elements.loginEmail?.focus());
+    } catch (error) {
+        showError(`Erro: ${error.message}`);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleLogout() {
+    showLoading('Saindo...');
+    setActionButtonsDisabled(true);
+
+    try {
+        await logoutAccount();
+        renderAccountState(null);
+        showSuccessMessageModal('Voce saiu da conta.');
+    } catch (error) {
+        showError(`Erro: ${error.message}`);
+    } finally {
+        hideLoading();
+        setActionButtonsDisabled(false);
+    }
+}
+
+
+async function handleBillingPix() {
+    elements.billingPixPanel.classList.toggle('hidden');
+
+    if (elements.billingPixPanel.classList.contains('hidden')) {
+        return;
+    }
+
+    elements.billingPixPanel.textContent = 'Carregando Pix...';
+
+    try {
+        const data = await getBillingPix();
+        elements.billingPixPanel.innerHTML = '';
+
+        const title = document.createElement('strong');
+        title.textContent = data.enabled ? 'Chave Pix Premium' : 'Pix ainda nao configurado';
+
+        const key = document.createElement('p');
+        key.textContent = data.enabled
+            ? data.pix_key
+            : 'Configure a chave Pix no arquivo .env local.';
+
+        const receiver = document.createElement('p');
+        receiver.textContent = data.receiver_email
+            ? `Responsavel: ${data.receiver_email}`
+            : 'Responsavel nao configurado.';
+
+        elements.billingPixPanel.appendChild(title);
+        elements.billingPixPanel.appendChild(key);
+        elements.billingPixPanel.appendChild(receiver);
+    } catch (error) {
+        elements.billingPixPanel.textContent = error.message;
+    }
+}
+
+
+function createAdminUserRow(user) {
+    const row = document.createElement('div');
+    row.classList.add('admin-user-row');
+
+    const info = document.createElement('div');
+    const name = document.createElement('strong');
+    name.textContent = user.name;
+
+    const meta = document.createElement('span');
+    meta.textContent = `${user.email} - ${planLabel(user)}`;
+
+    info.appendChild(name);
+    info.appendChild(meta);
+    row.appendChild(info);
+
+    if (user.is_admin) {
+        const locked = document.createElement('span');
+        locked.textContent = 'Admin';
+        row.appendChild(locked);
+        return row;
+    }
+
+    const select = document.createElement('select');
+    select.setAttribute('aria-label', `Plano de ${user.name}`);
+    ['free', 'premium'].forEach(plan => {
+        const option = document.createElement('option');
+        option.value = plan;
+        option.textContent = plan === 'premium' ? 'Premium' : 'Gratuito';
+        option.selected = user.plan === plan;
+        select.appendChild(option);
+    });
+    select.addEventListener('change', async () => {
+        try {
+            await updateUserPlan(user.id, select.value);
+            showSuccessMessageModal('Plano atualizado.');
+            await handleAdminUsers({ forceOpen: true });
+        } catch (error) {
+            showError(`Erro: ${error.message}`);
+        }
+    });
+
+    row.appendChild(select);
+    return row;
+}
+
+
+async function handleAdminUsers(options = {}) {
+    if (options.forceOpen) {
+        elements.adminUsersPanel.classList.remove('hidden');
+    } else {
+        elements.adminUsersPanel.classList.toggle('hidden');
+    }
+
+    if (elements.adminUsersPanel.classList.contains('hidden')) {
+        return;
+    }
+
+    elements.adminUsersPanel.textContent = 'Carregando usuarios...';
+
+    try {
+        const data = await listAdminUsers();
+        elements.adminUsersPanel.innerHTML = '';
+
+        if (!data.users || data.users.length === 0) {
+            elements.adminUsersPanel.textContent = 'Nenhum usuario encontrado.';
+            return;
+        }
+
+        data.users.forEach(user => {
+            elements.adminUsersPanel.appendChild(createAdminUserRow(user));
+        });
+    } catch (error) {
+        elements.adminUsersPanel.textContent = error.message;
+    }
+}
 
 
 function getLotteryOptionButtons() {
@@ -197,6 +506,10 @@ async function loadDataStatus() {
 
 
 function ensureAdminToken() {
+    if (state.currentUser?.is_admin) {
+        return true;
+    }
+
     if (!adminTokenRequired) {
         return true;
     }
@@ -220,7 +533,7 @@ function ensureAdminToken() {
 function handleAdminError(error) {
     if (error.status === 401) {
         clearSavedAdminToken();
-        showError('Token admin inválido ou ausente. Tente novamente.');
+        showError('Acesso admin necessario. Entre com uma conta admin ou informe um token valido.');
         return true;
     }
 
@@ -242,8 +555,13 @@ async function handleGenerateGames() {
     setActionButtonsDisabled(true);
 
     try {
-        const jogos = await generateGames(lotteryType, String(numGames));
+        const data = await generateGames(lotteryType, String(numGames));
+        const jogos = data.games || data;
         state.currentGeneratedGames = jogos;
+
+        if (data.usage && state.currentUser) {
+            renderAccountState({ ...state.currentUser, usage: data.usage });
+        }
 
         displayGamesAsBalls(jogos, elements.jogosGeradosModalDisplay, lotteryType);
         openModal(elements.generatedGamesModalOverlay);
@@ -539,6 +857,34 @@ function handleFontChanged() {
 
 
 function bindEvents() {
+    if (elements.loginForm) {
+        elements.loginForm.addEventListener('submit', handleLogin);
+    }
+
+    if (elements.registerForm) {
+        elements.registerForm.addEventListener('submit', handleRegister);
+    }
+
+    if (elements.guestAccessButton) {
+        elements.guestAccessButton.addEventListener('click', handleGuestAccess);
+    }
+
+    if (elements.navLoginButton) {
+        elements.navLoginButton.addEventListener('click', handleReturnToLogin);
+    }
+
+    if (elements.logoutButton) {
+        elements.logoutButton.addEventListener('click', handleLogout);
+    }
+
+    if (elements.premiumPixButton) {
+        elements.premiumPixButton.addEventListener('click', handleBillingPix);
+    }
+
+    if (elements.adminUsersButton) {
+        elements.adminUsersButton.addEventListener('click', () => handleAdminUsers());
+    }
+
     getLotteryOptionButtons().forEach(button => {
         button.addEventListener('click', () => selectLotteryOption(button));
         button.addEventListener('keydown', handleLotteryOptionKeydown);
@@ -607,5 +953,6 @@ setSelectedLottery(selectedLotteryType());
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
 loadAdminStatus();
+refreshAuthSession();
 loadLatestResults();
 loadDataStatus();

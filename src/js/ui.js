@@ -34,6 +34,18 @@ export function setActionButtonsDisabled(disabled) {
         elements.updateDataButton.disabled = disabled;
     }
 
+    [
+        elements.premiumPixButton,
+        elements.adminUsersButton,
+        elements.logoutButton,
+        elements.navLoginButton,
+        elements.guestAccessButton,
+        elements.loginForm?.querySelector('button'),
+        elements.registerForm?.querySelector('button'),
+    ].filter(Boolean).forEach(button => {
+        button.disabled = disabled;
+    });
+
     if (elements.lotteryOptionGrid) {
         elements.lotteryOptionGrid.querySelectorAll('button').forEach(button => {
             button.disabled = disabled;

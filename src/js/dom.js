@@ -1,4 +1,7 @@
 export const elements = {
+    authGate: document.getElementById('auth-gate'),
+    appShell: document.getElementById('app-shell'),
+    topNav: document.getElementById('top-nav'),
     gerarJogosButton: document.getElementById('gerar-jogos'),
     visualizarHistoricoButton: document.getElementById('visualizar-historico'),
     loadingMessage: document.getElementById('loading-message'),
@@ -36,6 +39,28 @@ export const elements = {
     assistenciaModalCloseBtn: document.getElementById('assistencia-modal-close-btn'),
     assistenciaModalTitle: document.getElementById('assistencia-modal-title'),
     mainTitle: document.getElementById('main-title'),
+    accountSection: document.getElementById('account-section'),
+    authForms: document.getElementById('auth-forms'),
+    loginForm: document.getElementById('login-form'),
+    loginEmail: document.getElementById('login-email'),
+    loginPassword: document.getElementById('login-password'),
+    registerForm: document.getElementById('register-form'),
+    registerName: document.getElementById('register-name'),
+    registerEmail: document.getElementById('register-email'),
+    registerPassword: document.getElementById('register-password'),
+    registerSetupCode: document.getElementById('register-setup-code'),
+    guestAccessButton: document.getElementById('guest-access-btn'),
+    accountPanel: document.getElementById('account-panel'),
+    accountPlanBadge: document.getElementById('account-plan-badge'),
+    accountUserName: document.getElementById('account-user-name'),
+    accountUserEmail: document.getElementById('account-user-email'),
+    accountUsage: document.getElementById('account-usage'),
+    premiumPixButton: document.getElementById('premium-pix-btn'),
+    adminUsersButton: document.getElementById('admin-users-btn'),
+    navLoginButton: document.getElementById('nav-login-btn'),
+    logoutButton: document.getElementById('logout-btn'),
+    billingPixPanel: document.getElementById('billing-pix-panel'),
+    adminUsersPanel: document.getElementById('admin-users-panel'),
     latestResultsGrid: document.getElementById('latest-results-grid'),
     dataStatusGrid: document.getElementById('data-status-grid'),
     dataStatusUpdatedAt: document.getElementById('data-status-updated-at'),
@@ -46,6 +71,7 @@ export const elements = {
     historyModalTitle: document.getElementById('history-modal-title'),
     generatedGamesModalTitle: document.getElementById('generated-games-modal-title'),
     jogosGeradosMainDisplay: document.getElementById('jogos-gerados-main-display'),
+    appFooter: document.getElementById('app-footer'),
     footerYear: document.getElementById('footer-year'),
     drawCalendarGrid: document.getElementById('draw-calendar-grid'),
 };
@@ -94,6 +120,7 @@ export const lotteryDetails = {
 
 export const state = {
     currentGeneratedGames: [],
+    currentUser: null,
 };
 
 export function selectedLotteryType() {
@@ -103,6 +130,10 @@ export function selectedLotteryType() {
 export function adjustableFontElements() {
     return [
         elements.mainTitle,
+        elements.authGate,
+        elements.topNav,
+        elements.accountPlanBadge,
+        elements.accountUsage,
         elements.latestResultsGrid,
         elements.dataStatusGrid,
         elements.dataStatusUpdatedAt,

@@ -46,10 +46,167 @@
         - text-center: Alinha o texto ao centro
         As cores de fundo e texto agora são gerenciadas pelas variáveis CSS em style.css.
     -->
-    <main class="app-layout">
+    <section id="auth-gate" class="auth-gate" aria-labelledby="auth-title">
+        <div class="auth-gate-orbit" aria-hidden="true">
+            <span>06</span>
+            <span>13</span>
+            <span>22</span>
+            <span>31</span>
+            <span>45</span>
+            <span>58</span>
+        </div>
+
+        <div class="auth-hero">
+            <div class="auth-copy">
+                <span class="auth-kicker">SnugbX Loterias</span>
+                <h1 id="auth-title">Entre no jogo com estrategia</h1>
+                <p>Gere palpites, acompanhe resultados e explore loterias com uma experiencia simples, segura e pronta para jogar.</p>
+
+                <div class="auth-highlights" aria-label="Recursos disponiveis">
+                    <span>Visitante gratis</span>
+                    <span>Conta segura</span>
+                    <span>Planos Free e Premium</span>
+                </div>
+            </div>
+
+            <div class="lottery-controller" aria-label="Controle de acesso ao app">
+                <div class="controller-top">
+                    <span class="controller-light"></span>
+                    <strong>Gerador Online</strong>
+                    <span>Pronto</span>
+                </div>
+
+                <div class="controller-body">
+                    <div class="controller-pad" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="controller-screen">
+                        <div class="screen-header">
+                            <span>Acesso ao painel</span>
+                            <strong>Escolha sua entrada</strong>
+                        </div>
+
+                        <div id="auth-forms" class="auth-forms auth-screen-forms">
+                            <form id="login-form" class="auth-form">
+                                <h3>Entrar</h3>
+                                <input id="login-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para entrar" required>
+                                <input id="login-password" type="password" autocomplete="current-password" placeholder="Senha" aria-label="Senha para entrar" required>
+                                <button type="submit">Entrar na conta</button>
+                            </form>
+
+                            <form id="register-form" class="auth-form">
+                                <h3>Criar Conta</h3>
+                                <input id="register-name" type="text" autocomplete="name" placeholder="Nome" aria-label="Nome para cadastro" required>
+                                <input id="register-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para cadastro" required>
+                                <input id="register-password" type="password" autocomplete="new-password" placeholder="Senha forte" aria-label="Senha para cadastro" required>
+                                <input id="register-setup-code" type="password" autocomplete="one-time-code" placeholder="Codigo admin, se houver" aria-label="Codigo inicial de administrador">
+                                <button type="submit">Criar conta gratis</button>
+                            </form>
+                        </div>
+
+                        <button id="guest-access-btn" class="guest-access-btn" type="button">
+                            Acessar como visitante
+                        </button>
+                    </div>
+
+                    <div class="controller-actions" aria-hidden="true">
+                        <span>Mega</span>
+                        <span>Quina</span>
+                        <span>Lotofacil</span>
+                        <span>Dia de Sorte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <nav id="top-nav" class="top-nav hidden" aria-label="Navegacao principal">
+        <div class="top-nav-main">
+            <div class="top-nav-brand">
+                <span class="brand-mark" aria-hidden="true">SX</span>
+                <div>
+                    <strong>SnugbX Loterias</strong>
+                    <span>Gerador de jogos</span>
+                </div>
+            </div>
+
+            <div id="account-panel" class="account-panel top-account-panel">
+                <span id="account-plan-badge" class="account-plan-badge">Visitante</span>
+                <div class="account-user-summary">
+                    <div>
+                        <strong id="account-user-name">Visitante</strong>
+                        <span id="account-user-email">Acesso gratuito</span>
+                    </div>
+                    <div id="account-usage" class="account-usage">Uso: carregando...</div>
+                </div>
+                <div class="account-actions">
+                    <button id="premium-pix-btn" type="button">Pix Premium</button>
+                    <button id="admin-users-btn" type="button" class="hidden">Usuarios</button>
+                    <button id="nav-login-btn" type="button" class="nav-login-btn hidden">Entrar</button>
+                    <button id="logout-btn" type="button">Sair</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="billing-pix-panel" class="billing-pix-panel hidden" aria-live="polite"></div>
+        <div id="admin-users-panel" class="admin-users-panel hidden" aria-live="polite"></div>
+    </nav>
+
+    <main id="app-shell" class="app-layout app-shell hidden">
     <div class="container p-8 rounded-lg shadow-xl w-full text-center">
         <!-- Título da aplicação -->
         <h1 class="text-5xl font-bold mb-6" id="main-title">Gerador de Jogos de Loterias</h1>
+
+        <!-- Account moved to the top navigation and auth gate.
+        <section id="account-section" class="account-section mb-6" aria-labelledby="account-title">
+            <div class="account-header">
+                <div>
+                    <span class="account-eyebrow">Acesso seguro</span>
+                    <h2 id="account-title">Minha Conta</h2>
+                </div>
+                <span id="account-plan-badge" class="account-plan-badge">Visitante</span>
+            </div>
+
+            <div id="auth-forms" class="auth-forms">
+                <form id="login-form" class="auth-form">
+                    <h3>Entrar</h3>
+                    <input id="login-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para entrar" required>
+                    <input id="login-password" type="password" autocomplete="current-password" placeholder="Senha" aria-label="Senha para entrar" required>
+                    <button type="submit">Entrar</button>
+                </form>
+
+                <form id="register-form" class="auth-form">
+                    <h3>Criar Conta</h3>
+                    <input id="register-name" type="text" autocomplete="name" placeholder="Nome" aria-label="Nome para cadastro" required>
+                    <input id="register-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para cadastro" required>
+                    <input id="register-password" type="password" autocomplete="new-password" placeholder="Senha forte" aria-label="Senha para cadastro" required>
+                    <input id="register-setup-code" type="password" autocomplete="one-time-code" placeholder="Código admin, se houver" aria-label="Código inicial de administrador">
+                    <button type="submit">Criar Conta</button>
+                </form>
+            </div>
+
+            <div id="account-panel" class="account-panel hidden">
+                <div class="account-user-summary">
+                    <div>
+                        <strong id="account-user-name">Usuario</strong>
+                        <span id="account-user-email">email</span>
+                    </div>
+                    <div id="account-usage" class="account-usage">Uso: carregando...</div>
+                </div>
+                <div class="account-actions">
+                    <button id="premium-pix-btn" type="button">Pix Premium</button>
+                    <button id="admin-users-btn" type="button" class="hidden">Usuários</button>
+                    <button id="logout-btn" type="button">Sair</button>
+                </div>
+                <div id="billing-pix-panel" class="billing-pix-panel hidden" aria-live="polite"></div>
+                <div id="admin-users-panel" class="admin-users-panel hidden" aria-live="polite"></div>
+            </div>
+        </section>
+        -->
 
         <section id="latest-results-section" class="latest-results-section mb-6">
             <div class="latest-results-heading">
@@ -201,7 +358,7 @@
     </aside>
     </main>
 
-    <footer class="app-footer text-center text-sm">
+    <footer id="app-footer" class="app-footer text-center text-sm hidden">
         &copy; <span id="footer-year"></span> Everlan (SnugbX). Todos os direitos reservados.
     </footer>
 

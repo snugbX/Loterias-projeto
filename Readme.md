@@ -34,6 +34,41 @@ Os dados históricos utilizados para a análise de números e a geração de jog
 
 ---
 
+### **Contas, planos e seguranca:**
+
+O app separa visitantes, usuarios gratuitos, usuarios Premium e admin.
+
+* **Visitante:** pode ver resultados e calendario.
+* **Gratuito:** pode gerar jogos com limite diario em `FREE_DAILY_GAME_LIMIT`.
+* **Premium:** libera recursos avancados, como assistencia de numeros quentes/frios e uso sem limite diario.
+* **Admin:** pode atualizar dados e gerenciar planos dos usuarios.
+
+As senhas nao sao salvas em texto puro. Elas ficam protegidas por hash seguro no banco configurado em `AUTH_DB_PATH`.
+
+Os dados sensiveis ficam no arquivo `.env`, que nao deve ser enviado ao GitHub:
+
+```env
+APP_SECRET_KEY=gere-uma-chave-grande-e-aleatoria
+ADMIN_EMAIL=admin@exemplo.com
+ADMIN_SETUP_CODE=troque-este-codigo-inicial
+PIX_KEY=sua-chave-pix
+AUTH_DB_PATH=data/loterias_auth.sqlite3
+FREE_DAILY_GAME_LIMIT=20
+SESSION_COOKIE_SECURE=0
+```
+
+Para criar a primeira conta admin, use na tela **Criar Conta** o e-mail configurado em `ADMIN_EMAIL` e informe o codigo de `ADMIN_SETUP_CODE`. Depois disso, o admin consegue ver usuarios e trocar plano gratuito/Premium pela interface.
+
+Em producao com HTTPS, configure:
+
+```env
+SESSION_COOKIE_SECURE=1
+```
+
+O Pix configurado aqui deve ser usado apenas para assinatura Premium do app. A aposta em loteria continua sendo finalizada pelo usuario no canal oficial.
+
+---
+
 ### **Atualização automática dos resultados:**
 
 Para baixar os resultados mais recentes da Mega Sena, Lotofácil, Quina e Dia de Sorte, execute o arquivo:
