@@ -153,7 +153,7 @@ def can_generate_for_access(access_user, requested_games):
         if usage["used_today"] + requested_games > usage["free_daily_limit"]:
             return (
                 False,
-                "Visitantes podem gerar ate "
+                "Visitantes podem gerar até "
                 f"{usage['free_daily_limit']} jogos por dia. Entre ou crie uma conta "
                 "para continuar com mais controle.",
             )
@@ -229,7 +229,7 @@ def require_premium_access():
     if user["is_premium"]:
         return None
 
-    return jsonify({"error": "Recurso disponivel no plano Premium."}), 403
+    return jsonify({"error": "Recurso disponível no plano Premium."}), 403
 
 
 def admin_token_configured():
@@ -267,7 +267,7 @@ def require_admin_access():
     if validate_admin_token_request():
         return None
 
-    return jsonify({"error": "Acesso admin necessario."}), 401
+    return jsonify({"error": "Acesso admin necessário."}), 401
 
 def login_rate_key(email):
     return f"{request.remote_addr or 'local'}:{auth_storage.normalize_email(email)}"
@@ -334,6 +334,7 @@ def auth_register():
     name = (data.get("name") or "").strip()
     email = auth_storage.normalize_email(data.get("email"))
     password = data.get("password") or ""
+    terms_accepted = bool(data.get("terms_accepted"))
     admin_email = configured_admin_email()
     is_configured_admin = bool(admin_email and email == admin_email)
     role = auth_storage.ROLE_USER
@@ -346,7 +347,7 @@ def auth_register():
             data.get("setup_code", "").strip(),
             setup_code
         ):
-            return jsonify({"error": "Codigo admin inicial invalido."}), 403
+            return jsonify({"error": "Código admin inicial inválido."}), 403
 
         role = auth_storage.ROLE_ADMIN
         plan = auth_storage.PLAN_PREMIUM
@@ -358,6 +359,8 @@ def auth_register():
             password=password,
             role=role,
             plan=plan,
+            terms_accepted=terms_accepted,
+            terms_version=auth_storage.TERMS_VERSION,
         )
     except ValueError as error:
         return jsonify({"error": str(error)}), 400
@@ -389,7 +392,7 @@ def auth_login():
 
     if user is None:
         record_failed_login(email)
-        return jsonify({"error": "E-mail ou senha invalidos."}), 401
+        return jsonify({"error": "E-mail ou senha inválidos."}), 401
 
     clear_failed_logins(email)
     session.clear()
@@ -432,7 +435,7 @@ def auth_logout():
         return csrf_error
 
     session.clear()
-    return jsonify({"message": "Voce saiu da conta."})
+    return jsonify({"message": "Você saiu da conta."})
 
 
 @app.route('/billing/pix')
@@ -455,7 +458,7 @@ def admin_users():
     user = current_user()
 
     if not user or not user["is_admin"]:
-        return jsonify({"error": "Acesso admin necessario."}), 401
+        return jsonify({"error": "Acesso admin necessário."}), 401
 
     return jsonify({"users": auth_storage.list_users()})
 
@@ -476,7 +479,7 @@ def admin_update_user_plan(user_id):
         return jsonify({"error": str(error)}), 400
 
     if updated_user is None:
-        return jsonify({"error": "Usuario nao encontrado ou nao editavel."}), 404
+        return jsonify({"error": "Usuário não encontrado ou não editável."}), 404
 
     actor = current_user()
     auth_storage.log_audit(
@@ -512,6 +515,21 @@ def gerar_jogos(lottery_type):
     if lottery_type is None:
         return jsonify({"error": "Tipo de loteria inválido"}), 400 # Bad Request
 
+    generation_mode = gerador_loterias.normalize_generation_mode(
+        request.args.get("mode", "normal")
+    )
+
+    if generation_mode is None:
+        return jsonify({"error": "Modo de geração inválido."}), 400
+
+    if not gerador_loterias.is_generation_mode_available_for_lottery(
+        generation_mode,
+        lottery_type,
+    ):
+        return jsonify({
+            "error": "Essa estratégia não está disponível para a loteria escolhida."
+        }), 422
+
     # Obtém a quantidade de jogos do parâmetro de consulta, se fornecido
     num_games_str = request.args.get('num_games')
     num_games = None
@@ -528,12 +546,25 @@ def gerar_jogos(lottery_type):
         # 1. Gera os jogos usando a função genérica, passando a quantidade se fornecida
         requested_games = num_games or gerador_loterias.LOTTERY_CONFIGS[lottery_type]['NUM_GAMES_DEFAULT']
         access_user = current_access_payload()
+
+        if (
+            generation_mode in gerador_loterias.PREMIUM_GENERATION_MODES
+            and not access_user["is_premium"]
+        ):
+            return jsonify({
+                "error": "Esse modo de geração faz parte do plano Premium."
+            }), 403
+
         can_generate, plan_message = can_generate_for_access(access_user, requested_games)
 
         if not can_generate:
             return jsonify({"error": plan_message}), 403
 
-        jogos_gerados = gerador_loterias.generate_n_lottery_games(lottery_type, num_games_to_generate=num_games)
+        jogos_gerados = gerador_loterias.generate_n_lottery_games(
+            lottery_type,
+            num_games_to_generate=num_games,
+            generation_mode=generation_mode,
+        )
 
         if not jogos_gerados:
             gerador_loterias.logging.error(f"Nenhum jogo pôde ser gerado para {lottery_type}. Verifique o log do servidor.")
@@ -551,8 +582,11 @@ def gerar_jogos(lottery_type):
         # 3. Retorna os jogos gerados como uma resposta JSON para o frontend
         return jsonify({
             "games": jogos_gerados,
+            "generation_mode": generation_mode,
             "usage": usage,
         })
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 422
     except Exception as e:
         gerador_loterias.logging.error(f"Erro na rota /gerar_jogos/{lottery_type}: {e}")
         return jsonify({"error": "Erro interno ao gerar ou salvar jogos"}), 500
@@ -689,7 +723,7 @@ def admin_update_data():
         }), 500
 
     return jsonify({
-        "message": "Atualizacao concluida.",
+        "message": "Atualização concluída.",
         "output": output,
         "status": gerador_loterias.get_data_status(),
     })

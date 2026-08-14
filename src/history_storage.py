@@ -55,7 +55,7 @@ def list_history_files(lottery_type):
 
     if not history_dir.exists():
         gerador_loterias.logging.warning(
-            f"Diretorio de historico nao encontrado: {history_dir}"
+            f"Diretório de histórico não encontrado: {history_dir}"
         )
         return sorted(files, reverse=True)
 
@@ -71,7 +71,7 @@ def list_history_files(lottery_type):
 def read_history_file(filename):
     if history_file_path(filename) is None:
         gerador_loterias.logging.warning(
-            f"Tentativa de acesso nao autorizado ou arquivo invalido: {filename}"
+            f"Tentativa de acesso não autorizado ou arquivo inválido: {filename}"
         )
         return None
 
@@ -84,7 +84,7 @@ def read_history_file(filename):
 
     if file_path is None or not file_path.exists() or not file_path.is_file():
         gerador_loterias.logging.warning(
-            f"Tentativa de acesso nao autorizado ou arquivo nao encontrado: {filename}"
+            f"Tentativa de acesso não autorizado ou arquivo não encontrado: {filename}"
         )
         return None
 
@@ -110,7 +110,7 @@ def clear_history(lottery_type):
             file_path.unlink()
             deleted_filenames.add(filename)
             gerador_loterias.logging.info(
-                f"Arquivo de historico deletado: {file_path}"
+                f"Arquivo de histórico deletado: {file_path}"
             )
 
     return len(deleted_filenames)
@@ -121,7 +121,7 @@ def delete_history_file(filename):
 
     if file_path is None:
         gerador_loterias.logging.warning(
-            f"Tentativa de exclusao de arquivo invalido ou fora do diretorio permitido: {filename}"
+            f"Tentativa de exclusão de arquivo inválido ou fora do diretório permitido: {filename}"
         )
         return "invalid"
 

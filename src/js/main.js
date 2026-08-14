@@ -4,24 +4,28 @@ import {
     deleteHistoryFile,
     enterAsGuest,
     generateGames,
-    getAdminStatus,
     getAuthSession,
     getBillingPix,
     getDataStatus,
     getHistoryFileContent,
     getHotColdNumbers,
     getLatestResults,
-    getSavedAdminToken,
     listAdminUsers,
     listHistoryFiles,
     loginAccount,
     logoutAccount,
     registerAccount,
-    setSavedAdminToken,
     updateData,
     updateUserPlan,
 } from './api.js';
-import { elements, lotteryColors, lotteryDetails, selectedLotteryType, state } from './dom.js';
+import {
+    elements,
+    lotteryColors,
+    lotteryDetails,
+    selectedGenerationMode,
+    selectedLotteryType,
+    state,
+} from './dom.js';
 import { renderDrawCalendar } from './drawCalendar.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
@@ -45,7 +49,256 @@ import {
     showSuccessMessageModal,
 } from './ui.js';
 
-let adminTokenRequired = false;
+let adminConfigured = true;
+
+const generationModeLabels = {
+    normal: 'Jogo normal',
+    balanced_parity: 'Pares e ímpares',
+    even_only: 'Só pares',
+    odd_only: 'Só ímpares',
+    spread: 'Bem distribuído',
+    hot_cold_mix: 'Quentes e frios',
+    lucky_dates: 'Datas da sorte',
+    high_numbers: 'Números altos',
+    never_prize: 'Sem prêmio histórico',
+    mixed: 'Tudo misturado',
+};
+
+const unavailableGenerationModesByLottery = {
+    lotofacil: new Set(['even_only', 'odd_only', 'high_numbers', 'lucky_dates']),
+    diadesorte: new Set(['lucky_dates']),
+};
+
+// Tempo da tela de boas-vindas antes de fechar sozinha.
+// Altere este valor em milissegundos: 15000 = 15 segundos.
+const WELCOME_AUTO_DISMISS_MS = 15000;
+const WELCOME_EXIT_MS = 650;
+const WELCOME_STORAGE_KEY = 'snugbx-welcome-seen';
+let welcomeDismissTimer = null;
+let lastPrivacyTermsFocus = null;
+
+
+function isAdminUser(user = state.currentUser) {
+    return Boolean(user?.is_admin);
+}
+
+
+function hasPremiumAccess(user = state.currentUser) {
+    return Boolean(user?.is_premium);
+}
+
+
+function updateAdminVisibility(user = state.currentUser) {
+    const isAdmin = isAdminUser(user);
+
+    [
+        elements.adminUsersButton,
+        elements.updateDataButton,
+        elements.limparHistoricoBtn,
+        elements.limparHistoricoDiretoBtn,
+    ].filter(Boolean).forEach(element => {
+        element.classList.toggle('hidden', !isAdmin);
+    });
+
+    if (!isAdmin) {
+        elements.adminUsersPanel?.classList.add('hidden');
+    }
+}
+
+
+function updateAdminSetupVisibility() {
+    elements.registerSetupCode?.classList.toggle('hidden', adminConfigured);
+}
+
+
+function getGenerationModeButtons() {
+    if (!elements.generationModeGrid) {
+        return [];
+    }
+
+    return Array.from(elements.generationModeGrid.querySelectorAll('[data-generation-mode]'));
+}
+
+
+function isGenerationModeAvailableForLottery(mode, lotteryType = selectedLotteryType()) {
+    return !unavailableGenerationModesByLottery[lotteryType]?.has(mode);
+}
+
+
+function canUseGenerationMode(mode, user = state.currentUser) {
+    if (!isGenerationModeAvailableForLottery(mode)) {
+        return false;
+    }
+
+    if (mode === 'normal') {
+        return true;
+    }
+
+    if (!hasPremiumAccess(user)) {
+        return false;
+    }
+
+    return true;
+}
+
+
+function setSelectedGenerationMode(mode) {
+    const nextMode = canUseGenerationMode(mode) ? mode : 'normal';
+    state.selectedGenerationMode = nextMode;
+
+    if (elements.selectedGenerationModeLabel) {
+        elements.selectedGenerationModeLabel.textContent = generationModeLabels[nextMode] || 'Jogo normal';
+    }
+
+    getGenerationModeButtons().forEach(button => {
+        const buttonMode = button.dataset.generationMode;
+        const selected = buttonMode === nextMode;
+        const availableForLottery = isGenerationModeAvailableForLottery(buttonMode);
+        const available = canUseGenerationMode(buttonMode);
+
+        button.classList.toggle('hidden', !availableForLottery);
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-checked', String(selected));
+        button.dataset.available = String(available);
+        button.disabled = !available;
+        button.tabIndex = selected ? 0 : -1;
+        button.removeAttribute('title');
+    });
+}
+
+
+function renderGenerationModeAccess(user = state.currentUser) {
+    const premium = hasPremiumAccess(user);
+
+    elements.generationModeGrid?.classList.toggle('hidden', !premium);
+    elements.premiumUpsellPanel?.classList.toggle('hidden', premium);
+
+    if (!premium) {
+        setSelectedGenerationMode('normal');
+        return;
+    }
+
+    setSelectedGenerationMode(state.selectedGenerationMode);
+}
+
+
+function rememberWelcomeSeen() {
+    try {
+        window.sessionStorage.setItem(WELCOME_STORAGE_KEY, '1');
+    } catch (error) {
+        console.warn('Não foi possível salvar a exibição da abertura.', error);
+    }
+}
+
+
+function wasWelcomeSeen() {
+    try {
+        return window.sessionStorage.getItem(WELCOME_STORAGE_KEY) === '1';
+    } catch (error) {
+        console.warn('Não foi possível ler a exibição da abertura.', error);
+        return false;
+    }
+}
+
+
+function dismissWelcomeScreen() {
+    if (!elements.welcomeScreen || elements.welcomeScreen.classList.contains('hidden')) {
+        return;
+    }
+
+    window.clearTimeout(welcomeDismissTimer);
+    rememberWelcomeSeen();
+    elements.welcomeScreen.classList.add('is-leaving');
+
+    window.setTimeout(() => {
+        elements.welcomeScreen.classList.add('hidden');
+    }, WELCOME_EXIT_MS);
+}
+
+
+function initWelcomeScreen() {
+    if (!elements.welcomeScreen) {
+        return;
+    }
+
+    if (wasWelcomeSeen()) {
+        elements.welcomeScreen.classList.add('hidden');
+        return;
+    }
+
+    elements.welcomeSkipButton?.addEventListener('click', dismissWelcomeScreen);
+    welcomeDismissTimer = window.setTimeout(dismissWelcomeScreen, WELCOME_AUTO_DISMISS_MS);
+}
+
+
+function closePrivacyTermsModal() {
+    if (!elements.privacyTermsModalOverlay) {
+        return;
+    }
+
+    closeModal(elements.privacyTermsModalOverlay);
+
+    requestAnimationFrame(() => {
+        const focusTarget = lastPrivacyTermsFocus || elements.registerTermsAccepted;
+        focusTarget?.focus();
+    });
+}
+
+
+function openPrivacyTermsModal() {
+    if (!elements.privacyTermsModalOverlay) {
+        return;
+    }
+
+    lastPrivacyTermsFocus = document.activeElement;
+    openModal(elements.privacyTermsModalOverlay);
+
+    requestAnimationFrame(() => {
+        elements.privacyTermsContent?.focus();
+    });
+}
+
+
+function acceptPrivacyTermsFromModal() {
+    if (elements.registerTermsAccepted) {
+        elements.registerTermsAccepted.checked = true;
+    }
+
+    closePrivacyTermsModal();
+}
+
+
+function handlePrivacyTermsKeydown(event) {
+    if (event.key === 'Escape') {
+        closePrivacyTermsModal();
+        return;
+    }
+
+    if (event.key !== 'Tab') {
+        return;
+    }
+
+    const focusableElements = Array.from(
+        elements.privacyTermsModalOverlay.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+    ).filter(element => !element.disabled && element.offsetParent !== null);
+
+    if (focusableElements.length === 0) {
+        return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+    }
+}
 
 
 function planLabel(user) {
@@ -104,12 +357,13 @@ function renderAccountState(user) {
         elements.accountUserName.textContent = 'Visitante';
         elements.accountUserEmail.textContent = 'Acesso gratuito';
         elements.accountUsage.textContent = 'Uso: carregando...';
-        elements.adminUsersButton.classList.add('hidden');
         elements.navLoginButton?.classList.add('hidden');
         elements.logoutButton?.classList.add('hidden');
         elements.premiumPixButton?.classList.add('hidden');
         elements.billingPixPanel?.classList.add('hidden');
         elements.adminUsersPanel?.classList.add('hidden');
+        updateAdminVisibility(null);
+        renderGenerationModeAccess(null);
         return;
     }
 
@@ -117,10 +371,11 @@ function renderAccountState(user) {
     elements.accountUserName.textContent = user.name || 'Visitante';
     elements.accountUserEmail.textContent = isGuest ? 'Versao gratuita sem cadastro' : user.email;
     elements.accountUsage.textContent = usageText(user);
-    elements.adminUsersButton.classList.toggle('hidden', !user.is_admin);
+    updateAdminVisibility(user);
     elements.navLoginButton?.classList.toggle('hidden', !isGuest);
     elements.logoutButton?.classList.toggle('hidden', isGuest);
     elements.premiumPixButton?.classList.toggle('hidden', isGuest);
+    renderGenerationModeAccess(user);
 }
 
 
@@ -128,7 +383,8 @@ async function refreshAuthSession() {
     try {
         const data = await getAuthSession();
         renderAccountState(data.user);
-        adminTokenRequired = Boolean(data.admin_configured || adminTokenRequired);
+        adminConfigured = Boolean(data.admin_configured);
+        updateAdminSetupVisibility();
     } catch (error) {
         renderAccountState(null);
         console.error('Erro ao carregar sessao:', error);
@@ -160,6 +416,13 @@ async function handleLogin(event) {
 
 async function handleRegister(event) {
     event.preventDefault();
+
+    if (!elements.registerTermsAccepted?.checked) {
+        showError('Para criar sua conta, leia e aceite a Política de Privacidade e os Termos de Uso.');
+        elements.registerTermsAccepted?.focus();
+        return;
+    }
+
     showLoading('Criando conta...');
     setActionButtonsDisabled(true);
 
@@ -169,6 +432,7 @@ async function handleRegister(event) {
             email: elements.registerEmail.value,
             password: elements.registerPassword.value,
             setupCode: elements.registerSetupCode.value,
+            termsAccepted: elements.registerTermsAccepted.checked,
         });
         renderAccountState(data.user);
         elements.registerForm.reset();
@@ -227,7 +491,7 @@ async function handleLogout() {
     try {
         await logoutAccount();
         renderAccountState(null);
-        showSuccessMessageModal('Voce saiu da conta.');
+        showSuccessMessageModal('Você saiu da conta.');
     } catch (error) {
         showError(`Erro: ${error.message}`);
     } finally {
@@ -251,7 +515,7 @@ async function handleBillingPix() {
         elements.billingPixPanel.innerHTML = '';
 
         const title = document.createElement('strong');
-        title.textContent = data.enabled ? 'Chave Pix Premium' : 'Pix ainda nao configurado';
+        title.textContent = data.enabled ? 'Chave Pix Premium' : 'Pix ainda não configurado';
 
         const key = document.createElement('p');
         key.textContent = data.enabled
@@ -260,8 +524,8 @@ async function handleBillingPix() {
 
         const receiver = document.createElement('p');
         receiver.textContent = data.receiver_email
-            ? `Responsavel: ${data.receiver_email}`
-            : 'Responsavel nao configurado.';
+            ? `Responsável: ${data.receiver_email}`
+            : 'Responsável não configurado.';
 
         elements.billingPixPanel.appendChild(title);
         elements.billingPixPanel.appendChild(key);
@@ -269,6 +533,23 @@ async function handleBillingPix() {
     } catch (error) {
         elements.billingPixPanel.textContent = error.message;
     }
+}
+
+
+async function handlePremiumUpsell() {
+    if (state.currentUser?.is_guest) {
+        await handleReturnToLogin();
+        showError('Entre ou crie uma conta para ativar o plano Premium.');
+        return;
+    }
+
+    if (!state.currentUser) {
+        renderAccountState(null);
+        elements.loginEmail?.focus();
+        return;
+    }
+
+    await handleBillingPix();
 }
 
 
@@ -319,6 +600,11 @@ function createAdminUserRow(user) {
 
 
 async function handleAdminUsers(options = {}) {
+    if (!isAdminUser()) {
+        showError('Recurso exclusivo do administrador.');
+        return;
+    }
+
     if (options.forceOpen) {
         elements.adminUsersPanel.classList.remove('hidden');
     } else {
@@ -329,14 +615,14 @@ async function handleAdminUsers(options = {}) {
         return;
     }
 
-    elements.adminUsersPanel.textContent = 'Carregando usuarios...';
+    elements.adminUsersPanel.textContent = 'Carregando usuários...';
 
     try {
         const data = await listAdminUsers();
         elements.adminUsersPanel.innerHTML = '';
 
         if (!data.users || data.users.length === 0) {
-            elements.adminUsersPanel.textContent = 'Nenhum usuario encontrado.';
+            elements.adminUsersPanel.textContent = 'Nenhum usuário encontrado.';
             return;
         }
 
@@ -389,6 +675,8 @@ function setSelectedLottery(lotteryType) {
         button.setAttribute('aria-checked', String(selected));
         button.tabIndex = selected ? 0 : -1;
     });
+
+    setSelectedGenerationMode(state.selectedGenerationMode);
 }
 
 
@@ -454,17 +742,6 @@ function validateNumGames() {
 }
 
 
-async function loadAdminStatus() {
-    try {
-        const data = await getAdminStatus();
-        adminTokenRequired = Boolean(data.admin_token_required);
-    } catch (error) {
-        adminTokenRequired = true;
-        console.error('Erro ao verificar protecao admin:', error);
-    }
-}
-
-
 async function loadLatestResults() {
     if (!elements.latestResultsGrid) {
         return;
@@ -498,7 +775,7 @@ async function loadDataStatus() {
             elements.dataStatusUpdatedAt
         );
     } catch (error) {
-        elements.dataStatusGrid.textContent = 'Status dos dados indisponivel no momento.';
+        elements.dataStatusGrid.textContent = 'Status dos dados indisponível no momento.';
         elements.dataStatusGrid.classList.add('text-gray-500');
         console.error('Erro ao carregar status dos dados:', error);
     }
@@ -506,34 +783,19 @@ async function loadDataStatus() {
 
 
 function ensureAdminToken() {
-    if (state.currentUser?.is_admin) {
+    if (isAdminUser()) {
         return true;
     }
 
-    if (!adminTokenRequired) {
-        return true;
-    }
-
-    if (getSavedAdminToken()) {
-        return true;
-    }
-
-    const token = window.prompt('Digite o token admin para continuar:');
-
-    if (!token) {
-        showError('Ação cancelada. Token admin não informado.');
-        return false;
-    }
-
-    setSavedAdminToken(token.trim());
-    return true;
+    showError('Recurso exclusivo do administrador.');
+    return false;
 }
 
 
 function handleAdminError(error) {
     if (error.status === 401) {
         clearSavedAdminToken();
-        showError('Acesso admin necessario. Entre com uma conta admin ou informe um token valido.');
+        showError('Acesso admin necessário. Entre com uma conta admin ou informe um token válido.');
         return true;
     }
 
@@ -555,7 +817,7 @@ async function handleGenerateGames() {
     setActionButtonsDisabled(true);
 
     try {
-        const data = await generateGames(lotteryType, String(numGames));
+        const data = await generateGames(lotteryType, String(numGames), selectedGenerationMode());
         const jogos = data.games || data;
         state.currentGeneratedGames = jogos;
 
@@ -662,7 +924,7 @@ async function handleCopyGames() {
             copyWithFallback(formattedGames);
         }
 
-        showSuccessMessageModal('Jogos copiados para a area de transferencia!');
+        showSuccessMessageModal('Jogos copiados para a área de transferência!');
     } catch (error) {
         showError(error.message || 'Falha ao copiar jogos. Por favor, copie manualmente.');
         console.error('Erro ao copiar:', error);
@@ -679,7 +941,7 @@ async function fetchFilesAndDisplayHistory(lotteryType, options = {}) {
         elements.historyModalCloseBtn.focus();
     }
 
-    showLoading('Carregando historico...');
+    showLoading('Carregando histórico...');
     elements.historicoArquivosContainer.classList.remove('hidden');
     elements.historicoConteudoContainer.classList.add('hidden');
     setActionButtonsDisabled(true);
@@ -691,20 +953,24 @@ async function fetchFilesAndDisplayHistory(lotteryType, options = {}) {
 
         if (data.files && data.files.length > 0) {
             data.files.forEach(filename => {
+                const deleteAction = isAdminUser()
+                    ? () => showCustomConfirmModal(
+                        'Confirmar Exclusão',
+                        `Tem certeza que deseja apagar o arquivo "${filename}"? Esta ação é irreversível!`,
+                        () => confirmDeleteFileAction(filename, lotteryType)
+                    )
+                    : null;
+
                 const row = createHistoryFileRow(
                     filename,
                     () => loadHistoricalFile(filename, lotteryType),
-                    () => showCustomConfirmModal(
-                        'Confirmar Exclusao',
-                        `Tem certeza que deseja apagar o arquivo "${filename}"? Esta acao e irreversivel!`,
-                        () => confirmDeleteFileAction(filename, lotteryType)
-                    )
+                    deleteAction
                 );
 
                 elements.historicoArquivosLista.appendChild(row);
             });
         } else {
-            elements.historicoArquivosLista.textContent = 'Nenhum arquivo de historico encontrado para esta loteria.';
+            elements.historicoArquivosLista.textContent = 'Nenhum arquivo de histórico encontrado para esta loteria.';
             elements.historicoArquivosLista.classList.add('text-gray-500');
         }
 
@@ -713,7 +979,7 @@ async function fetchFilesAndDisplayHistory(lotteryType, options = {}) {
         updateDynamicElementColors();
     } catch (error) {
         showError(`Erro: ${error.message}`);
-        console.error('Erro ao listar arquivos de historico:', error);
+        console.error('Erro ao listar arquivos de histórico:', error);
         closeModal(elements.historyModalOverlay);
     } finally {
         hideLoading();
@@ -758,7 +1024,7 @@ async function loadHistoricalFile(filename, lotteryType) {
     try {
         const data = await getHistoryFileContent(filename);
         elements.currentFilenameSpan.textContent = (
-            `Historico de ${formatLotteryName(lotteryType)} - ${formatHistoryFilename(filename)}`
+            `Histórico de ${formatLotteryName(lotteryType)} - ${formatHistoryFilename(filename)}`
         );
 
         displayGamesAsBalls(data.content, elements.historicoConteudoJogosWrapper, lotteryType);
@@ -777,7 +1043,7 @@ async function loadHistoricalFile(filename, lotteryType) {
 
 
 async function fetchHotColdNumbers(lotteryType) {
-    showLoading('Obtendo numeros de assistencia...');
+    showLoading('Obtendo números de assistência...');
 
     try {
         const data = await getHotColdNumbers(lotteryType);
@@ -786,7 +1052,7 @@ async function fetchHotColdNumbers(lotteryType) {
         updateDynamicElementColors();
     } catch (error) {
         showError(`Erro: ${error.message}`);
-        console.error('Erro ao obter assistencia:', error);
+        console.error('Erro ao obter assistência:', error);
         closeModal(elements.assistenciaModalOverlay);
     } finally {
         hideLoading();
@@ -813,14 +1079,14 @@ async function handleAssistance() {
 
 function confirmClearHistory(lotteryType) {
     showCustomConfirmModal(
-        'Limpar Historico',
-        `Tem certeza que deseja DELETAR TODOS os arquivos de historico para ${formatLotteryName(lotteryType)}? Esta acao e irreversivel!`,
+        'Limpar Histórico',
+        `Tem certeza que deseja DELETAR TODOS os arquivos de histórico para ${formatLotteryName(lotteryType)}? Esta ação é irreversível!`,
         async () => {
             if (!ensureAdminToken()) {
                 return;
             }
 
-            showLoading(`Limpando historico para ${formatLotteryName(lotteryType)}...`);
+            showLoading(`Limpando histórico para ${formatLotteryName(lotteryType)}...`);
             setActionButtonsDisabled(true);
 
             try {
@@ -833,7 +1099,7 @@ function confirmClearHistory(lotteryType) {
                 }
 
                 showError(`Erro: ${error.message}`);
-                console.error('Erro ao limpar historico:', error);
+                console.error('Erro ao limpar histórico:', error);
             } finally {
                 hideLoading();
                 setActionButtonsDisabled(false);
@@ -865,6 +1131,31 @@ function bindEvents() {
         elements.registerForm.addEventListener('submit', handleRegister);
     }
 
+    if (elements.openPrivacyTermsButton) {
+        elements.openPrivacyTermsButton.addEventListener('click', openPrivacyTermsModal);
+    }
+
+    if (elements.privacyTermsCloseButton) {
+        elements.privacyTermsCloseButton.addEventListener('click', closePrivacyTermsModal);
+    }
+
+    if (elements.privacyTermsDismissButton) {
+        elements.privacyTermsDismissButton.addEventListener('click', closePrivacyTermsModal);
+    }
+
+    if (elements.privacyTermsAcceptButton) {
+        elements.privacyTermsAcceptButton.addEventListener('click', acceptPrivacyTermsFromModal);
+    }
+
+    if (elements.privacyTermsModalOverlay) {
+        elements.privacyTermsModalOverlay.addEventListener('keydown', handlePrivacyTermsKeydown);
+        elements.privacyTermsModalOverlay.addEventListener('click', event => {
+            if (event.target === elements.privacyTermsModalOverlay) {
+                closePrivacyTermsModal();
+            }
+        });
+    }
+
     if (elements.guestAccessButton) {
         elements.guestAccessButton.addEventListener('click', handleGuestAccess);
     }
@@ -889,6 +1180,16 @@ function bindEvents() {
         button.addEventListener('click', () => selectLotteryOption(button));
         button.addEventListener('keydown', handleLotteryOptionKeydown);
     });
+
+    getGenerationModeButtons().forEach(button => {
+        button.addEventListener('click', () => {
+            setSelectedGenerationMode(button.dataset.generationMode);
+        });
+    });
+
+    if (elements.premiumUpsellButton) {
+        elements.premiumUpsellButton.addEventListener('click', handlePremiumUpsell);
+    }
 
     elements.lotterySelect.addEventListener('change', () => {
         setSelectedLottery(selectedLotteryType());
@@ -948,11 +1249,11 @@ function setFooterYear() {
 
 
 setFooterYear();
+initWelcomeScreen();
 renderDrawCalendar(elements.drawCalendarGrid);
 setSelectedLottery(selectedLotteryType());
 bindEvents();
 initPreferences({ onFontChanged: handleFontChanged });
-loadAdminStatus();
 refreshAuthSession();
 loadLatestResults();
 loadDataStatus();

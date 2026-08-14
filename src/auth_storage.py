@@ -18,6 +18,7 @@ PLAN_PREMIUM = "premium"
 VALID_ROLES = {ROLE_ADMIN, ROLE_USER}
 VALID_PLANS = {PLAN_FREE, PLAN_PREMIUM}
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+TERMS_VERSION = "2026-08-14"
 
 AUTH_DB_PATH = gerador_loterias.resolve_project_path(
     os.environ.get(
@@ -51,7 +52,7 @@ def validate_password(password):
         return False, "A senha precisa ter pelo menos 10 caracteres."
 
     if not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password):
-        return False, "Use letras e numeros na senha."
+        return False, "Use letras e números na senha."
 
     return True, ""
 
@@ -107,6 +108,17 @@ def _ensure_schema(connection):
         )
         """
     )
+    user_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(users)").fetchall()
+    }
+
+    if "terms_accepted_at" not in user_columns:
+        connection.execute("ALTER TABLE users ADD COLUMN terms_accepted_at TEXT")
+
+    if "terms_version" not in user_columns:
+        connection.execute("ALTER TABLE users ADD COLUMN terms_version TEXT")
+
     connection.execute(
         "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)"
     )
@@ -128,6 +140,8 @@ def serialize_user(row, include_email=True):
         "is_active": bool(row["is_active"]),
         "created_at": row["created_at"],
         "last_login_at": row["last_login_at"],
+        "terms_accepted_at": row["terms_accepted_at"],
+        "terms_version": row["terms_version"],
         "is_admin": row["role"] == ROLE_ADMIN,
         "is_premium": row["role"] == ROLE_ADMIN or row["plan"] == PLAN_PREMIUM,
     }
@@ -184,17 +198,28 @@ def admin_exists():
     return row is not None
 
 
-def create_user(name, email, password, role=ROLE_USER, plan=PLAN_FREE):
+def create_user(
+    name,
+    email,
+    password,
+    role=ROLE_USER,
+    plan=PLAN_FREE,
+    terms_accepted=False,
+    terms_version=TERMS_VERSION,
+):
     name = (name or "").strip()
     email = normalize_email(email)
     role = role if role in VALID_ROLES else ROLE_USER
     plan = plan if plan in VALID_PLANS else PLAN_FREE
 
     if not name or len(name) > 120:
-        raise ValueError("Informe um nome valido.")
+        raise ValueError("Informe um nome válido.")
 
     if not validate_email(email):
-        raise ValueError("Informe um e-mail valido.")
+        raise ValueError("Informe um e-mail válido.")
+
+    if not terms_accepted:
+        raise ValueError("Aceite a Política de Privacidade e os Termos de Uso para criar sua conta.")
 
     valid_password, password_message = validate_password(password)
 
@@ -213,10 +238,31 @@ def create_user(name, email, password, role=ROLE_USER, plan=PLAN_FREE):
         cursor = connection.execute(
             """
             INSERT INTO users
-                (name, email, password_hash, role, plan, is_active, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, 1, ?, ?)
+                (
+                    name,
+                    email,
+                    password_hash,
+                    role,
+                    plan,
+                    is_active,
+                    created_at,
+                    updated_at,
+                    terms_accepted_at,
+                    terms_version
+                )
+            VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
             """,
-            (name, email, password_hash, role, plan, created_at, created_at)
+            (
+                name,
+                email,
+                password_hash,
+                role,
+                plan,
+                created_at,
+                created_at,
+                created_at,
+                terms_version,
+            )
         )
         connection.commit()
         user_id = cursor.lastrowid
@@ -229,7 +275,12 @@ def create_user(name, email, password, role=ROLE_USER, plan=PLAN_FREE):
     finally:
         connection.close()
 
-    log_audit(user_id, "user.created", user_id, {"role": role, "plan": plan})
+    log_audit(
+        user_id,
+        "user.created",
+        user_id,
+        {"role": role, "plan": plan, "terms_version": terms_version}
+    )
     return serialize_user(row)
 
 
@@ -360,7 +411,7 @@ def list_users():
 
 def update_user_plan(user_id, plan):
     if plan not in VALID_PLANS:
-        raise ValueError("Plano invalido.")
+        raise ValueError("Plano inválido.")
 
     updated_at = now_iso()
     connection = _connect()

@@ -1,14 +1,21 @@
 import { elements, state } from './dom.js';
 
+const ERROR_AUTO_HIDE_MS = 7000;
+let errorHideTimer = null;
+
 
 export function showError(message) {
-    elements.errorMessage.textContent = message;
+    clearTimeout(errorHideTimer);
+    elements.errorMessageText.textContent = message;
     elements.errorMessage.classList.remove('hidden');
+    errorHideTimer = setTimeout(hideError, ERROR_AUTO_HIDE_MS);
 }
 
 
 export function hideError() {
-    elements.errorMessage.textContent = '';
+    clearTimeout(errorHideTimer);
+    errorHideTimer = null;
+    elements.errorMessageText.textContent = '';
     elements.errorMessage.classList.add('hidden');
 }
 
@@ -22,6 +29,9 @@ export function showLoading(message) {
 export function hideLoading() {
     elements.loadingMessage.classList.add('hidden');
 }
+
+
+elements.errorCloseButton?.addEventListener('click', hideError);
 
 
 export function setActionButtonsDisabled(disabled) {
@@ -40,11 +50,22 @@ export function setActionButtonsDisabled(disabled) {
         elements.logoutButton,
         elements.navLoginButton,
         elements.guestAccessButton,
-        elements.loginForm?.querySelector('button'),
-        elements.registerForm?.querySelector('button'),
+        elements.premiumUpsellButton,
+        elements.openPrivacyTermsButton,
+        elements.privacyTermsCloseButton,
+        elements.privacyTermsAcceptButton,
+        elements.privacyTermsDismissButton,
+        elements.loginForm?.querySelector('button[type="submit"]'),
+        elements.registerForm?.querySelector('button[type="submit"]'),
     ].filter(Boolean).forEach(button => {
         button.disabled = disabled;
     });
+
+    if (elements.generationModeGrid) {
+        elements.generationModeGrid.querySelectorAll('button').forEach(button => {
+            button.disabled = disabled || button.dataset.available === 'false';
+        });
+    }
 
     if (elements.lotteryOptionGrid) {
         elements.lotteryOptionGrid.querySelectorAll('button').forEach(button => {
@@ -79,6 +100,7 @@ export function clearAllDisplays() {
     closeModal(elements.historyModalOverlay);
     closeModal(elements.generatedGamesModalOverlay);
     closeModal(elements.assistenciaModalOverlay);
+    closeModal(elements.privacyTermsModalOverlay);
 }
 
 

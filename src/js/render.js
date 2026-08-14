@@ -18,7 +18,7 @@ export function formatHistoryFilename(filename) {
 export function formatLotteryName(lotteryType) {
     const names = {
         megasena: 'Mega Sena',
-        lotofacil: 'Lotofacil',
+        lotofacil: 'Lotofácil',
         quina: 'Quina',
         diadesorte: 'Dia de Sorte',
     };
@@ -106,7 +106,7 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
     targetElement.classList.remove('text-gray-500');
 
     if (!numbers || numbers.length === 0) {
-        targetElement.textContent = 'Nenhum numero encontrado.';
+        targetElement.textContent = 'Nenhum número encontrado.';
         targetElement.classList.add('text-gray-500');
         return;
     }
@@ -135,7 +135,7 @@ export function displayLatestResults(results, targetElement) {
     targetElement.innerHTML = '';
 
     if (!results || Object.keys(results).length === 0) {
-        targetElement.textContent = 'Ultimos resultados indisponiveis.';
+        targetElement.textContent = 'Últimos resultados indisponíveis.';
         targetElement.classList.add('text-gray-500');
         return;
     }
@@ -206,7 +206,7 @@ export function displayDataStatus(status, targetElement, updatedAtElement) {
     targetElement.innerHTML = '';
 
     if (!status || Object.keys(status).length === 0) {
-        targetElement.textContent = 'Status dos dados indisponivel.';
+        targetElement.textContent = 'Status dos dados indisponível.';
         targetElement.classList.add('text-gray-500');
         return;
     }
@@ -233,7 +233,7 @@ export function displayDataStatus(status, targetElement, updatedAtElement) {
         contest.classList.add('data-status-contest');
         contest.textContent = item.contest
             ? `Concurso ${item.contest}`
-            : 'CSV nao encontrado';
+            : 'CSV não encontrado';
 
         const date = document.createElement('p');
         date.textContent = item.date ? `Sorteio: ${item.date}` : 'Sem data local';
@@ -242,7 +242,7 @@ export function displayDataStatus(status, targetElement, updatedAtElement) {
         fileInfo.classList.add('data-status-file');
         fileInfo.textContent = item.modified_at
             ? `Arquivo atualizado: ${new Date(item.modified_at).toLocaleString('pt-BR')}`
-            : 'Arquivo ainda nao carregado';
+            : 'Arquivo ainda não carregado';
 
         card.appendChild(title);
         card.appendChild(contest);
@@ -299,7 +299,7 @@ export function createHistoryFileRow(filename, onView, onDelete) {
     actionsDiv.classList.add('flex', 'items-center', 'gap-2');
 
     const viewButton = iconButton(
-        'Visualizar conteudo',
+        'Visualizar conteúdo',
         `<svg class="w-5 h-5 text-blue-500 hover:text-blue-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -307,16 +307,20 @@ export function createHistoryFileRow(filename, onView, onDelete) {
         onView
     );
 
-    const deleteButton = iconButton(
-        'Apagar arquivo',
-        `<svg class="w-5 h-5 text-red-500 hover:text-red-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-        </svg>`,
-        onDelete
-    );
-
     actionsDiv.appendChild(viewButton);
-    actionsDiv.appendChild(deleteButton);
+
+    if (onDelete) {
+        const deleteButton = iconButton(
+            'Apagar arquivo',
+            `<svg class="w-5 h-5 text-red-500 hover:text-red-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>`,
+            onDelete
+        );
+
+        actionsDiv.appendChild(deleteButton);
+    }
+
     fileDiv.appendChild(textSpan);
     fileDiv.appendChild(actionsDiv);
 

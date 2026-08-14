@@ -1,4 +1,6 @@
 export const elements = {
+    welcomeScreen: document.getElementById('welcome-screen'),
+    welcomeSkipButton: document.getElementById('welcome-skip-btn'),
     authGate: document.getElementById('auth-gate'),
     appShell: document.getElementById('app-shell'),
     topNav: document.getElementById('top-nav'),
@@ -6,6 +8,8 @@ export const elements = {
     visualizarHistoricoButton: document.getElementById('visualizar-historico'),
     loadingMessage: document.getElementById('loading-message'),
     errorMessage: document.getElementById('error-message'),
+    errorMessageText: document.getElementById('error-message-text'),
+    errorCloseButton: document.getElementById('error-close-btn'),
     lotterySelect: document.getElementById('lottery-select'),
     numGamesInput: document.getElementById('num-games-input'),
     historicoArquivosContainer: document.getElementById('historico-arquivos-container-modal'),
@@ -39,7 +43,6 @@ export const elements = {
     assistenciaModalCloseBtn: document.getElementById('assistencia-modal-close-btn'),
     assistenciaModalTitle: document.getElementById('assistencia-modal-title'),
     mainTitle: document.getElementById('main-title'),
-    accountSection: document.getElementById('account-section'),
     authForms: document.getElementById('auth-forms'),
     loginForm: document.getElementById('login-form'),
     loginEmail: document.getElementById('login-email'),
@@ -49,6 +52,13 @@ export const elements = {
     registerEmail: document.getElementById('register-email'),
     registerPassword: document.getElementById('register-password'),
     registerSetupCode: document.getElementById('register-setup-code'),
+    registerTermsAccepted: document.getElementById('register-terms-accepted'),
+    openPrivacyTermsButton: document.getElementById('open-privacy-terms-btn'),
+    privacyTermsModalOverlay: document.getElementById('privacy-terms-modal-overlay'),
+    privacyTermsContent: document.getElementById('privacy-terms-content'),
+    privacyTermsCloseButton: document.getElementById('privacy-terms-close-btn'),
+    privacyTermsAcceptButton: document.getElementById('privacy-terms-accept-btn'),
+    privacyTermsDismissButton: document.getElementById('privacy-terms-dismiss-btn'),
     guestAccessButton: document.getElementById('guest-access-btn'),
     accountPanel: document.getElementById('account-panel'),
     accountPlanBadge: document.getElementById('account-plan-badge'),
@@ -65,6 +75,11 @@ export const elements = {
     dataStatusGrid: document.getElementById('data-status-grid'),
     dataStatusUpdatedAt: document.getElementById('data-status-updated-at'),
     updateDataButton: document.getElementById('update-data-btn'),
+    generationModeSection: document.getElementById('generation-mode-section'),
+    generationModeGrid: document.getElementById('generation-mode-grid'),
+    selectedGenerationModeLabel: document.getElementById('selected-generation-mode-label'),
+    premiumUpsellPanel: document.getElementById('premium-upsell-panel'),
+    premiumUpsellButton: document.getElementById('premium-upsell-btn'),
     lotteryOptionGrid: document.getElementById('lottery-option-grid'),
     selectedLotteryName: document.getElementById('selected-lottery-name'),
     selectedLotteryMeta: document.getElementById('selected-lottery-meta'),
@@ -121,10 +136,15 @@ export const lotteryDetails = {
 export const state = {
     currentGeneratedGames: [],
     currentUser: null,
+    selectedGenerationMode: 'normal',
 };
 
 export function selectedLotteryType() {
     return elements.lotterySelect.value;
+}
+
+export function selectedGenerationMode() {
+    return state.selectedGenerationMode;
 }
 
 export function adjustableFontElements() {
@@ -137,6 +157,9 @@ export function adjustableFontElements() {
         elements.latestResultsGrid,
         elements.dataStatusGrid,
         elements.dataStatusUpdatedAt,
+        elements.generationModeSection,
+        elements.selectedGenerationModeLabel,
+        elements.premiumUpsellPanel,
         elements.lotteryOptionGrid,
         elements.selectedLotteryName,
         elements.selectedLotteryMeta,

@@ -52,7 +52,7 @@ def normalize_paths(paths):
             raise ValueError(f"Arquivo fora do projeto: {path}") from exc
 
         if not path.exists():
-            raise FileNotFoundError(f"Arquivo nao encontrado: {path}")
+            raise FileNotFoundError(f"Arquivo não encontrado: {path}")
 
         normalized.append(path.relative_to(PROJECT_ROOT).as_posix())
 
@@ -64,7 +64,7 @@ def current_branch():
     branch = completed.stdout.strip()
 
     if not branch or branch == "HEAD":
-        raise RuntimeError("Nao foi possivel identificar a branch atual.")
+        raise RuntimeError("Não foi possível identificar a branch atual.")
 
     return branch
 
@@ -97,13 +97,13 @@ def publish(paths, message, dry_run=False):
         return 0
 
     if dry_run:
-        print("Simulacao de publicacao no GitHub.")
+        print("Simulação de publicação no GitHub.")
         status = status_for_paths(normalized_paths)
         print(status or "Nenhuma alteracao detectada nos arquivos informados.")
         return 0
 
     if not has_remote():
-        raise RuntimeError("Remote 'origin' nao encontrado. Configure o GitHub antes de publicar.")
+        raise RuntimeError("Remote 'origin' não encontrado. Configure o GitHub antes de publicar.")
 
     branch = current_branch()
     print("Preparando arquivos para GitHub:")
@@ -120,7 +120,7 @@ def publish(paths, message, dry_run=False):
 
     run_git(["commit", "-m", message])
     run_git(["push", "origin", branch])
-    print(f"Atualizacao enviada para origin/{branch}.")
+    print(f"Atualização enviada para origin/{branch}.")
     return 0
 
 

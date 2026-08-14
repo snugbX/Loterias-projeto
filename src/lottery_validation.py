@@ -6,7 +6,7 @@ def normalize_lottery_type(lottery_type):
 
     if normalized not in gerador_loterias.LOTTERY_CONFIGS:
         gerador_loterias.logging.warning(
-            f"Tipo de loteria invalido recebido: {lottery_type}"
+            f"Tipo de loteria inválido recebido: {lottery_type}"
         )
         return None
 

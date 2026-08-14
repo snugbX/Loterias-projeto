@@ -37,7 +37,7 @@ async function requestJson(resource, fallbackMessage, options) {
             const openedDirectly = window.location.protocol === 'file:';
             const message = openedDirectly
                 ? 'O app foi aberto direto pelo arquivo HTML. Abra pelo "Abrir Loterias.cmd" ou rode "py app.py" e mantenha a janela do servidor aberta.'
-                : 'O servidor local nao esta respondendo. Abra novamente pelo "Abrir Loterias.cmd" ou rode "py app.py" e mantenha a janela do servidor aberta.';
+                : 'O servidor local não está respondendo. Abra novamente pelo "Abrir Loterias.cmd" ou rode "py app.py" e mantenha a janela do servidor aberta.';
 
             throw new Error(message);
         }
@@ -102,8 +102,11 @@ function csrfHeaders(extraHeaders = {}) {
     };
 }
 
-export async function generateGames(lotteryType, numGames) {
-    const params = new URLSearchParams({ num_games: numGames });
+export async function generateGames(lotteryType, numGames, generationMode = 'normal') {
+    const params = new URLSearchParams({
+        num_games: numGames,
+        mode: generationMode,
+    });
 
     return requestJson(
         `/gerar_jogos/${encodeURIComponent(lotteryType)}?${params.toString()}`,
@@ -118,26 +121,26 @@ export async function generateGames(lotteryType, numGames) {
 export async function listHistoryFiles(lotteryType) {
     return requestJson(
         `/get_history_files/${encodeURIComponent(lotteryType)}`,
-        'Erro ao carregar historico'
+        'Erro ao carregar histórico'
     );
 }
 
 export async function getHistoryFileContent(filename) {
     return requestJson(
         `/get_file_content/${encodeURIComponent(filename)}`,
-        'Erro ao carregar conteudo do arquivo'
+        'Erro ao carregar conteúdo do arquivo'
     );
 }
 
 export async function getHotColdNumbers(lotteryType) {
     return requestJson(
         `/get_hot_cold_numbers/${encodeURIComponent(lotteryType)}`,
-        'Erro ao obter numeros de assistencia'
+        'Erro ao obter números de assistência'
     );
 }
 
 export async function getLatestResults() {
-    return requestJson('/latest_results', 'Erro ao carregar ultimos resultados');
+    return requestJson('/latest_results', 'Erro ao carregar últimos resultados');
 }
 
 export async function getDataStatus() {
@@ -150,7 +153,7 @@ export async function getAuthSession() {
     return data;
 }
 
-export async function registerAccount({ name, email, password, setupCode }) {
+export async function registerAccount({ name, email, password, setupCode, termsAccepted }) {
     const data = await requestJson(
         '/auth/register',
         'Erro ao criar conta',
@@ -162,6 +165,7 @@ export async function registerAccount({ name, email, password, setupCode }) {
                 email,
                 password,
                 setup_code: setupCode,
+                terms_accepted: Boolean(termsAccepted),
             }),
         }
     );
@@ -213,7 +217,7 @@ export async function getBillingPix() {
 }
 
 export async function listAdminUsers() {
-    return requestJson('/admin/users', 'Erro ao carregar usuarios');
+    return requestJson('/admin/users', 'Erro ao carregar usuários');
 }
 
 export async function updateUserPlan(userId, plan) {
@@ -242,7 +246,7 @@ export async function updateData() {
 export async function clearHistory(lotteryType) {
     return requestJson(
         `/clear_history/${encodeURIComponent(lotteryType)}`,
-        'Erro ao limpar historico',
+        'Erro ao limpar histórico',
         {
             method: 'POST',
             headers: adminHeaders(),

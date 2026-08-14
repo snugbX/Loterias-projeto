@@ -36,6 +36,33 @@
         </div>
     </div>
 
+    <div class="global-status" aria-live="polite">
+        <div id="loading-message" class="mb-4 hidden">Carregando...</div>
+        <div id="error-message" class="toast-message error-toast mb-4 hidden" role="alert">
+            <span id="error-message-text"></span>
+            <button id="error-close-btn" type="button" aria-label="Fechar notificação">X</button>
+        </div>
+    </div>
+
+    <section id="welcome-screen" class="welcome-screen" aria-labelledby="welcome-title">
+        <div class="welcome-stage">
+            <div class="welcome-brand-row">
+                <span>SnugbX Loterias</span>
+                <span>Gerador online</span>
+            </div>
+            <h1 id="welcome-title">Palpite bom também tem estratégia.</h1>
+            <p>Escolha sua loteria, jogue no seu estilo e deixe o app preparar combinações com personalidade.</p>
+            <div class="welcome-number-line" aria-hidden="true">
+                <span>07</span>
+                <span>13</span>
+                <span>22</span>
+                <span>31</span>
+                <span>45</span>
+            </div>
+            <button id="welcome-skip-btn" class="welcome-skip-btn" type="button">Entrar agora</button>
+        </div>
+    </section>
+
     <!--
         Container principal da aplicação:
         - p-8: Padding interno generoso
@@ -54,16 +81,17 @@
             <span>31</span>
             <span>45</span>
             <span>58</span>
+            <span>15</span>
         </div>
 
         <div class="auth-hero">
             <div class="auth-copy">
                 <span class="auth-kicker">SnugbX Loterias</span>
-                <h1 id="auth-title">Entre no jogo com estrategia</h1>
-                <p>Gere palpites, acompanhe resultados e explore loterias com uma experiencia simples, segura e pronta para jogar.</p>
+                <h1 id="auth-title">Entre no jogo com estratégia</h1>
+                <p>Gere palpites, acompanhe resultados e explore loterias com uma experiência simples, segura e pronta para jogar.</p>
 
-                <div class="auth-highlights" aria-label="Recursos disponiveis">
-                    <span>Visitante gratis</span>
+                <div class="auth-highlights" aria-label="Recursos disponíveis">
+                    <span>Visitante grátis</span>
                     <span>Conta segura</span>
                     <span>Planos Free e Premium</span>
                 </div>
@@ -103,8 +131,18 @@
                                 <input id="register-name" type="text" autocomplete="name" placeholder="Nome" aria-label="Nome para cadastro" required>
                                 <input id="register-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para cadastro" required>
                                 <input id="register-password" type="password" autocomplete="new-password" placeholder="Senha forte" aria-label="Senha para cadastro" required>
-                                <input id="register-setup-code" type="password" autocomplete="one-time-code" placeholder="Codigo admin, se houver" aria-label="Codigo inicial de administrador">
-                                <button type="submit">Criar conta gratis</button>
+                                <input id="register-setup-code" class="hidden" type="password" autocomplete="one-time-code" placeholder="Código admin, se houver" aria-label="Código inicial de administrador">
+                                <div class="terms-consent">
+                                    <input id="register-terms-accepted" type="checkbox" required aria-describedby="register-terms-help">
+                                    <div>
+                                        <label for="register-terms-accepted">Li e aceito a Política de Privacidade e os Termos de Uso.</label>
+                                        <button id="open-privacy-terms-btn" class="terms-open-btn" type="button" aria-haspopup="dialog" aria-controls="privacy-terms-modal-overlay">
+                                            Ler termos completos
+                                        </button>
+                                        <p id="register-terms-help">Obrigatório para criar uma conta. Você pode ler tudo antes de marcar.</p>
+                                    </div>
+                                </div>
+                                <button type="submit">Criar conta grátis</button>
                             </form>
                         </div>
 
@@ -116,7 +154,7 @@
                     <div class="controller-actions" aria-hidden="true">
                         <span>Mega</span>
                         <span>Quina</span>
-                        <span>Lotofacil</span>
+                        <span>Lotofácil</span>
                         <span>Dia de Sorte</span>
                     </div>
                 </div>
@@ -124,7 +162,7 @@
         </div>
     </section>
 
-    <nav id="top-nav" class="top-nav hidden" aria-label="Navegacao principal">
+    <nav id="top-nav" class="top-nav hidden" aria-label="Navegação principal">
         <div class="top-nav-main">
             <div class="top-nav-brand">
                 <span class="brand-mark" aria-hidden="true">SX</span>
@@ -145,7 +183,7 @@
                 </div>
                 <div class="account-actions">
                     <button id="premium-pix-btn" type="button">Pix Premium</button>
-                    <button id="admin-users-btn" type="button" class="hidden">Usuarios</button>
+                    <button id="admin-users-btn" type="button" class="hidden">Usuários</button>
                     <button id="nav-login-btn" type="button" class="nav-login-btn hidden">Entrar</button>
                     <button id="logout-btn" type="button">Sair</button>
                 </div>
@@ -160,54 +198,6 @@
     <div class="container p-8 rounded-lg shadow-xl w-full text-center">
         <!-- Título da aplicação -->
         <h1 class="text-5xl font-bold mb-6" id="main-title">Gerador de Jogos de Loterias</h1>
-
-        <!-- Account moved to the top navigation and auth gate.
-        <section id="account-section" class="account-section mb-6" aria-labelledby="account-title">
-            <div class="account-header">
-                <div>
-                    <span class="account-eyebrow">Acesso seguro</span>
-                    <h2 id="account-title">Minha Conta</h2>
-                </div>
-                <span id="account-plan-badge" class="account-plan-badge">Visitante</span>
-            </div>
-
-            <div id="auth-forms" class="auth-forms">
-                <form id="login-form" class="auth-form">
-                    <h3>Entrar</h3>
-                    <input id="login-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para entrar" required>
-                    <input id="login-password" type="password" autocomplete="current-password" placeholder="Senha" aria-label="Senha para entrar" required>
-                    <button type="submit">Entrar</button>
-                </form>
-
-                <form id="register-form" class="auth-form">
-                    <h3>Criar Conta</h3>
-                    <input id="register-name" type="text" autocomplete="name" placeholder="Nome" aria-label="Nome para cadastro" required>
-                    <input id="register-email" type="email" autocomplete="email" placeholder="E-mail" aria-label="E-mail para cadastro" required>
-                    <input id="register-password" type="password" autocomplete="new-password" placeholder="Senha forte" aria-label="Senha para cadastro" required>
-                    <input id="register-setup-code" type="password" autocomplete="one-time-code" placeholder="Código admin, se houver" aria-label="Código inicial de administrador">
-                    <button type="submit">Criar Conta</button>
-                </form>
-            </div>
-
-            <div id="account-panel" class="account-panel hidden">
-                <div class="account-user-summary">
-                    <div>
-                        <strong id="account-user-name">Usuario</strong>
-                        <span id="account-user-email">email</span>
-                    </div>
-                    <div id="account-usage" class="account-usage">Uso: carregando...</div>
-                </div>
-                <div class="account-actions">
-                    <button id="premium-pix-btn" type="button">Pix Premium</button>
-                    <button id="admin-users-btn" type="button" class="hidden">Usuários</button>
-                    <button id="logout-btn" type="button">Sair</button>
-                </div>
-                <div id="billing-pix-panel" class="billing-pix-panel hidden" aria-live="polite"></div>
-                <div id="admin-users-panel" class="admin-users-panel hidden" aria-live="polite"></div>
-            </div>
-        </section>
-        -->
-
         <section id="latest-results-section" class="latest-results-section mb-6">
             <div class="latest-results-heading">
                 <h2>Últimos Resultados</h2>
@@ -224,7 +214,7 @@
                     <h2>Status dos Dados</h2>
                     <p id="data-status-updated-at">Verificando arquivos locais...</p>
                 </div>
-                <button id="update-data-btn" type="button" class="data-status-update-btn" aria-label="Atualizar resultados das loterias">
+                <button id="update-data-btn" type="button" class="data-status-update-btn hidden" aria-label="Atualizar resultados das loterias">
                     Atualizar Resultados
                 </button>
             </div>
@@ -306,6 +296,68 @@
             </div>
         </section>
 
+        <section id="generation-mode-section" class="generation-mode-section mb-6" aria-labelledby="generation-mode-title">
+            <div class="generation-mode-heading">
+                <div>
+                    <span class="generation-mode-eyebrow">Estratégias Premium</span>
+                    <h2 id="generation-mode-title">Modo de Geração</h2>
+                </div>
+                <span id="selected-generation-mode-label">Jogo normal</span>
+            </div>
+
+            <div id="generation-mode-grid" class="generation-mode-grid hidden" role="radiogroup" aria-labelledby="generation-mode-title">
+                <button type="button" class="generation-mode-option is-selected" data-generation-mode="normal" role="radio" aria-checked="true">
+                    <strong>Normal</strong>
+                    <span>Probabilidade e filtros atuais.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="balanced_parity" role="radio" aria-checked="false">
+                    <strong>Pares e ímpares</strong>
+                    <span>Equilibra a divisão do jogo.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="never_prize" role="radio" aria-checked="false">
+                    <strong>Sem prêmio histórico</strong>
+                    <span>Foge das faixas históricas fortes da loteria escolhida.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="spread" role="radio" aria-checked="false">
+                    <strong>Bem distribuído</strong>
+                    <span>Espalha por faixas numéricas.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="hot_cold_mix" role="radio" aria-checked="false">
+                    <strong>Quentes e frios</strong>
+                    <span>Mistura frequentes e esquecidos.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="even_only" role="radio" aria-checked="false">
+                    <strong>Só pares</strong>
+                    <span>Uma superstição direta e ousada.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="odd_only" role="radio" aria-checked="false">
+                    <strong>Só ímpares</strong>
+                    <span>Para quem joga no instinto.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="lucky_dates" role="radio" aria-checked="false">
+                    <strong>Datas da sorte</strong>
+                    <span>Prioriza dezenas até 31.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="high_numbers" role="radio" aria-checked="false">
+                    <strong>Números altos</strong>
+                    <span>Foca na metade superior.</span>
+                </button>
+                <button type="button" class="generation-mode-option" data-generation-mode="mixed" role="radio" aria-checked="false">
+                    <strong>Tudo misturado</strong>
+                    <span>Alterna estratégias a cada jogo.</span>
+                </button>
+            </div>
+
+            <div id="premium-upsell-panel" class="premium-upsell-panel">
+                <div>
+                    <span>Premium: aqui você manda</span>
+                    <strong>Quer gerar jogo usando sua superstição favorita?</strong>
+                    <p>Mude para Premium e escolha sua melhor estratégia em um clique: pares, ímpares, quentes, frios, datas da sorte e filtros históricos. No Premium, o palpite sai do seu jeito.</p>
+                </div>
+                <button id="premium-upsell-btn" type="button">Quero mandar no jogo</button>
+            </div>
+        </section>
+
         <!-- Campo para a quantidade de jogos -->
         <div class="mb-6">
             <label for="num-games-input" class="block text-sm font-bold mb-2">Quantidade de Jogos:</label>
@@ -328,14 +380,11 @@
                 Assistência
             </button>
             <!-- Botão para Limpar Histórico -->
-            <button id="limpar-historico-btn" class="flex-1 bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-md hover:from-red-600 hover:to-orange-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75" aria-label="Limpar todo o histórico de jogos">
+            <button id="limpar-historico-btn" class="flex-1 bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-md hover:from-red-600 hover:to-orange-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 hidden" aria-label="Limpar todo o histórico de jogos">
                 Limpar Histórico
             </button>
         </div>
 
-        <!-- Mensagens de status (mantidas para compatibilidade, mas menos usadas) -->
-        <div id="loading-message" class="mb-4 hidden" aria-live="polite">Carregando...</div>
-        <div id="error-message" class="mb-4 hidden" aria-live="polite"></div>
         <!-- <div id="success-message" class="text-green-500 mb-4 hidden"></div> REMOVIDO EM FAVOR DO MODAL -->
 
         <!-- Div onde os jogos gerados seriam exibidos na tela principal (agora está hidden e o conteúdo vai para o modal) -->
@@ -382,6 +431,83 @@
     </div>
 
     <!-- Novo Modal para Histórico -->
+    <!-- Modal de Política de Privacidade e Termos de Uso -->
+    <div id="privacy-terms-modal-overlay" class="modal-overlay privacy-terms-modal hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-terms-title" aria-describedby="privacy-terms-summary" aria-hidden="true">
+        <div id="privacy-terms-content" class="modal-content privacy-terms-content" tabindex="-1">
+            <div class="privacy-terms-header">
+                <div>
+                    <span>Leitura obrigatória</span>
+                    <h3 id="privacy-terms-title">Política de Privacidade e Termos de Uso</h3>
+                </div>
+                <button id="privacy-terms-close-btn" class="privacy-terms-close-btn" type="button" aria-label="Fechar termos de privacidade">
+                    X
+                </button>
+            </div>
+
+            <p id="privacy-terms-summary" class="privacy-terms-summary">
+                Última atualização: 14/08/2026. Leia com calma antes de criar sua conta no SnugbX Loterias.
+            </p>
+
+            <div class="privacy-terms-reader" tabindex="0" aria-label="Texto completo da política de privacidade e termos de uso">
+                <section>
+                    <h4>1. Sobre o aplicativo</h4>
+                    <p>O SnugbX Loterias é uma ferramenta de geração, organização e análise de palpites de loterias. O app não garante prêmio, acerto, retorno financeiro ou qualquer resultado em sorteios oficiais.</p>
+                    <p>O app não é um canal oficial da Caixa Econômica Federal, das Loterias Caixa ou de qualquer casa lotérica. As apostas, quando realizadas fora do app, continuam sendo responsabilidade do usuário.</p>
+                </section>
+
+                <section>
+                    <h4>2. Dados que podemos coletar</h4>
+                    <p>Para criar e proteger sua conta, podemos armazenar nome, e-mail, senha protegida por criptografia de hash, plano de acesso, data de criação da conta, data do último login e registros básicos de uso.</p>
+                    <p>Também podemos salvar histórico de jogos gerados, preferências do app e registros técnicos necessários para segurança, manutenção e auditoria.</p>
+                </section>
+
+                <section>
+                    <h4>3. Como usamos seus dados</h4>
+                    <p>Usamos seus dados para permitir login, cadastro, acesso visitante, separação entre plano gratuito, Premium e administrador, geração de jogos, exibição de histórico, suporte e melhoria do serviço.</p>
+                    <p>Não vendemos seus dados pessoais. Podemos usar informações técnicas para corrigir erros, prevenir abuso, proteger contas e manter o funcionamento do app.</p>
+                </section>
+
+                <section>
+                    <h4>4. Segurança da conta</h4>
+                    <p>Sua senha não é salva em texto puro. Mesmo assim, escolha uma senha forte, não compartilhe sua conta e evite usar a mesma senha de outros serviços.</p>
+                    <p>O app usa controles de sessão, proteção contra requisições indevidas e permissões diferentes para visitantes, usuários comuns, Premium e administradores.</p>
+                </section>
+
+                <section>
+                    <h4>5. Limites, pagamentos e plano Premium</h4>
+                    <p>Usuários visitantes e gratuitos podem ter limites de uso. O plano Premium pode liberar recursos extras, como modos de geração avançados e filtros de estratégia.</p>
+                    <p>Pagamentos via Pix, quando oferecidos, devem ser conferidos pelo usuário antes de qualquer envio. A liberação do plano pode depender de confirmação manual do administrador.</p>
+                </section>
+
+                <section>
+                    <h4>6. Responsabilidade do usuário</h4>
+                    <p>Você declara que usa o app por conta própria, entende que loteria envolve sorte e aceita que nenhuma estratégia elimina risco ou garante premiação.</p>
+                    <p>Use o app com responsabilidade. Não utilize o serviço para fraude, abuso, tentativa de invasão, automação maliciosa ou qualquer atividade ilegal.</p>
+                </section>
+
+                <section>
+                    <h4>7. Seus direitos</h4>
+                    <p>Você pode solicitar correção, revisão ou remoção dos seus dados de conta, quando tecnicamente possível e permitido pela necessidade de segurança, auditoria e manutenção.</p>
+                    <p>Se não concordar com estes termos, não crie conta. Você ainda pode usar o acesso visitante quando ele estiver disponível.</p>
+                </section>
+
+                <section>
+                    <h4>8. Alterações nos termos</h4>
+                    <p>Estes termos podem ser atualizados para melhorar clareza, segurança, funcionamento do app ou adequação legal. Quando houver mudança relevante, o app poderá solicitar novo aceite.</p>
+                </section>
+            </div>
+
+            <div class="privacy-terms-actions">
+                <button id="privacy-terms-accept-btn" class="privacy-terms-accept-btn" type="button">
+                    Li e aceito os termos
+                </button>
+                <button id="privacy-terms-dismiss-btn" class="privacy-terms-dismiss-btn" type="button">
+                    Fechar sem aceitar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="history-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
         <div class="modal-content max-w-2xl w-full"> <!-- Aumenta um pouco a largura para o histórico -->
             <div class="flex justify-between items-center mb-4">
@@ -397,7 +523,7 @@
                 <div id="historico-arquivos-lista-modal" class="space-y-2 max-h-60 overflow-y-auto p-2 rounded-lg border" style="background-color: var(--bg-primary); border-color: var(--border-color);">
                     <!-- A lista de arquivos será inserida aqui pelo JavaScript -->
                 </div>
-                <button id="limpar-historico-direto-btn-modal" class="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500" aria-label="Limpar histórico da loteria selecionada">
+                <button id="limpar-historico-direto-btn-modal" class="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 hidden" aria-label="Limpar histórico da loteria selecionada">
                     Limpar Histórico desta Loteria
                 </button>
             </div>

@@ -37,7 +37,7 @@ DOWNLOAD_CONFIGS = {
         "override_env": "ASLOTERIAS_MEGASENA_URL",
     },
     "lotofacil": {
-        "name": "Lotofacil",
+        "name": "Lotofácil",
         "page_url": "https://asloterias.com.br/download-todos-resultados-lotofacil",
         "fallback_payload": {"l": "lf", "t": "t", "o": "s", "f1": "", "f2": ""},
         "override_env": "ASLOTERIAS_LOTOFACIL_URL",
@@ -445,7 +445,7 @@ def downloaded_data_to_rows(download):
         return csv_to_rows(download.data)
 
     raise ValueError(
-        f"Formato nao reconhecido em {download.filename or download.source_url} "
+        f"Formato não reconhecido em {download.filename or download.source_url} "
         f"({download.content_type or 'sem content-type'})."
     )
 
@@ -472,7 +472,7 @@ def validate_rows(lottery_type, rows):
     ]
 
     if "Concurso" not in header or "Data" not in header:
-        raise ValueError("Cabecalho esperado nao foi encontrado.")
+        raise ValueError("Cabeçalho esperado não foi encontrado.")
 
     if len(ball_columns) != expected_ball_count:
         raise ValueError(
@@ -485,12 +485,12 @@ def validate_rows(lottery_type, rows):
         None,
     )
     if not first_result:
-        raise ValueError("Nenhum resultado foi encontrado apos o cabecalho.")
+        raise ValueError("Nenhum resultado foi encontrado após o cabeçalho.")
 
     indexes = {name: index for index, name in enumerate(header)}
     contest = first_result[indexes["Concurso"]].strip()
     if not contest.isdigit():
-        raise ValueError("Numero do concurso invalido no primeiro resultado.")
+        raise ValueError("Número do concurso inválido no primeiro resultado.")
 
     min_number = int(config["MIN_NUMBER"])
     max_number = int(config["MAX_NUMBER"])
@@ -498,7 +498,7 @@ def validate_rows(lottery_type, rows):
     for column in ball_columns:
         value = first_result[indexes[column]].strip()
         if not value.isdigit():
-            raise ValueError(f"Valor invalido em {column}: {value!r}")
+            raise ValueError(f"Valor inválido em {column}: {value!r}")
 
         number = int(value)
         if number < min_number or number > max_number:
@@ -568,7 +568,7 @@ def update_lottery(lottery_type, args):
     if local_summary:
         print(
             "Local atual: concurso "
-            f"{local_summary['contest']} em {local_summary['date'] or 'data nao informada'}."
+            f"{local_summary['contest']} em {local_summary['date'] or 'data não informada'}."
         )
 
     print("Verificando dados no site...")
@@ -583,7 +583,7 @@ def update_lottery(lottery_type, args):
     print(f"Arquivo recebido: {download.filename}")
 
     if download.skipped:
-        print(f"Sem atualizacao necessaria: {download.skip_reason}.")
+        print(f"Sem atualização necessária: {download.skip_reason}.")
         return None
 
     rows = downloaded_data_to_rows(download)
@@ -600,7 +600,7 @@ def update_lottery(lottery_type, args):
         and int(summary["contest"]) <= int(local_summary["contest"])
     ):
         print(
-            "Sem atualizacao necessaria: "
+            "Sem atualização necessária: "
             f"CSV local ja esta no concurso {local_summary['contest']}."
         )
         return None
@@ -636,11 +636,11 @@ def publish_updated_files(updated_paths, args):
         return
 
     if args.dry_run:
-        print("Publicacao ignorada em modo de simulacao.")
+        print("Publicação ignorada em modo de simulação.")
         return
 
     if not updated_paths:
-        print("Nenhum CSV foi alterado. Publicacao no GitHub nao sera acionada.")
+        print("Nenhum CSV foi alterado. Publicação no GitHub não será acionada.")
         return
 
     publish_script = Path(__file__).with_name("publish_lottery_data.py")
@@ -656,11 +656,11 @@ def publish_updated_files(updated_paths, args):
 
     command.extend(str(path) for path in updated_paths)
 
-    print("\nChamando publicacao no GitHub...")
+    print("\nChamando publicação no GitHub...")
     completed = subprocess.run(command, cwd=PROJECT_ROOT)
 
     if completed.returncode != 0:
-        raise RuntimeError("Falha ao publicar atualizacao no GitHub.")
+        raise RuntimeError("Falha ao publicar atualização no GitHub.")
 
 
 def parse_args(argv):
@@ -678,17 +678,17 @@ def parse_args(argv):
         "--order",
         choices=sorted(ORDER_CODES.keys()),
         default="sorteio",
-        help="Ordem dos numeros no arquivo baixado.",
+        help="Ordem dos números no arquivo baixado.",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Baixa e valida, mas nao substitui os CSVs.",
+        help="Baixa e valida, mas não substitui os CSVs.",
     )
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Substitui os CSVs mesmo quando o concurso local ja parece atualizado.",
+        help="Substitui os CSVs mesmo quando o concurso local já parece atualizado.",
     )
     parser.add_argument(
         "--no-backup",
@@ -704,7 +704,7 @@ def parse_args(argv):
     parser.add_argument(
         "--no-clean-backups",
         action="store_true",
-        help="Nao remove backups antigos ao final da atualizacao.",
+        help="Não remove backups antigos ao final da atualização.",
     )
     parser.add_argument(
         "--timeout",
@@ -721,18 +721,18 @@ def parse_args(argv):
         "--publish",
         action="store_true",
         default=env_flag("LOTTERY_PUBLISH_AFTER_UPDATE", default=False),
-        help="Depois de atualizar CSVs, chama o script de publicacao no GitHub.",
+        help="Depois de atualizar CSVs, chama o script de publicação no GitHub.",
     )
     parser.add_argument(
         "--no-publish",
         action="store_false",
         dest="publish",
-        help="Desativa publicacao no GitHub mesmo se LOTTERY_PUBLISH_AFTER_UPDATE=1.",
+        help="Desativa publicação no GitHub mesmo se LOTTERY_PUBLISH_AFTER_UPDATE=1.",
     )
     parser.add_argument(
         "--publish-dry-run",
         action="store_true",
-        help="Simula a publicacao no GitHub sem commit nem push.",
+        help="Simula a publicação no GitHub sem commit nem push.",
     )
     parser.add_argument(
         "--publish-message",
@@ -763,7 +763,7 @@ def main(argv=None):
             print(f"Erro ao atualizar {lottery_type}: {exc}")
 
     if failed:
-        print("\nAlgumas loterias nao foram atualizadas:", ", ".join(failed))
+        print("\nAlgumas loterias não foram atualizadas:", ", ".join(failed))
         return 1
 
     if not args.dry_run and not args.no_clean_backups:

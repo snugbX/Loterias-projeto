@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import logging
 import joblib
+from itertools import combinations
 from logging.handlers import RotatingFileHandler
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -154,6 +155,102 @@ LOTTERY_DISPLAY_NAMES = {
     "quina": "Quina",
     "diadesorte": "Dia de Sorte",
 }
+
+GENERATION_MODES = {
+    "normal": "Jogo normal",
+    "balanced_parity": "Pares e ímpares equilibrados",
+    "even_only": "Somente pares",
+    "odd_only": "Somente ímpares",
+    "spread": "Bem distribuído por faixas",
+    "hot_cold_mix": "Quentes e frios misturados",
+    "lucky_dates": "Datas da sorte",
+    "high_numbers": "Números altos",
+    "never_prize": "Sem prêmio histórico",
+    "mixed": "Tudo junto e misturado",
+}
+PREMIUM_GENERATION_MODES = set(GENERATION_MODES) - {"normal"}
+MIXED_STRATEGY_POOL = [
+    "balanced_parity",
+    "spread",
+    "hot_cold_mix",
+    "lucky_dates",
+    "high_numbers",
+]
+HISTORICAL_PRIZE_FILTERS = {
+    "megasena": {
+        "min_matches": 4,
+        "label": "quadra, quina ou sena",
+    },
+    "quina": {
+        "min_matches": 4,
+        "label": "quadra ou quina",
+    },
+    "lotofacil": {
+        "min_matches": 13,
+        "label": "13, 14 ou 15 acertos",
+    },
+    "diadesorte": {
+        "min_matches": 5,
+        "label": "5, 6 ou 7 dezenas",
+    },
+}
+
+
+def normalize_generation_mode(mode):
+    mode = (mode or "normal").strip().lower()
+
+    if mode in GENERATION_MODES:
+        return mode
+
+    return None
+
+
+def count_numbers_matching(config, predicate):
+    return sum(1 for number in all_main_numbers(config) if predicate(number))
+
+
+def is_generation_mode_available_for_lottery(mode, lottery_type):
+    mode = normalize_generation_mode(mode)
+
+    if mode is None or lottery_type not in LOTTERY_CONFIGS:
+        return False
+
+    if mode == "normal":
+        return True
+
+    config = LOTTERY_CONFIGS[lottery_type]
+    num_to_draw = config['NUM_BALLS_TO_DRAW']
+
+    if mode == "never_prize":
+        return lottery_type in HISTORICAL_PRIZE_FILTERS
+
+    if mode == "even_only":
+        return count_numbers_matching(config, lambda number: number % 2 == 0) >= num_to_draw
+
+    if mode == "odd_only":
+        return count_numbers_matching(config, lambda number: number % 2 != 0) >= num_to_draw
+
+    if mode == "high_numbers":
+        midpoint = (config['MIN_NUMBER'] + config['MAX_NUMBER']) / 2
+        return count_numbers_matching(config, lambda number: number > midpoint) >= num_to_draw
+
+    if mode == "lucky_dates":
+        date_count = count_numbers_matching(config, lambda number: number <= 31)
+        total_numbers = len(all_main_numbers(config))
+        return num_to_draw <= date_count < total_numbers
+
+    if mode == "mixed":
+        return bool(get_available_mixed_strategy_pool(lottery_type))
+
+    return True
+
+
+def get_available_mixed_strategy_pool(lottery_type):
+    return [
+        mode
+        for mode in MIXED_STRATEGY_POOL
+        if is_generation_mode_available_for_lottery(mode, lottery_type)
+    ]
 
 
 def sort_number_columns(columns):
@@ -579,6 +676,342 @@ def generate_random_set(min_num, max_num, num_to_draw):
     )
 
 
+def all_main_numbers(config):
+    return list(range(config['MIN_NUMBER'], config['MAX_NUMBER'] + 1))
+
+
+def weighted_sample_from_pool(pool, probabilidades, count):
+    pool = sorted({int(number) for number in pool})
+
+    if count <= 0:
+        return []
+
+    if len(pool) < count:
+        return []
+
+    weights = np.array(
+        [float(probabilidades.get(number, 0.0)) + 0.0001 for number in pool],
+        dtype=float
+    )
+
+    if weights.sum() <= 0:
+        weights = np.ones(len(pool), dtype=float) / len(pool)
+    else:
+        weights = weights / weights.sum()
+
+    return sorted(
+        np.random.choice(
+            pool,
+            size=count,
+            replace=False,
+            p=weights
+        ).astype(int).tolist()
+    )
+
+
+def fill_missing_numbers(selected, config, probabilidades):
+    selected = list(dict.fromkeys(int(number) for number in selected))
+    needed = config['NUM_BALLS_TO_DRAW'] - len(selected)
+
+    if needed <= 0:
+        return sorted(selected[:config['NUM_BALLS_TO_DRAW']])
+
+    pool = [
+        number
+        for number in all_main_numbers(config)
+        if number not in selected
+    ]
+    selected.extend(weighted_sample_from_pool(pool, probabilidades, needed))
+
+    return sorted(selected)
+
+
+def generate_balanced_parity_set(config, probabilidades):
+    num_to_draw = config['NUM_BALLS_TO_DRAW']
+    even_pool = [number for number in all_main_numbers(config) if number % 2 == 0]
+    odd_pool = [number for number in all_main_numbers(config) if number % 2 != 0]
+
+    if num_to_draw % 2 == 0:
+        even_count = num_to_draw // 2
+    else:
+        even_count = int(np.random.choice([num_to_draw // 2, num_to_draw // 2 + 1]))
+
+    odd_count = num_to_draw - even_count
+
+    selected = []
+    selected.extend(weighted_sample_from_pool(even_pool, probabilidades, even_count))
+    selected.extend(weighted_sample_from_pool(odd_pool, probabilidades, odd_count))
+
+    return fill_missing_numbers(selected, config, probabilidades)
+
+
+def generate_pool_set(config, probabilidades, predicate, strict=False):
+    pool = [number for number in all_main_numbers(config) if predicate(number)]
+    num_to_draw = config['NUM_BALLS_TO_DRAW']
+
+    if strict and len(pool) < num_to_draw:
+        raise ValueError(
+            "Essa estratégia não tem dezenas suficientes para esta loteria."
+        )
+
+    selected = weighted_sample_from_pool(
+        pool,
+        probabilidades,
+        min(len(pool), num_to_draw)
+    )
+
+    return fill_missing_numbers(selected, config, probabilidades)
+
+
+def generate_spread_set(config, probabilidades):
+    numbers = all_main_numbers(config)
+    num_to_draw = config['NUM_BALLS_TO_DRAW']
+    bucket_count = min(5, num_to_draw, len(numbers))
+    bucket_size = int(np.ceil(len(numbers) / bucket_count))
+    selected = []
+
+    for bucket_index in range(bucket_count):
+        start = bucket_index * bucket_size
+        end = min(start + bucket_size, len(numbers))
+        bucket = numbers[start:end]
+        count = num_to_draw // bucket_count
+
+        if bucket_index < num_to_draw % bucket_count:
+            count += 1
+
+        selected.extend(weighted_sample_from_pool(bucket, probabilidades, count))
+
+    return fill_missing_numbers(selected, config, probabilidades)
+
+
+def generate_hot_cold_mix_set(config, probabilidades):
+    numbers = all_main_numbers(config)
+    num_to_draw = config['NUM_BALLS_TO_DRAW']
+    frequency = {
+        number: float(probabilidades.get(number, 0.0))
+        for number in numbers
+    }
+    pool_size = min(len(numbers), max(num_to_draw * 2, num_to_draw))
+    hot_pool = sorted(numbers, key=lambda number: frequency[number], reverse=True)[:pool_size]
+    cold_pool = sorted(numbers, key=lambda number: (frequency[number], number))[:pool_size]
+    hot_count = num_to_draw // 2
+    cold_count = num_to_draw - hot_count
+    selected = []
+
+    selected.extend(weighted_sample_from_pool(hot_pool, probabilidades, hot_count))
+    selected.extend(weighted_sample_from_pool(cold_pool, probabilidades, cold_count))
+
+    return fill_missing_numbers(selected, config, probabilidades)
+
+
+def get_number_columns(df, config):
+    return sort_number_columns([
+        col for col in df.columns
+        if col.startswith(config['CSV_COLUMNS_PREFIX'])
+    ])
+
+
+def get_historical_number_sets(df, config):
+    number_cols = get_number_columns(df, config)
+
+    if not number_cols:
+        return []
+
+    historical_sets = []
+
+    for _, row in df[number_cols].iterrows():
+        numbers = (
+            pd.to_numeric(row, errors="coerce")
+            .dropna()
+            .astype(int)
+            .tolist()
+        )
+
+        if len(numbers) >= config['NUM_BALLS_TO_DRAW']:
+            historical_sets.append(frozenset(numbers[:config['NUM_BALLS_TO_DRAW']]))
+
+    return historical_sets
+
+
+def has_historical_prize(game, historical_sets, min_matches):
+    game_set = set(int(number) for number in game)
+
+    return any(
+        len(game_set.intersection(historical_set)) >= min_matches
+        for historical_set in historical_sets
+    )
+
+
+def build_historical_prize_signatures(historical_sets, min_matches):
+    signatures = set()
+
+    for historical_set in historical_sets:
+        numbers = sorted(int(number) for number in historical_set)
+
+        for prize_combo in combinations(numbers, min_matches):
+            signatures.add(prize_combo)
+
+    return signatures
+
+
+def has_historical_prize_signature(game, historical_prize_signatures, min_matches):
+    numbers = sorted(int(number) for number in game)
+
+    return any(
+        prize_combo in historical_prize_signatures
+        for prize_combo in combinations(numbers, min_matches)
+    )
+
+
+def generate_default_main_numbers(lottery_type, probabilidades, model, df, config):
+    if lottery_type == "megasena":
+        return generate_filtered_megasena_game(
+            probabilidades=probabilidades,
+            model=model,
+            df=df,
+            config=config
+        )
+
+    if model is not None:
+        return generate_single_set_with_ml_proba(
+            model=model,
+            df=df,
+            columns_prefix=config['CSV_COLUMNS_PREFIX'],
+            min_num=config['MIN_NUMBER'],
+            max_num=config['MAX_NUMBER'],
+            num_to_draw=config['NUM_BALLS_TO_DRAW']
+        )
+
+    return generate_single_set(
+        probabilidades=probabilidades,
+        num_to_draw=config['NUM_BALLS_TO_DRAW'],
+        min_num=config['MIN_NUMBER'],
+        max_num=config['MAX_NUMBER']
+    )
+
+
+def generate_candidate_by_mode(lottery_type, mode, probabilidades, model, df, config):
+    if mode == "normal":
+        return generate_default_main_numbers(lottery_type, probabilidades, model, df, config)
+
+    if mode == "balanced_parity":
+        return generate_balanced_parity_set(config, probabilidades)
+
+    if mode == "even_only":
+        return generate_pool_set(
+            config,
+            probabilidades,
+            lambda number: number % 2 == 0,
+            strict=True
+        )
+
+    if mode == "odd_only":
+        return generate_pool_set(
+            config,
+            probabilidades,
+            lambda number: number % 2 != 0,
+            strict=True
+        )
+
+    if mode == "spread":
+        return generate_spread_set(config, probabilidades)
+
+    if mode == "hot_cold_mix":
+        return generate_hot_cold_mix_set(config, probabilidades)
+
+    if mode == "lucky_dates":
+        return generate_pool_set(
+            config,
+            probabilidades,
+            lambda number: number <= 31,
+            strict=True
+        )
+
+    if mode == "high_numbers":
+        midpoint = (config['MIN_NUMBER'] + config['MAX_NUMBER']) / 2
+        return generate_pool_set(
+            config,
+            probabilidades,
+            lambda number: number > midpoint,
+            strict=True
+        )
+
+    return generate_default_main_numbers(lottery_type, probabilidades, model, df, config)
+
+
+def generate_main_numbers_with_mode(
+    lottery_type,
+    generation_mode,
+    probabilidades,
+    model,
+    df,
+    config,
+    historical_prize_signatures
+):
+    if not is_generation_mode_available_for_lottery(generation_mode, lottery_type):
+        raise ValueError(
+            "Essa estratégia não está disponível para a loteria escolhida."
+        )
+
+    historical_filter = HISTORICAL_PRIZE_FILTERS.get(lottery_type)
+
+    if generation_mode == "never_prize" and historical_filter is None:
+        raise ValueError(
+            "O modo sem prêmio histórico não está disponível para esta loteria."
+        )
+
+    max_attempts = 5000 if generation_mode == "never_prize" else 800
+    min_prize_matches = (
+        historical_filter["min_matches"]
+        if historical_filter
+        else None
+    )
+    mixed_strategy_pool = (
+        get_available_mixed_strategy_pool(lottery_type)
+        if generation_mode == "mixed"
+        else []
+    )
+
+    for _ in range(max_attempts):
+        mode = generation_mode
+
+        if generation_mode == "mixed":
+            mode = str(np.random.choice(mixed_strategy_pool))
+
+        if generation_mode == "never_prize":
+            candidate = generate_random_set(
+                config['MIN_NUMBER'],
+                config['MAX_NUMBER'],
+                config['NUM_BALLS_TO_DRAW']
+            )
+        else:
+            candidate = generate_candidate_by_mode(
+                lottery_type,
+                mode,
+                probabilidades,
+                model,
+                df,
+                config
+            )
+
+        if not candidate:
+            continue
+
+        if generation_mode == "never_prize" and has_historical_prize_signature(
+            candidate,
+            historical_prize_signatures,
+            min_prize_matches
+        ):
+            continue
+
+        return sorted(int(number) for number in candidate)
+
+    raise ValueError(
+        "Não foi possível encontrar uma combinação para essa estratégia agora. "
+        "Tente reduzir a quantidade de jogos ou usar outro modo."
+    )
+
+
 
 def is_good_megasena_game(game):
     """
@@ -677,9 +1110,15 @@ def generate_filtered_megasena_game(probabilidades, model, df, config):
         max_num=config['MAX_NUMBER']
     )
 
-def generate_n_lottery_games(lottery_type, num_games_to_generate=None):
+def generate_n_lottery_games(lottery_type, num_games_to_generate=None, generation_mode="normal"):
     if lottery_type not in LOTTERY_CONFIGS:
         logging.error(f"Tipo de loteria inválido: {lottery_type}")
+        return []
+
+    generation_mode = normalize_generation_mode(generation_mode)
+
+    if generation_mode is None:
+        logging.error("Modo de geração inválido.")
         return []
 
     config = LOTTERY_CONFIGS[lottery_type]
@@ -702,34 +1141,39 @@ def generate_n_lottery_games(lottery_type, num_games_to_generate=None):
         config['MAX_NUMBER']
     )
 
-    model = load_trained_model(lottery_type)
+    model = (
+        None
+        if generation_mode == "never_prize"
+        else load_trained_model(lottery_type)
+    )
+    historical_prize_signatures = set()
+
+    if generation_mode == "never_prize":
+        historical_filter = HISTORICAL_PRIZE_FILTERS.get(lottery_type)
+
+        if historical_filter is None:
+            raise ValueError(
+                "O modo sem prêmio histórico não está disponível para esta loteria."
+            )
+
+        historical_sets = get_historical_number_sets(df, config)
+        historical_prize_signatures = build_historical_prize_signatures(
+            historical_sets,
+            historical_filter["min_matches"]
+        )
 
     all_generated_games = []
 
     for _ in range(num_games):
-        if lottery_type == "megasena":
-            main_numbers = generate_filtered_megasena_game(
-                probabilidades=prob_main_numbers,
-                model=model,
-                df=df,
-                config=config
-            )
-        elif model is not None:
-            main_numbers = generate_single_set_with_ml_proba(
-                model=model,
-                df=df,
-                columns_prefix=config['CSV_COLUMNS_PREFIX'],
-                min_num=config['MIN_NUMBER'],
-                max_num=config['MAX_NUMBER'],
-                num_to_draw=config['NUM_BALLS_TO_DRAW']
-            )
-        else:
-            main_numbers = generate_single_set(
-                probabilidades=prob_main_numbers,
-                num_to_draw=config['NUM_BALLS_TO_DRAW'],
-                min_num=config['MIN_NUMBER'],
-                max_num=config['MAX_NUMBER']
-            )
+        main_numbers = generate_main_numbers_with_mode(
+            lottery_type=lottery_type,
+            generation_mode=generation_mode,
+            probabilidades=prob_main_numbers,
+            model=model,
+            df=df,
+            config=config,
+            historical_prize_signatures=historical_prize_signatures
+        )
 
         game = [int(num) for num in main_numbers]
         game.extend(generate_extra_values(df, config))
