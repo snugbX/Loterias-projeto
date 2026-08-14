@@ -6,10 +6,11 @@ const MIN_FONT_SIZE = 12;
 const MAX_FONT_SIZE = 24;
 
 
-export function applyTheme(theme) {
+export function applyTheme(theme, callbacks = {}) {
     document.body.classList.toggle('dark-theme', theme === 'dark');
     localStorage.setItem('theme', theme);
     updateDynamicElementColors();
+    callbacks?.onThemeChanged?.(theme);
 }
 
 
@@ -83,7 +84,7 @@ export function updateDynamicElementColors() {
 
     elements.mainTitle.style.color = 'var(--text-primary)';
     elements.loadingMessage.style.color = 'var(--text-secondary)';
-    elements.errorMessage.style.color = 'var(--text-secondary)';
+    elements.errorMessage.style.removeProperty('color');
 }
 
 
@@ -141,9 +142,9 @@ function adjustFontSize(direction, callbacks) {
 }
 
 
-function loadTheme() {
+function loadTheme(callbacks) {
     const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
+    applyTheme(savedTheme, callbacks);
 }
 
 
@@ -165,12 +166,12 @@ export function initPreferences(callbacks = {}) {
     elements.themeToggle.addEventListener('click', () => {
         const currentTheme = localStorage.getItem('theme') || 'light';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        applyTheme(newTheme);
+        applyTheme(newTheme, callbacks);
     });
 
     elements.increaseFontButton.addEventListener('click', () => adjustFontSize('increase', callbacks));
     elements.decreaseFontButton.addEventListener('click', () => adjustFontSize('decrease', callbacks));
 
-    loadTheme();
+    loadTheme(callbacks);
     loadFontSize(callbacks);
 }

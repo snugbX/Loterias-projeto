@@ -59,10 +59,11 @@ function createLotteryPill(lotteryType) {
     const pill = document.createElement('span');
 
     pill.classList.add('draw-calendar-pill');
+    pill.dataset.lottery = lotteryType;
     pill.textContent = lotteryNames[lotteryType] || lotteryType;
-    pill.style.borderColor = colors.primary;
-    pill.style.color = colors.primary;
-    pill.style.background = `${colors.secondary}33`;
+    pill.style.setProperty('--lottery-primary', colors.primary);
+    pill.style.setProperty('--lottery-secondary', colors.secondary);
+    pill.style.setProperty('--lottery-ball-bg', colors.ball || colors.primary);
 
     return pill;
 }

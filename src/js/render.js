@@ -32,6 +32,16 @@ function isNumericValue(value) {
 }
 
 
+function applyLotteryColorVars(element, lotteryType, fallback = {}) {
+    const colors = lotteryColors[lotteryType] || {};
+
+    element.dataset.lottery = lotteryType;
+    element.style.setProperty('--lottery-primary', colors.primary || fallback.primary || '#209869');
+    element.style.setProperty('--lottery-secondary', colors.secondary || fallback.secondary || '#8FCBB3');
+    element.style.setProperty('--lottery-ball-bg', colors.ball || fallback.primary || '#047857');
+}
+
+
 function appendNumberBall(container, value, color) {
     const span = document.createElement('span');
     span.classList.add(
@@ -49,12 +59,11 @@ function appendNumberBall(container, value, color) {
 }
 
 
-function appendExtraBadge(container, value, color) {
+function appendExtraBadge(container, value, lotteryType, color) {
     const badge = document.createElement('span');
     badge.classList.add('game-extra-badge');
+    applyLotteryColorVars(badge, lotteryType, { primary: color });
     badge.textContent = `Mês da Sorte: ${value}`;
-    badge.style.borderColor = color;
-    badge.style.color = color;
     container.appendChild(badge);
 }
 
@@ -85,14 +94,15 @@ export function displayGamesAsBalls(games, targetContainer, lotteryType) {
             'shadow-md',
             'animate-fadeInScale'
         );
-        jogoLineDiv.style.backgroundColor = colors.secondary;
+        applyLotteryColorVars(jogoLineDiv, lotteryType);
+        jogoLineDiv.style.background = 'linear-gradient(135deg, var(--lottery-soft-bg), var(--bg-secondary) 72%)';
         jogoLineDiv.style.animationDelay = `${index * 0.05}s`;
 
         jogo.forEach(value => {
             if (isNumericValue(value)) {
-                appendNumberBall(jogoLineDiv, value, colors.primary);
+                appendNumberBall(jogoLineDiv, value, colors.ball || colors.primary);
             } else {
-                appendExtraBadge(jogoLineDiv, value, colors.primary);
+                appendExtraBadge(jogoLineDiv, value, lotteryType, colors.primary);
             }
         });
 
@@ -123,7 +133,7 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
             'hover:shadow-lg'
         );
         span.textContent = String(num).padStart(2, '0');
-        span.style.backgroundColor = typeClass === 'hot' ? '#EF4444' : '#6B7280';
+        span.style.backgroundColor = typeClass === 'hot' ? '#B91C1C' : '#6B7280';
         span.style.fontSize = getComputedStyle(document.body).getPropertyValue('--ball-font-size');
         targetElement.appendChild(span);
     });
@@ -151,15 +161,18 @@ export function displayLatestResults(results, targetElement) {
 
         const card = document.createElement('article');
         card.classList.add('latest-result-card');
-        card.style.borderColor = result.color_primary;
-        card.style.background = `linear-gradient(180deg, ${result.color_secondary}33, var(--bg-secondary) 58%)`;
+        applyLotteryColorVars(card, lotteryType, {
+            primary: result.color_primary,
+            secondary: result.color_secondary,
+        });
+        card.style.borderColor = 'var(--lottery-border)';
 
         const header = document.createElement('div');
         header.classList.add('latest-result-card-header');
 
         const name = document.createElement('h3');
         name.textContent = result.name;
-        name.style.color = result.color_primary;
+        name.style.color = 'var(--lottery-readable)';
 
         const meta = document.createElement('p');
         meta.textContent = `Concurso ${result.contest} • ${result.date}`;
@@ -174,7 +187,6 @@ export function displayLatestResults(results, targetElement) {
             const ball = document.createElement('span');
             ball.classList.add('latest-result-ball');
             ball.textContent = String(number).padStart(2, '0');
-            ball.style.backgroundColor = result.color_primary;
             balls.appendChild(ball);
         });
 
@@ -187,9 +199,11 @@ export function displayLatestResults(results, targetElement) {
 
             Object.entries(result.extras).forEach(([label, value]) => {
                 const extra = document.createElement('span');
+                applyLotteryColorVars(extra, lotteryType, {
+                    primary: result.color_primary,
+                    secondary: result.color_secondary,
+                });
                 extra.textContent = `${label}: ${value}`;
-                extra.style.borderColor = result.color_primary;
-                extra.style.color = result.color_primary;
                 extras.appendChild(extra);
             });
 
@@ -222,12 +236,15 @@ export function displayDataStatus(status, targetElement, updatedAtElement) {
 
         const card = document.createElement('article');
         card.classList.add('data-status-card');
-        card.style.borderColor = item.file_exists ? item.color_primary : '#EF4444';
-        card.style.background = `linear-gradient(180deg, ${item.color_secondary || '#E5E7EB'}22, var(--bg-secondary) 62%)`;
+        applyLotteryColorVars(card, lotteryType, {
+            primary: item.color_primary,
+            secondary: item.color_secondary,
+        });
+        card.style.borderColor = item.file_exists ? 'var(--lottery-border)' : '#B91C1C';
 
         const title = document.createElement('h3');
         title.textContent = item.name;
-        title.style.color = item.color_primary;
+        title.style.color = item.file_exists ? 'var(--lottery-readable)' : '#B91C1C';
 
         const contest = document.createElement('p');
         contest.classList.add('data-status-contest');

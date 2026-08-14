@@ -653,8 +653,13 @@ function setSelectedLottery(lotteryType) {
     }
 
     elements.lotterySelect.value = lotteryType;
+    const darkTheme = document.body.classList.contains('dark-theme');
+
     document.body.style.setProperty('--active-lottery-primary', colors.primary);
     document.body.style.setProperty('--active-lottery-secondary', colors.secondary);
+    document.body.style.setProperty('--active-lottery-readable', darkTheme ? colors.readableDark : colors.readable);
+    document.body.style.setProperty('--active-lottery-border', darkTheme ? colors.readableDark : colors.border);
+    document.body.style.setProperty('--active-lottery-soft-bg', darkTheme ? colors.softBgDark : colors.softBg);
 
     if (elements.selectedLotteryName) {
         elements.selectedLotteryName.textContent = details.name;
@@ -665,7 +670,7 @@ function setSelectedLottery(lotteryType) {
     }
 
     if (elements.gerarJogosButton) {
-        elements.gerarJogosButton.style.background = `linear-gradient(135deg, ${colors.primary}, ${details.accent})`;
+        elements.gerarJogosButton.style.background = `linear-gradient(135deg, ${colors.action || colors.primary}, ${details.accent})`;
         elements.gerarJogosButton.style.boxShadow = `0 10px 22px ${colors.secondary}66`;
     }
 
@@ -1253,7 +1258,10 @@ initWelcomeScreen();
 renderDrawCalendar(elements.drawCalendarGrid);
 setSelectedLottery(selectedLotteryType());
 bindEvents();
-initPreferences({ onFontChanged: handleFontChanged });
+initPreferences({
+    onFontChanged: handleFontChanged,
+    onThemeChanged: () => setSelectedLottery(selectedLotteryType()),
+});
 refreshAuthSession();
 loadLatestResults();
 loadDataStatus();
