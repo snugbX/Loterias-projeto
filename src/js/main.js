@@ -10,6 +10,7 @@ import {
     getHistoryFileContent,
     getHotColdNumbers,
     getLatestResults,
+    getStrategyStats,
     listAdminUsers,
     listHistoryFiles,
     loginAccount,
@@ -120,6 +121,119 @@ function getGenerationModeButtons() {
 }
 
 
+function formatStrategyPercentage(value) {
+    const percentage = Number(value);
+
+    if (!Number.isFinite(percentage)) {
+        return '';
+    }
+
+    return percentage.toLocaleString('pt-BR', {
+        minimumFractionDigits: percentage > 0 && percentage < 1 ? 2 : 0,
+        maximumFractionDigits: 2,
+    });
+}
+
+
+function getGenerationModeStatBadge(button) {
+    let badge = button.querySelector('.generation-mode-stat');
+
+    if (!badge) {
+        badge = document.createElement('small');
+        badge.classList.add('generation-mode-stat');
+        button.appendChild(badge);
+    }
+
+    return badge;
+}
+
+
+function setGenerationModeStatsLoading() {
+    getGenerationModeButtons().forEach(button => {
+        const badge = getGenerationModeStatBadge(button);
+
+        badge.classList.add('is-muted');
+        badge.textContent = 'Calculando histórico...';
+        badge.removeAttribute('title');
+    });
+}
+
+
+function clearGenerationModeStats() {
+    getGenerationModeButtons().forEach(button => {
+        const badge = button.querySelector('.generation-mode-stat');
+
+        if (badge) {
+            badge.remove();
+        }
+    });
+}
+
+
+function renderGenerationStrategyStats(stats) {
+    const modes = stats?.modes || {};
+
+    getGenerationModeButtons().forEach(button => {
+        const mode = button.dataset.generationMode;
+        const stat = modes[mode];
+        const badge = getGenerationModeStatBadge(button);
+
+        if (!stat) {
+            badge.classList.add('is-muted');
+            badge.textContent = 'Sem leitura histórica';
+            badge.removeAttribute('title');
+            return;
+        }
+
+        badge.classList.toggle('is-muted', !stat.has_stat);
+
+        if (stat.has_stat) {
+            const formattedPercentage = formatStrategyPercentage(stat.percentage);
+            badge.textContent = `${formattedPercentage}% dos sorteios`;
+            badge.title = `${stat.matches} de ${stat.total} concursos da ${stats.lottery_name || 'loteria'} bateram com essa estratégia.`;
+            return;
+        }
+
+        badge.textContent = stat.message || 'Sem base histórica direta';
+        badge.removeAttribute('title');
+    });
+}
+
+
+async function loadGenerationStrategyStats(lotteryType = selectedLotteryType()) {
+    if (!elements.generationModeGrid || !hasPremiumAccess()) {
+        clearGenerationModeStats();
+        return;
+    }
+
+    const cachedStats = state.strategyStatsByLottery[lotteryType];
+
+    if (cachedStats) {
+        renderGenerationStrategyStats(cachedStats);
+        return;
+    }
+
+    setGenerationModeStatsLoading();
+
+    try {
+        const data = await getStrategyStats(lotteryType);
+        state.strategyStatsByLottery[lotteryType] = data.stats;
+
+        if (selectedLotteryType() === lotteryType) {
+            renderGenerationStrategyStats(data.stats);
+        }
+    } catch (error) {
+        getGenerationModeButtons().forEach(button => {
+            const badge = getGenerationModeStatBadge(button);
+            badge.classList.add('is-muted');
+            badge.textContent = 'Estatística indisponível';
+            badge.removeAttribute('title');
+        });
+        console.error('Erro ao carregar estatísticas das estratégias:', error);
+    }
+}
+
+
 function isGenerationModeAvailableForLottery(mode, lotteryType = selectedLotteryType()) {
     return !unavailableGenerationModesByLottery[lotteryType]?.has(mode);
 }
@@ -174,11 +288,13 @@ function renderGenerationModeAccess(user = state.currentUser) {
     elements.premiumUpsellPanel?.classList.toggle('hidden', premium);
 
     if (!premium) {
+        clearGenerationModeStats();
         setSelectedGenerationMode('normal');
         return;
     }
 
     setSelectedGenerationMode(state.selectedGenerationMode);
+    loadGenerationStrategyStats();
 }
 
 
@@ -682,6 +798,10 @@ function setSelectedLottery(lotteryType) {
     });
 
     setSelectedGenerationMode(state.selectedGenerationMode);
+
+    if (hasPremiumAccess()) {
+        loadGenerationStrategyStats(lotteryType);
+    }
 }
 
 

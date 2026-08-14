@@ -833,6 +833,143 @@ def get_historical_number_sets(df, config):
     return historical_sets
 
 
+def get_historical_number_lists(df, config):
+    number_cols = get_number_columns(df, config)
+
+    if not number_cols:
+        return []
+
+    historical_lists = []
+
+    for _, row in df[number_cols].iterrows():
+        numbers = (
+            pd.to_numeric(row, errors="coerce")
+            .dropna()
+            .astype(int)
+            .tolist()
+        )
+
+        if len(numbers) >= config['NUM_BALLS_TO_DRAW']:
+            historical_lists.append([
+                int(number)
+                for number in numbers[:config['NUM_BALLS_TO_DRAW']]
+            ])
+
+    return historical_lists
+
+
+def has_balanced_parity(numbers):
+    even_count = sum(1 for number in numbers if number % 2 == 0)
+    odd_count = len(numbers) - even_count
+
+    return abs(even_count - odd_count) <= 1
+
+
+def has_spread_distribution(numbers, config):
+    all_numbers = all_main_numbers(config)
+    bucket_count = min(5, config['NUM_BALLS_TO_DRAW'], len(all_numbers))
+
+    if bucket_count <= 0:
+        return False
+
+    bucket_size = int(np.ceil(len(all_numbers) / bucket_count))
+    bucket_counts = [0] * bucket_count
+
+    for number in numbers:
+        index = min(
+            bucket_count - 1,
+            max(0, (int(number) - config['MIN_NUMBER']) // bucket_size)
+        )
+        bucket_counts[index] += 1
+
+    return min(bucket_counts) > 0 and max(bucket_counts) - min(bucket_counts) <= 1
+
+
+def strategy_matches_historical_draw(numbers, mode, config):
+    if mode == "balanced_parity":
+        return has_balanced_parity(numbers)
+
+    if mode == "even_only":
+        return all(number % 2 == 0 for number in numbers)
+
+    if mode == "odd_only":
+        return all(number % 2 != 0 for number in numbers)
+
+    if mode == "spread":
+        return has_spread_distribution(numbers, config)
+
+    if mode == "lucky_dates":
+        return all(number <= 31 for number in numbers)
+
+    if mode == "high_numbers":
+        midpoint = (config['MIN_NUMBER'] + config['MAX_NUMBER']) / 2
+        return all(number > midpoint for number in numbers)
+
+    return None
+
+
+def get_generation_strategy_stats(lottery_type):
+    if lottery_type not in LOTTERY_CONFIGS:
+        logging.error(f"Tipo de loteria invÃ¡lido: {lottery_type}")
+        return None
+
+    config = LOTTERY_CONFIGS[lottery_type]
+    df = load_data(config['FILE_PATH'], config['SKIP_ROWS'])
+
+    if df is None or df.empty:
+        return {
+            "lottery_type": lottery_type,
+            "total_draws": 0,
+            "modes": {},
+        }
+
+    historical_draws = get_historical_number_lists(df, config)
+    total_draws = len(historical_draws)
+    modes = {}
+
+    for mode, label in GENERATION_MODES.items():
+        available = is_generation_mode_available_for_lottery(mode, lottery_type)
+        stat_payload = {
+            "mode": mode,
+            "label": label,
+            "available": available,
+            "has_stat": False,
+            "matches": None,
+            "total": total_draws,
+            "percentage": None,
+        }
+
+        if mode == "normal":
+            stat_payload["message"] = "Base padr\u00e3o"
+        elif mode in {"never_prize", "hot_cold_mix", "mixed"}:
+            stat_payload["message"] = "Sem base hist\u00f3rica direta"
+        elif available and total_draws > 0:
+            matches = sum(
+                1
+                for numbers in historical_draws
+                if strategy_matches_historical_draw(numbers, mode, config)
+            )
+            stat_payload.update({
+                "has_stat": True,
+                "matches": matches,
+                "percentage": round((matches / total_draws) * 100, 2),
+                "message": f"{matches} de {total_draws} sorteios",
+            })
+        elif not available:
+            stat_payload["message"] = "Indispon\u00edvel nesta loteria"
+        else:
+            stat_payload["message"] = "Sem dados suficientes"
+
+        modes[mode] = stat_payload
+
+    return {
+        "lottery_type": lottery_type,
+        "lottery_name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
+        "total_draws": total_draws,
+        "modes": modes,
+    }
+
+
 def has_historical_prize(game, historical_sets, min_matches):
     game_set = set(int(number) for number in game)
 

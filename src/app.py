@@ -672,6 +672,24 @@ def data_status():
         gerador_loterias.logging.error(f"Erro ao obter status dos dados: {e}")
         return jsonify({"error": "Erro ao obter status dos dados"}), 500
 
+@app.route('/strategy_stats/<lottery_type>')
+def strategy_stats(lottery_type):
+    lottery_type = normalize_lottery_type(lottery_type)
+
+    if lottery_type is None:
+        return jsonify({"error": "Tipo de loteria invÃ¡lido"}), 400
+
+    try:
+        stats = gerador_loterias.get_generation_strategy_stats(lottery_type)
+
+        if stats is None:
+            return jsonify({"error": "Tipo de loteria invÃ¡lido"}), 400
+
+        return jsonify({"stats": stats})
+    except Exception as e:
+        gerador_loterias.logging.error(f"Erro ao obter estatÃ­sticas de estratÃ©gia: {e}")
+        return jsonify({"error": "Erro ao obter estatÃ­sticas de estratÃ©gia"}), 500
+
 @app.route('/admin_status')
 def admin_status():
     return jsonify({"admin_token_required": admin_token_configured()})

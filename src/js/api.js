@@ -147,6 +147,13 @@ export async function getDataStatus() {
     return requestJson('/data_status', 'Erro ao carregar status dos dados');
 }
 
+export async function getStrategyStats(lotteryType) {
+    return requestJson(
+        `/strategy_stats/${encodeURIComponent(lotteryType)}`,
+        'Erro ao carregar estatÃ­sticas das estratÃ©gias'
+    );
+}
+
 export async function getAuthSession() {
     const data = await requestJson('/auth/me', 'Erro ao carregar conta');
     setSavedCsrfToken(data.csrf_token);

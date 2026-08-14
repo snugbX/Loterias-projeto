@@ -165,6 +165,7 @@ export const state = {
     currentGeneratedGames: [],
     currentUser: null,
     selectedGenerationMode: 'normal',
+    strategyStatsByLottery: {},
 };
 
 export function selectedLotteryType() {
