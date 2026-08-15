@@ -15,7 +15,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from xml.etree import ElementTree
 
-from gerador_loterias import LOTTERY_CONFIGS, PROJECT_ROOT
+from gerador_loterias import LOTTERY_CONFIGS, PROJECT_ROOT, resolve_project_path
 
 
 USER_AGENT = (
@@ -24,7 +24,14 @@ USER_AGENT = (
     "Chrome/126.0 Safari/537.36"
 )
 DOWNLOAD_ENDPOINT = "https://asloterias.com.br/download_excel.php"
-BACKUP_DIR = Path(PROJECT_ROOT) / "backups_loterias"
+BACKUP_DIR = Path(
+    resolve_project_path(
+        os.environ.get(
+            "LOTTERY_BACKUP_DIR",
+            os.path.join(PROJECT_ROOT, "backups_loterias")
+        )
+    )
+)
 ORDER_CODES = {
     "sorteio": "s",
     "crescente": "c",

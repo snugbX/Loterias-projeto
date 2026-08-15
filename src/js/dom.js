@@ -76,8 +76,11 @@ export const elements = {
     dataStatusUpdatedAt: document.getElementById('data-status-updated-at'),
     updateDataButton: document.getElementById('update-data-btn'),
     generationModeSection: document.getElementById('generation-mode-section'),
+    generationModePicker: document.getElementById('generation-mode-picker'),
+    generationModeToggle: document.getElementById('generation-mode-toggle'),
     generationModeGrid: document.getElementById('generation-mode-grid'),
     selectedGenerationModeLabel: document.getElementById('selected-generation-mode-label'),
+    selectedGenerationModeSummary: document.getElementById('selected-generation-mode-summary'),
     premiumUpsellPanel: document.getElementById('premium-upsell-panel'),
     premiumUpsellButton: document.getElementById('premium-upsell-btn'),
     lotteryOptionGrid: document.getElementById('lottery-option-grid'),
@@ -164,6 +167,8 @@ export const lotteryDetails = {
 export const state = {
     currentGeneratedGames: [],
     currentUser: null,
+    dataStatus: null,
+    latestResults: null,
     selectedGenerationMode: 'normal',
     strategyStatsByLottery: {},
 };

@@ -198,31 +198,24 @@
     <div class="container p-8 rounded-lg shadow-xl w-full text-center">
         <!-- Título da aplicação -->
         <h1 class="text-5xl font-bold mb-6" id="main-title">Gerador de Jogos de Loterias</h1>
-        <section id="latest-results-section" class="latest-results-section mb-6">
-            <div class="latest-results-heading">
-                <h2>Últimos Resultados</h2>
-            </div>
-            <div id="latest-results-grid" class="latest-results-grid" aria-live="polite">
-                Carregando últimos resultados...
-            </div>
-        </section>
-
-        <!-- Seletor visual do tipo de loteria -->
-        <section id="data-status-section" class="data-status-section mb-6">
-            <div class="data-status-heading">
+        <section id="latest-results-section" class="latest-results-section data-overview-section mb-6">
+            <div class="data-status-heading data-overview-heading">
                 <div>
-                    <h2>Status dos Dados</h2>
+                    <span class="latest-results-eyebrow">Resultados e dados</span>
+                    <h2>Últimos Resultados</h2>
                     <p id="data-status-updated-at">Verificando arquivos locais...</p>
                 </div>
                 <button id="update-data-btn" type="button" class="data-status-update-btn hidden" aria-label="Atualizar resultados das loterias">
                     Atualizar Resultados
                 </button>
             </div>
-            <div id="data-status-grid" class="data-status-grid" aria-live="polite">
-                Carregando status dos dados...
+            <div id="latest-results-grid" class="latest-results-grid" aria-live="polite">
+                Carregando últimos resultados...
             </div>
+            <div id="data-status-grid" class="data-status-grid hidden" aria-live="polite"></div>
         </section>
 
+        <!-- Seletor visual do tipo de loteria -->
         <section class="lottery-picker mb-5" aria-labelledby="lottery-picker-title">
             <div class="lottery-picker-heading">
                 <div>
@@ -302,7 +295,14 @@
                     <span class="generation-mode-eyebrow">Estratégias Premium</span>
                     <h2 id="generation-mode-title">Modo de Geração</h2>
                 </div>
-                <span id="selected-generation-mode-label">Jogo normal</span>
+            </div>
+
+            <div id="generation-mode-picker" class="generation-mode-picker hidden">
+                <button id="generation-mode-toggle" class="generation-mode-toggle" type="button" aria-expanded="false" aria-controls="generation-mode-grid">
+                    <span>Modo escolhido</span>
+                    <strong id="selected-generation-mode-label">Jogo normal</strong>
+                    <small id="selected-generation-mode-summary">Probabilidade e filtros atuais.</small>
+                </button>
             </div>
 
             <div id="generation-mode-grid" class="generation-mode-grid hidden" role="radiogroup" aria-labelledby="generation-mode-title">
@@ -310,13 +310,10 @@
                     <strong>Normal</strong>
                     <span>Probabilidade e filtros atuais.</span>
                 </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="balanced_parity" role="radio" aria-checked="false">
-                    <strong>Pares e ímpares</strong>
-                    <span>Equilibra a divisão do jogo.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="never_prize" role="radio" aria-checked="false">
-                    <strong>Sem prêmio histórico</strong>
-                    <span>Foge das faixas históricas fortes da loteria escolhida.</span>
+                <button type="button" class="generation-mode-option is-recommended" data-generation-mode="balanced_never_prize" role="radio" aria-checked="false">
+                    <small>Recomendado</small>
+                    <strong>Pares/ímpares + sem prêmio</strong>
+                    <span>Equilibra o jogo e evita faixas históricas premiadas.</span>
                 </button>
                 <button type="button" class="generation-mode-option" data-generation-mode="spread" role="radio" aria-checked="false">
                     <strong>Bem distribuído</strong>

@@ -31,7 +31,6 @@ import { renderDrawCalendar } from './drawCalendar.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
-    displayDataStatus,
     displayLatestResults,
     displayGamesAsBalls,
     displayNumberBalls,
@@ -54,6 +53,7 @@ let adminConfigured = true;
 
 const generationModeLabels = {
     normal: 'Jogo normal',
+    balanced_never_prize: 'Recomendado',
     balanced_parity: 'Pares e ímpares',
     even_only: 'Só pares',
     odd_only: 'Só ímpares',
@@ -63,6 +63,20 @@ const generationModeLabels = {
     high_numbers: 'Números altos',
     never_prize: 'Sem prêmio histórico',
     mixed: 'Tudo misturado',
+};
+
+const generationModeSummaries = {
+    normal: 'Probabilidade e filtros atuais.',
+    balanced_never_prize: 'Pares/ímpares + filtro sem prêmio histórico.',
+    balanced_parity: 'Equilibra a divisão do jogo.',
+    even_only: 'Uma superstição direta e ousada.',
+    odd_only: 'Para quem joga no instinto.',
+    spread: 'Espalha por faixas numéricas.',
+    hot_cold_mix: 'Mistura frequentes e esquecidos.',
+    lucky_dates: 'Prioriza dezenas até 31.',
+    high_numbers: 'Foca na metade superior.',
+    never_prize: 'Foge das faixas históricas fortes.',
+    mixed: 'Alterna estratégias a cada jogo.',
 };
 
 const unavailableGenerationModesByLottery = {
@@ -118,6 +132,18 @@ function getGenerationModeButtons() {
     }
 
     return Array.from(elements.generationModeGrid.querySelectorAll('[data-generation-mode]'));
+}
+
+
+function setGenerationModePickerOpen(open) {
+    elements.generationModeGrid?.classList.toggle('hidden', !open);
+    elements.generationModeToggle?.setAttribute('aria-expanded', String(open));
+}
+
+
+function toggleGenerationModePicker() {
+    const isOpen = elements.generationModeToggle?.getAttribute('aria-expanded') === 'true';
+    setGenerationModePickerOpen(!isOpen);
 }
 
 
@@ -264,6 +290,12 @@ function setSelectedGenerationMode(mode) {
         elements.selectedGenerationModeLabel.textContent = generationModeLabels[nextMode] || 'Jogo normal';
     }
 
+    if (elements.selectedGenerationModeSummary) {
+        elements.selectedGenerationModeSummary.textContent = (
+            generationModeSummaries[nextMode] || generationModeSummaries.normal
+        );
+    }
+
     getGenerationModeButtons().forEach(button => {
         const buttonMode = button.dataset.generationMode;
         const selected = buttonMode === nextMode;
@@ -275,7 +307,7 @@ function setSelectedGenerationMode(mode) {
         button.setAttribute('aria-checked', String(selected));
         button.dataset.available = String(available);
         button.disabled = !available;
-        button.tabIndex = selected ? 0 : -1;
+        button.tabIndex = available ? 0 : -1;
         button.removeAttribute('title');
     });
 }
@@ -284,7 +316,8 @@ function setSelectedGenerationMode(mode) {
 function renderGenerationModeAccess(user = state.currentUser) {
     const premium = hasPremiumAccess(user);
 
-    elements.generationModeGrid?.classList.toggle('hidden', !premium);
+    elements.generationModePicker?.classList.toggle('hidden', !premium);
+    setGenerationModePickerOpen(false);
     elements.premiumUpsellPanel?.classList.toggle('hidden', premium);
 
     if (!premium) {
@@ -867,6 +900,22 @@ function validateNumGames() {
 }
 
 
+function updateDataStatusTimestamp() {
+    if (elements.dataStatusUpdatedAt) {
+        elements.dataStatusUpdatedAt.textContent = `Verificado em ${new Date().toLocaleString('pt-BR')}`;
+    }
+}
+
+
+function renderResultsOverview() {
+    if (!elements.latestResultsGrid || !state.latestResults) {
+        return;
+    }
+
+    displayLatestResults(state.latestResults, elements.latestResultsGrid, state.dataStatus);
+}
+
+
 async function loadLatestResults() {
     if (!elements.latestResultsGrid) {
         return;
@@ -876,8 +925,10 @@ async function loadLatestResults() {
 
     try {
         const data = await getLatestResults();
-        displayLatestResults(data.results, elements.latestResultsGrid);
+        state.latestResults = data.results;
+        renderResultsOverview();
     } catch (error) {
+        state.latestResults = null;
         elements.latestResultsGrid.textContent = 'Últimos resultados indisponíveis no momento.';
         elements.latestResultsGrid.classList.add('text-gray-500');
         console.error('Erro ao carregar últimos resultados:', error);
@@ -886,22 +937,19 @@ async function loadLatestResults() {
 
 
 async function loadDataStatus() {
-    if (!elements.dataStatusGrid) {
+    if (!elements.dataStatusUpdatedAt && !elements.latestResultsGrid) {
         return;
     }
 
-    elements.dataStatusGrid.textContent = 'Carregando status dos dados...';
-
     try {
         const data = await getDataStatus();
-        displayDataStatus(
-            data.status,
-            elements.dataStatusGrid,
-            elements.dataStatusUpdatedAt
-        );
+        state.dataStatus = data.status;
+        updateDataStatusTimestamp();
+        renderResultsOverview();
     } catch (error) {
-        elements.dataStatusGrid.textContent = 'Status dos dados indisponível no momento.';
-        elements.dataStatusGrid.classList.add('text-gray-500');
+        if (elements.dataStatusUpdatedAt) {
+            elements.dataStatusUpdatedAt.textContent = 'Status dos dados indisponível no momento.';
+        }
         console.error('Erro ao carregar status dos dados:', error);
     }
 }
@@ -976,11 +1024,9 @@ async function handleUpdateData() {
 
     try {
         const data = await updateData();
-        displayDataStatus(
-            data.status,
-            elements.dataStatusGrid,
-            elements.dataStatusUpdatedAt
-        );
+        state.dataStatus = data.status;
+        updateDataStatusTimestamp();
+        renderResultsOverview();
         await loadLatestResults();
         showSuccessMessageModal(data.message || 'Dados atualizados com sucesso.');
     } catch (error) {
@@ -1306,9 +1352,15 @@ function bindEvents() {
         button.addEventListener('keydown', handleLotteryOptionKeydown);
     });
 
+    if (elements.generationModeToggle) {
+        elements.generationModeToggle.addEventListener('click', toggleGenerationModePicker);
+    }
+
     getGenerationModeButtons().forEach(button => {
         button.addEventListener('click', () => {
             setSelectedGenerationMode(button.dataset.generationMode);
+            setGenerationModePickerOpen(false);
+            elements.generationModeToggle?.focus();
         });
     });
 

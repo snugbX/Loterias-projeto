@@ -22,6 +22,7 @@ backups_loterias/
 
 # Resultados gerados pela aplicacao
 resultados_Loterias/*.csv
+resultados_Loterias/**/*.csv
 !resultados_Loterias/.gitkeep
 data/*
 !data/.gitkeep

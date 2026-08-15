@@ -2,7 +2,7 @@ import { lotteryColors } from './dom.js';
 
 
 export function formatHistoryFilename(filename) {
-    const match = filename.match(/_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})\.csv$/);
+    const match = filename.match(/_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})(?:_\d{6})?\.csv$/);
 
     if (!match) {
         return filename;
@@ -140,7 +140,7 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
 }
 
 
-export function displayLatestResults(results, targetElement) {
+export function displayLatestResults(results, targetElement, status = null) {
     const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
     targetElement.innerHTML = '';
 
@@ -208,6 +208,27 @@ export function displayLatestResults(results, targetElement) {
             });
 
             card.appendChild(extras);
+        }
+
+        const statusItem = status?.[lotteryType];
+
+        if (statusItem) {
+            const statusFooter = document.createElement('div');
+            statusFooter.classList.add('latest-result-status');
+
+            const statusTitle = document.createElement('strong');
+            statusTitle.textContent = statusItem.file_exists
+                ? 'CSV local verificado'
+                : 'CSV local ausente';
+
+            const statusMeta = document.createElement('span');
+            statusMeta.textContent = statusItem.modified_at
+                ? `Dados atualizados: ${new Date(statusItem.modified_at).toLocaleString('pt-BR')}`
+                : 'Dados locais sem data de atualização';
+
+            statusFooter.appendChild(statusTitle);
+            statusFooter.appendChild(statusMeta);
+            card.appendChild(statusFooter);
         }
 
         targetElement.appendChild(card);

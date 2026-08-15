@@ -14,9 +14,20 @@ LOTTERY_TYPES_PATTERN = "|".join(
 )
 HISTORY_FILENAME_PATTERN = re.compile(
     rf"^({LOTTERY_TYPES_PATTERN})_resultados_"
-    r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.csv$",
+    r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{6})?\.csv$",
     re.IGNORECASE
 )
+OWNER_SEGMENT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]+")
+
+
+def owner_directory_segment(owner_key):
+    segment = OWNER_SEGMENT_PATTERN.sub("_", str(owner_key or "legacy")).strip("._-")
+    return segment[:80] or "legacy"
+
+
+def owner_history_dir(owner_key):
+    base_dir = Path(gerador_loterias.OUTPUT_DIR).resolve()
+    return (base_dir / owner_directory_segment(owner_key)).resolve()
 
 
 def parse_history_value(value):
@@ -31,14 +42,14 @@ def parse_history_value(value):
     return value
 
 
-def history_file_path(filename):
+def history_file_path(filename, owner_key):
     if os.path.basename(filename) != filename:
         return None
 
     if not HISTORY_FILENAME_PATTERN.match(filename):
         return None
 
-    history_dir = Path(gerador_loterias.OUTPUT_DIR).resolve()
+    history_dir = owner_history_dir(owner_key)
     file_path = (history_dir / filename).resolve()
 
     try:
@@ -49,9 +60,9 @@ def history_file_path(filename):
     return file_path
 
 
-def list_history_files(lottery_type):
-    history_dir = Path(gerador_loterias.OUTPUT_DIR)
-    files = set(history_database.list_history_files(lottery_type))
+def list_history_files(lottery_type, owner_key):
+    history_dir = owner_history_dir(owner_key)
+    files = set(history_database.list_history_files(lottery_type, owner_key))
 
     if not history_dir.exists():
         gerador_loterias.logging.warning(
@@ -68,19 +79,19 @@ def list_history_files(lottery_type):
     return sorted(files, reverse=True)
 
 
-def read_history_file(filename):
-    if history_file_path(filename) is None:
+def read_history_file(filename, owner_key):
+    if history_file_path(filename, owner_key) is None:
         gerador_loterias.logging.warning(
             f"Tentativa de acesso não autorizado ou arquivo inválido: {filename}"
         )
         return None
 
-    db_data = history_database.read_history_file(filename)
+    db_data = history_database.read_history_file(filename, owner_key)
 
     if db_data is not None:
         return db_data
 
-    file_path = history_file_path(filename)
+    file_path = history_file_path(filename, owner_key)
 
     if file_path is None or not file_path.exists() or not file_path.is_file():
         gerador_loterias.logging.warning(
@@ -95,16 +106,16 @@ def read_history_file(filename):
     ]
 
 
-def clear_history(lottery_type):
-    history_dir = Path(gerador_loterias.OUTPUT_DIR)
-    deleted_filenames = set(history_database.clear_history(lottery_type))
+def clear_history(lottery_type, owner_key):
+    history_dir = owner_history_dir(owner_key)
+    deleted_filenames = set(history_database.clear_history(lottery_type, owner_key))
 
     if not history_dir.exists():
         return len(deleted_filenames)
 
     for filename in os.listdir(history_dir):
         match = HISTORY_FILENAME_PATTERN.match(filename)
-        file_path = history_file_path(filename)
+        file_path = history_file_path(filename, owner_key)
 
         if match and match.group(1).lower() == lottery_type and file_path is not None:
             file_path.unlink()
@@ -116,8 +127,8 @@ def clear_history(lottery_type):
     return len(deleted_filenames)
 
 
-def delete_history_file(filename):
-    file_path = history_file_path(filename)
+def delete_history_file(filename, owner_key):
+    file_path = history_file_path(filename, owner_key)
 
     if file_path is None:
         gerador_loterias.logging.warning(
@@ -125,7 +136,7 @@ def delete_history_file(filename):
         )
         return "invalid"
 
-    deleted_from_db = history_database.delete_history_file(filename)
+    deleted_from_db = history_database.delete_history_file(filename, owner_key)
     file_exists = file_path.exists() and file_path.is_file()
 
     if not deleted_from_db and not file_exists:

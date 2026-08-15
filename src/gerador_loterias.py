@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import logging
 import joblib
+import re
 from itertools import combinations
 from logging.handlers import RotatingFileHandler
 
@@ -52,6 +53,13 @@ OUTPUT_DIR = resolve_project_path(
         os.path.join(PROJECT_ROOT, "resultados_Loterias")
     )
 )
+LOTTERY_DATA_DIR = resolve_project_path(
+    os.environ.get(
+        "LOTTERY_DATA_DIR",
+        PROJECT_ROOT
+    )
+)
+HISTORY_OWNER_SEGMENT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]+")
 MODEL_DIR = resolve_project_path(
     os.environ.get(
         "LOTTERY_MODEL_DIR",
@@ -68,6 +76,7 @@ LOG_FILE = resolve_project_path(
 LOG_MAX_BYTES = env_int("LOTTERY_LOG_MAX_BYTES", 512 * 1024)
 LOG_BACKUP_COUNT = env_int("LOTTERY_LOG_BACKUP_COUNT", 3)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(LOTTERY_DATA_DIR, exist_ok=True)
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 _MODEL_CACHE = {}
@@ -85,9 +94,13 @@ logging.basicConfig(
     force=True
 )
 
+
+def lottery_data_path(filename):
+    return os.path.join(LOTTERY_DATA_DIR, filename)
+
 LOTTERY_CONFIGS = {
     'megasena': {
-        'FILE_PATH': os.path.join(PROJECT_ROOT, "mega_sena_asloterias_ate_concurso_3019_sorteio - mega_sena_www.asloterias.com.br.csv"),
+        'FILE_PATH': lottery_data_path("mega_sena_asloterias_ate_concurso_3019_sorteio - mega_sena_www.asloterias.com.br.csv"),
         'NUM_BALLS_TO_DRAW': 6,
         'MIN_NUMBER': 1,
         'MAX_NUMBER': 60,
@@ -98,7 +111,7 @@ LOTTERY_CONFIGS = {
         'COLOR_SECONDARY': '#8FCBB3'
     },
     'lotofacil': {
-        'FILE_PATH': os.path.join(PROJECT_ROOT, "loto_facil_asloterias_ate_concurso_3713_sorteio - lotofacil_www.asloterias.com.br.csv"),
+        'FILE_PATH': lottery_data_path("loto_facil_asloterias_ate_concurso_3713_sorteio - lotofacil_www.asloterias.com.br.csv"),
         'NUM_BALLS_TO_DRAW': 15,
         'MIN_NUMBER': 1,
         'MAX_NUMBER': 25,
@@ -109,7 +122,7 @@ LOTTERY_CONFIGS = {
         'COLOR_SECONDARY': '#C87FC3'
     },
     'quina': {
-        'FILE_PATH': os.path.join(PROJECT_ROOT, "quina_asloterias_ate_concurso_6759_sorteio - quina_www.asloterias.com.br.csv"),
+        'FILE_PATH': lottery_data_path("quina_asloterias_ate_concurso_6759_sorteio - quina_www.asloterias.com.br.csv"),
         'NUM_BALLS_TO_DRAW': 5,
         'MIN_NUMBER': 1,
         'MAX_NUMBER': 80,
@@ -120,7 +133,7 @@ LOTTERY_CONFIGS = {
         'COLOR_SECONDARY': '#927FC1'
     },
     'diadesorte': {
-        'FILE_PATH': os.path.join(PROJECT_ROOT, "dia_sorte_asloterias_ate_concurso_1230_sorteio - dia_de_sorte_www.asloterias.com.br.csv"),
+        'FILE_PATH': lottery_data_path("dia_sorte_asloterias_ate_concurso_1230_sorteio - dia_de_sorte_www.asloterias.com.br.csv"),
         'NUM_BALLS_TO_DRAW': 7,
         'MIN_NUMBER': 1,
         'MAX_NUMBER': 31,
@@ -149,6 +162,37 @@ LOTTERY_CONFIGS = {
     }
 }
 
+
+def initialize_persistent_lottery_data():
+    for config in LOTTERY_CONFIGS.values():
+        target_path = config['FILE_PATH']
+        source_path = os.path.join(PROJECT_ROOT, os.path.basename(target_path))
+
+        if os.path.abspath(target_path) == os.path.abspath(source_path):
+            continue
+
+        if os.path.exists(target_path):
+            continue
+
+        if not os.path.exists(source_path):
+            logging.warning(
+                f"CSV inicial não encontrado para popular dados persistentes: {source_path}"
+            )
+            continue
+
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+
+        try:
+            import shutil
+
+            shutil.copy2(source_path, target_path)
+            logging.info(f"CSV inicial copiado para dados persistentes: {target_path}")
+        except Exception as e:
+            logging.error(f"Erro ao copiar CSV inicial para {target_path}: {e}")
+
+
+initialize_persistent_lottery_data()
+
 LOTTERY_DISPLAY_NAMES = {
     "megasena": "Mega Sena",
     "lotofacil": "Lotofácil",
@@ -158,6 +202,7 @@ LOTTERY_DISPLAY_NAMES = {
 
 GENERATION_MODES = {
     "normal": "Jogo normal",
+    "balanced_never_prize": "Recomendado: pares/ímpares + sem prêmio histórico",
     "balanced_parity": "Pares e ímpares equilibrados",
     "even_only": "Somente pares",
     "odd_only": "Somente ímpares",
@@ -223,6 +268,15 @@ def is_generation_mode_available_for_lottery(mode, lottery_type):
 
     if mode == "never_prize":
         return lottery_type in HISTORICAL_PRIZE_FILTERS
+
+    if mode == "balanced_never_prize":
+        return (
+            lottery_type in HISTORICAL_PRIZE_FILTERS
+            and is_generation_mode_available_for_lottery(
+                "balanced_parity",
+                lottery_type
+            )
+        )
 
     if mode == "even_only":
         return count_numbers_matching(config, lambda number: number % 2 == 0) >= num_to_draw
@@ -886,6 +940,9 @@ def has_spread_distribution(numbers, config):
 
 
 def strategy_matches_historical_draw(numbers, mode, config):
+    if mode == "balanced_never_prize":
+        return has_balanced_parity(numbers)
+
     if mode == "balanced_parity":
         return has_balanced_parity(numbers)
 
@@ -910,7 +967,7 @@ def strategy_matches_historical_draw(numbers, mode, config):
 
 def get_generation_strategy_stats(lottery_type):
     if lottery_type not in LOTTERY_CONFIGS:
-        logging.error(f"Tipo de loteria invÃ¡lido: {lottery_type}")
+        logging.error(f"Tipo de loteria inválido: {lottery_type}")
         return None
 
     config = LOTTERY_CONFIGS[lottery_type]
@@ -941,6 +998,25 @@ def get_generation_strategy_stats(lottery_type):
 
         if mode == "normal":
             stat_payload["message"] = "Base padr\u00e3o"
+        elif mode == "balanced_never_prize" and available and total_draws > 0:
+            matches = sum(
+                1
+                for numbers in historical_draws
+                if strategy_matches_historical_draw(numbers, mode, config)
+            )
+            stat_payload.update({
+                "has_stat": True,
+                "matches": matches,
+                "percentage": round((matches / total_draws) * 100, 2),
+                "message": (
+                    f"{matches} de {total_draws} sorteios com equilíbrio "
+                    "entre pares e ímpares"
+                ),
+                "note": (
+                    "A taxa mede o equilíbrio entre pares e ímpares; "
+                    "o filtro sem prêmio histórico é aplicado na geração."
+                ),
+            })
         elif mode in {"never_prize", "hot_cold_mix", "mixed"}:
             stat_payload["message"] = "Sem base hist\u00f3rica direta"
         elif available and total_draws > 0:
@@ -1034,6 +1110,9 @@ def generate_candidate_by_mode(lottery_type, mode, probabilidades, model, df, co
     if mode == "balanced_parity":
         return generate_balanced_parity_set(config, probabilidades)
 
+    if mode == "balanced_never_prize":
+        return generate_balanced_parity_set(config, probabilidades)
+
     if mode == "even_only":
         return generate_pool_set(
             config,
@@ -1091,13 +1170,17 @@ def generate_main_numbers_with_mode(
         )
 
     historical_filter = HISTORICAL_PRIZE_FILTERS.get(lottery_type)
+    uses_historical_prize_filter = generation_mode in {
+        "never_prize",
+        "balanced_never_prize",
+    }
 
-    if generation_mode == "never_prize" and historical_filter is None:
+    if uses_historical_prize_filter and historical_filter is None:
         raise ValueError(
             "O modo sem prêmio histórico não está disponível para esta loteria."
         )
 
-    max_attempts = 5000 if generation_mode == "never_prize" else 800
+    max_attempts = 5000 if uses_historical_prize_filter else 800
     min_prize_matches = (
         historical_filter["min_matches"]
         if historical_filter
@@ -1134,7 +1217,7 @@ def generate_main_numbers_with_mode(
         if not candidate:
             continue
 
-        if generation_mode == "never_prize" and has_historical_prize_signature(
+        if uses_historical_prize_filter and has_historical_prize_signature(
             candidate,
             historical_prize_signatures,
             min_prize_matches
@@ -1278,14 +1361,14 @@ def generate_n_lottery_games(lottery_type, num_games_to_generate=None, generatio
         config['MAX_NUMBER']
     )
 
-    model = (
-        None
-        if generation_mode == "never_prize"
-        else load_trained_model(lottery_type)
-    )
+    uses_historical_prize_filter = generation_mode in {
+        "never_prize",
+        "balanced_never_prize",
+    }
+    model = None if uses_historical_prize_filter else load_trained_model(lottery_type)
     historical_prize_signatures = set()
 
-    if generation_mode == "never_prize":
+    if uses_historical_prize_filter:
         historical_filter = HISTORICAL_PRIZE_FILTERS.get(lottery_type)
 
         if historical_filter is None:
@@ -1335,7 +1418,22 @@ def serialize_game_value(value):
     return str(value)
 
 
-def save_generated_games_to_csv(jogos, lottery_type, output_dir):
+def history_owner_directory_segment(owner_key):
+    segment = HISTORY_OWNER_SEGMENT_PATTERN.sub(
+        "_",
+        str(owner_key or "legacy")
+    ).strip("._-")
+    return segment[:80] or "legacy"
+
+
+def resolve_history_output_dir(output_dir, owner_key=None):
+    if not owner_key:
+        return output_dir
+
+    return os.path.join(output_dir, history_owner_directory_segment(owner_key))
+
+
+def save_generated_games_to_csv(jogos, lottery_type, output_dir, owner_key=None):
     if not jogos:
         logging.info(f"Nenhum jogo para salvar para {lottery_type}.")
         return
@@ -1345,10 +1443,11 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
         return
 
     now = datetime.datetime.now()
-    data_hora = now.strftime("%Y-%m-%d_%H-%M-%S")
+    data_hora = now.strftime("%Y-%m-%d_%H-%M-%S_%f")
 
     file_name = f"{lottery_type}_resultados_{data_hora}.csv"
-    file_path = os.path.join(output_dir, file_name)
+    target_output_dir = resolve_history_output_dir(output_dir, owner_key)
+    file_path = os.path.join(target_output_dir, file_name)
 
     try:
         config = LOTTERY_CONFIGS[lottery_type]
@@ -1360,7 +1459,7 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
         columns.extend(config.get("EXTRA_COLUMNS", []))
 
         df_jogos = pd.DataFrame(jogos, columns=columns)
-        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(target_output_dir, exist_ok=True)
         df_jogos.to_csv(file_path, index=False, encoding='utf-8')
 
         try:
@@ -1373,7 +1472,8 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir):
                     [serialize_game_value(value) for value in jogo]
                     for jogo in jogos
                 ],
-                now.isoformat(timespec="seconds")
+                now.isoformat(timespec="seconds"),
+                owner_key=owner_key or "legacy",
             )
         except Exception as e:
             logging.error(f"Erro ao salvar histórico no banco SQLite: {e}")

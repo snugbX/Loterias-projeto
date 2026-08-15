@@ -146,6 +146,18 @@ def current_access_payload():
     return current_user_payload()
 
 
+def history_owner_key(access_user=None):
+    access_user = access_user or current_access_payload()
+
+    if access_user is None:
+        return None
+
+    if access_user.get("is_guest"):
+        return f"guest:{access_user.get('id') or 'guest'}"
+
+    return f"user:{access_user['id']}"
+
+
 def can_generate_for_access(access_user, requested_games):
     if access_user.get("is_guest"):
         usage = guest_usage_summary()
@@ -575,7 +587,8 @@ def gerar_jogos(lottery_type):
         gerador_loterias.save_generated_games_to_csv(
             jogos_gerados,
             lottery_type,
-            gerador_loterias.OUTPUT_DIR
+            gerador_loterias.OUTPUT_DIR,
+            owner_key=history_owner_key(access_user),
         )
         usage = record_generated_for_access(access_user, len(jogos_gerados))
 
@@ -607,7 +620,10 @@ def get_history_files(lottery_type):
         return jsonify({"error": "Tipo de loteria inválido"}), 400
 
     try:
-        files = history_storage.list_history_files(lottery_type)
+        files = history_storage.list_history_files(
+            lottery_type,
+            history_owner_key(),
+        )
         return jsonify({"files": files})
     except Exception as e:
         gerador_loterias.logging.error(f"Erro ao listar arquivos de histórico para {lottery_type}: {e}")
@@ -624,7 +640,10 @@ def get_file_content(filename):
         return login_error
 
     try:
-        data = history_storage.read_history_file(filename)
+        data = history_storage.read_history_file(
+            filename,
+            history_owner_key(),
+        )
 
         if data is None:
             return jsonify({"error": "Arquivo não encontrado ou acesso negado"}), 404
@@ -677,18 +696,18 @@ def strategy_stats(lottery_type):
     lottery_type = normalize_lottery_type(lottery_type)
 
     if lottery_type is None:
-        return jsonify({"error": "Tipo de loteria invÃ¡lido"}), 400
+        return jsonify({"error": "Tipo de loteria inválido"}), 400
 
     try:
         stats = gerador_loterias.get_generation_strategy_stats(lottery_type)
 
         if stats is None:
-            return jsonify({"error": "Tipo de loteria invÃ¡lido"}), 400
+            return jsonify({"error": "Tipo de loteria inválido"}), 400
 
         return jsonify({"stats": stats})
     except Exception as e:
-        gerador_loterias.logging.error(f"Erro ao obter estatÃ­sticas de estratÃ©gia: {e}")
-        return jsonify({"error": "Erro ao obter estatÃ­sticas de estratÃ©gia"}), 500
+        gerador_loterias.logging.error(f"Erro ao obter estatísticas de estratégia: {e}")
+        return jsonify({"error": "Erro ao obter estatísticas de estratégia"}), 500
 
 @app.route('/admin_status')
 def admin_status():
@@ -762,7 +781,10 @@ def clear_history(lottery_type):
         return admin_error
 
     try:
-        deleted_files_count = history_storage.clear_history(lottery_type)
+        deleted_files_count = history_storage.clear_history(
+            lottery_type,
+            history_owner_key(),
+        )
         return jsonify({"message": f"{deleted_files_count} arquivos de histórico para {lottery_type} foram deletados."}), 200
     except Exception as e:
         gerador_loterias.logging.error(f"Erro ao limpar histórico para {lottery_type}: {e}")
@@ -778,7 +800,10 @@ def delete_single_file(filename):
     if admin_error is not None:
         return admin_error
 
-    result = history_storage.delete_history_file(filename)
+    result = history_storage.delete_history_file(
+        filename,
+        history_owner_key(),
+    )
 
     if result == "invalid":
         return jsonify({"error": "Nome de arquivo inválido ou acesso negado."}), 400

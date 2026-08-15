@@ -28,17 +28,56 @@ def _ensure_schema(connection):
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS generated_games (
-            filename TEXT PRIMARY KEY,
+            owner_key TEXT NOT NULL,
+            filename TEXT NOT NULL,
             lottery_type TEXT NOT NULL,
             created_at TEXT NOT NULL,
-            games_json TEXT NOT NULL
+            games_json TEXT NOT NULL,
+            PRIMARY KEY (owner_key, filename)
         )
+        """
+    )
+
+    columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(generated_games)").fetchall()
+    }
+
+    if "owner_key" not in columns:
+        connection.execute("ALTER TABLE generated_games RENAME TO generated_games_legacy")
+        connection.execute(
+            """
+            CREATE TABLE generated_games (
+                owner_key TEXT NOT NULL,
+                filename TEXT NOT NULL,
+                lottery_type TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                games_json TEXT NOT NULL,
+                PRIMARY KEY (owner_key, filename)
+            )
+            """
+        )
+        connection.execute(
+            """
+            INSERT INTO generated_games
+                (owner_key, filename, lottery_type, created_at, games_json)
+            SELECT 'legacy', filename, lottery_type, created_at, games_json
+            FROM generated_games_legacy
+            """
+        )
+        connection.execute("DROP TABLE generated_games_legacy")
+
+    connection.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_generated_games_owner_lottery
+        ON generated_games(owner_key, lottery_type, filename)
         """
     )
     connection.commit()
 
 
-def save_history_record(filename, lottery_type, games, created_at=None):
+def save_history_record(filename, lottery_type, games, created_at=None, owner_key="legacy"):
+    owner_key = owner_key or "legacy"
     created_at = created_at or datetime.datetime.now().isoformat(timespec="seconds")
     games_json = json.dumps(games, ensure_ascii=False)
 
@@ -48,17 +87,17 @@ def save_history_record(filename, lottery_type, games, created_at=None):
         connection.execute(
             """
             INSERT OR REPLACE INTO generated_games
-                (filename, lottery_type, created_at, games_json)
-            VALUES (?, ?, ?, ?)
+                (owner_key, filename, lottery_type, created_at, games_json)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (filename, lottery_type, created_at, games_json)
+            (owner_key, filename, lottery_type, created_at, games_json)
         )
         connection.commit()
     finally:
         connection.close()
 
 
-def list_history_files(lottery_type):
+def list_history_files(lottery_type, owner_key):
     connection = _connect()
 
     try:
@@ -66,10 +105,10 @@ def list_history_files(lottery_type):
             """
             SELECT filename
             FROM generated_games
-            WHERE lottery_type = ?
+            WHERE owner_key = ? AND lottery_type = ?
             ORDER BY filename DESC
             """,
-            (lottery_type,)
+            (owner_key, lottery_type)
         ).fetchall()
     finally:
         connection.close()
@@ -77,7 +116,7 @@ def list_history_files(lottery_type):
     return [row["filename"] for row in rows]
 
 
-def read_history_file(filename):
+def read_history_file(filename, owner_key):
     connection = _connect()
 
     try:
@@ -85,9 +124,9 @@ def read_history_file(filename):
             """
             SELECT games_json
             FROM generated_games
-            WHERE filename = ?
+            WHERE owner_key = ? AND filename = ?
             """,
-            (filename,)
+            (owner_key, filename)
         ).fetchone()
     finally:
         connection.close()
@@ -98,13 +137,13 @@ def read_history_file(filename):
     return json.loads(row["games_json"])
 
 
-def delete_history_file(filename):
+def delete_history_file(filename, owner_key):
     connection = _connect()
 
     try:
         cursor = connection.execute(
-            "DELETE FROM generated_games WHERE filename = ?",
-            (filename,)
+            "DELETE FROM generated_games WHERE owner_key = ? AND filename = ?",
+            (owner_key, filename)
         )
         connection.commit()
         return cursor.rowcount > 0
@@ -112,15 +151,15 @@ def delete_history_file(filename):
         connection.close()
 
 
-def clear_history(lottery_type):
-    filenames = list_history_files(lottery_type)
+def clear_history(lottery_type, owner_key):
+    filenames = list_history_files(lottery_type, owner_key)
 
     connection = _connect()
 
     try:
         connection.execute(
-            "DELETE FROM generated_games WHERE lottery_type = ?",
-            (lottery_type,)
+            "DELETE FROM generated_games WHERE owner_key = ? AND lottery_type = ?",
+            (owner_key, lottery_type)
         )
         connection.commit()
     finally:
