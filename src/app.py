@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, send_from_directory
+import game_analysis
 import auth_storage
 import datetime
 import hmac
@@ -14,16 +15,15 @@ import time
 import socket
 from lottery_validation import normalize_lottery_type
 
-# Inicializa a aplicação Flask.
-# O parâmetro static_folder='.' indica que o Flask deve procurar arquivos estáticos
-# (como index.html, style.css e os módulos em js/) no diretório atual (src).
-app = Flask(__name__, static_folder='.')
+# Arquivos públicos são servidos somente pelas rotas com lista de permissões.
+app = Flask(__name__, static_folder=None)
 app.secret_key = os.environ.get("APP_SECRET_KEY") or secrets.token_urlsafe(48)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
     SESSION_COOKIE_SECURE=os.environ.get("SESSION_COOKIE_SECURE", "0").strip() == "1",
     PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=7),
+    MAX_CONTENT_LENGTH=16 * 1024,
 )
 
 LOGIN_ATTEMPTS = {}
@@ -317,7 +317,7 @@ def home():
     """
     Rota principal que serve o arquivo index.html.
     """
-    return app.send_static_file('index.html')
+    return send_from_directory(gerador_loterias.BASE_DIR, 'index.html')
 
 @app.route('/<path:path>')
 def static_files(path):
@@ -327,7 +327,33 @@ def static_files(path):
     if path not in ALLOWED_STATIC_FILES:
         return jsonify({"error": "Arquivo estático não encontrado"}), 404
 
-    return app.send_static_file(path)
+    return send_from_directory(gerador_loterias.BASE_DIR, path)
+
+
+@app.route('/analyze_game/<lottery_type>', methods=['POST'])
+def analyze_game(lottery_type):
+    access_error = require_premium_access()
+    if access_error is not None:
+        return access_error
+    csrf_error = require_csrf()
+    if csrf_error is not None:
+        return csrf_error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({"error": "Tipo de loteria inválido."}), 400
+    payload = request.get_json(silent=True)
+    try:
+        result = game_analysis.analyze_game(lottery_type, payload)
+        response = jsonify({"analysis": result})
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except game_analysis.HistoryUnavailable as error:
+        return jsonify({"error": str(error)}), 503
+    except Exception:
+        app.logger.exception("Falha na consulta de jogo de %s", lottery_type)
+        return jsonify({"error": "Não foi possível consultar o jogo. Tente novamente."}), 500
 
 
 @app.route('/auth/me')
