@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, session, send_from_directory
 import game_analysis
+import pattern_radar
 import auth_storage
 import datetime
 import hmac
@@ -354,6 +355,30 @@ def analyze_game(lottery_type):
     except Exception:
         app.logger.exception("Falha na consulta de jogo de %s", lottery_type)
         return jsonify({"error": "Não foi possível consultar o jogo. Tente novamente."}), 500
+
+
+@app.route('/pattern_radar/<lottery_type>')
+def get_pattern_radar(lottery_type):
+    access_error = require_premium_access()
+    if access_error is not None:
+        return access_error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({"error": "Tipo de loteria inválido."}), 400
+    source = request.args.get('previous_even')
+    if source is not None and (not source.isascii() or not source.isdigit() or len(source) > 2):
+        return jsonify({"error": "Perfil de pares e ímpares inválido."}), 400
+    try:
+        response = jsonify({"radar": pattern_radar.get_radar(lottery_type, int(source) if source is not None else None)})
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except game_analysis.HistoryUnavailable as error:
+        return jsonify({"error": str(error)}), 503
+    except Exception:
+        app.logger.exception("Falha no radar de %s", lottery_type)
+        return jsonify({"error": "Não foi possível carregar o radar. Tente novamente."}), 500
 
 
 @app.route('/auth/me')
