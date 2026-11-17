@@ -28,4 +28,4 @@ RUN mkdir -p \
 
 EXPOSE 5000
 
-CMD sh -c "gunicorn --bind 0.0.0.0:${PORT:-5000} app:app"
+CMD sh -c 'if [ "$LOTTERY_AUTO_UPDATE" = "1" ]; then python -u update_lottery_data.py --watch --interval "${LOTTERY_AUTO_UPDATE_INTERVAL:-3600}" --no-publish & fi; exec gunicorn --bind 0.0.0.0:${PORT:-5000} app:app'

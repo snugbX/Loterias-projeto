@@ -1,4 +1,5 @@
 import argparse
+from contextlib import contextmanager
 import csv
 import io
 import os
@@ -16,6 +17,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 from gerador_loterias import LOTTERY_CONFIGS, PROJECT_ROOT, resolve_project_path
+import pattern_radar
 
 
 USER_AGENT = (
@@ -670,9 +672,54 @@ def publish_updated_files(updated_paths, args):
         raise RuntimeError("Falha ao publicar atualização no GitHub.")
 
 
+@contextmanager
+def update_guard():
+    path = Path(next(iter(LOTTERY_CONFIGS.values()))["FILE_PATH"]).parent / '.lottery-update.lock'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('a+b') as handle:
+        if path.stat().st_size == 0:
+            handle.write(b'0')
+            handle.flush()
+        handle.seek(0)
+        acquired = False
+        try:
+            if os.name == 'nt':
+                import msvcrt
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            acquired = True
+        except OSError:
+            pass
+        try:
+            yield acquired
+        finally:
+            if acquired:
+                handle.seek(0)
+                if os.name == 'nt':
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def refresh_radar(lottery_type):
+    radar = pattern_radar.get_radar(lottery_type)
+    print(f"Radar atualizado: {radar['lottery_name']}, concurso {radar['latest']['contest']}, "
+          f"{radar['coverage']['valid_transitions']} transições válidas.")
+
+
 def parse_args(argv):
     parser = argparse.ArgumentParser(
         description="Atualiza os CSVs de resultados a partir do site As Loterias.",
+    )
+    parser.add_argument(
+        "--watch", action="store_true",
+        help="Mantém a verificação periódica em execução; Ctrl+C para encerrar.",
+    )
+    parser.add_argument(
+        "--interval", type=int, default=env_int("LOTTERY_AUTO_UPDATE_INTERVAL", 3600),
+        help="Intervalo de verificação em segundos (mínimo 900, padrão 3600).",
     )
     parser.add_argument(
         "--lottery",
@@ -747,16 +794,15 @@ def parse_args(argv):
         help="Mensagem de commit usada quando --publish estiver ativo.",
     )
 
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if not 900 <= args.interval <= 86400:
+        parser.error("--interval deve estar entre 900 e 86400 segundos.")
+    if args.watch and (args.dry_run or args.list_config):
+        parser.error("--watch não pode ser combinado com --dry-run ou --list-config.")
+    return args
 
 
-def main(argv=None):
-    args = parse_args(argv or sys.argv[1:])
-
-    if args.list_config:
-        list_config()
-        return 0
-
+def run_update_cycle(args):
     failed = []
     updated_paths = []
     for lottery_type in args.lottery:
@@ -765,6 +811,7 @@ def main(argv=None):
 
             if updated_path is not None:
                 updated_paths.append(updated_path)
+                refresh_radar(lottery_type)
         except Exception as exc:
             failed.append(lottery_type)
             print(f"Erro ao atualizar {lottery_type}: {exc}")
@@ -788,6 +835,34 @@ def main(argv=None):
 
     print("\nAtualizacao finalizada com sucesso.")
     return 0
+
+
+def main(argv=None):
+    args = parse_args(sys.argv[1:] if argv is None else argv)
+    if args.list_config:
+        list_config()
+        return 0
+    try:
+        while True:
+            try:
+                with update_guard() as acquired:
+                    if acquired:
+                        result = run_update_cycle(args)
+                    else:
+                        print("Outra atualização está em execução. Verificação ignorada.")
+                        result = 0
+            except Exception as error:
+                if not args.watch:
+                    raise
+                print(f"Falha na verificação automática: {error}. Uma nova tentativa será feita no próximo ciclo.")
+                result = 1
+            if not args.watch:
+                return result
+            print(f"Próxima verificação em {args.interval} segundos.", flush=True)
+            time.sleep(args.interval)
+    except KeyboardInterrupt:
+        print("\nVerificação automática encerrada.")
+        return 0
 
 
 if __name__ == "__main__":

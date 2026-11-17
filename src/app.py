@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, session, send_from_directory
 import game_analysis
 import pattern_radar
+import atexit
 import auth_storage
 import datetime
 import hmac
@@ -867,6 +868,17 @@ def delete_single_file(filename):
 
     return jsonify({"error": "Erro ao deletar arquivo."}), 500
 
+def stop_background_updater(process):
+    if process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+
+
 def abrir_navegador(host, port):
     time.sleep(1)
 
@@ -885,6 +897,13 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", "5000"))
     debug = env_flag("FLASK_DEBUG", default=False)
     auto_open_browser = env_flag("LOTTERY_AUTO_OPEN_BROWSER", default=True)
+
+    if env_flag("LOTTERY_AUTO_UPDATE", default=False) and (not debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'):
+        updater = subprocess.Popen([
+            sys.executable, '-u', os.path.join(gerador_loterias.BASE_DIR, 'update_lottery_data.py'),
+            '--watch', '--no-publish',
+        ], cwd=gerador_loterias.PROJECT_ROOT)
+        atexit.register(stop_background_updater, updater)
 
     if auto_open_browser and (not debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'):
         threading.Thread(target=abrir_navegador, args=(host, port)).start()
