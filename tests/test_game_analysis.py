@@ -175,7 +175,7 @@ class RouteTests(unittest.TestCase):
         client = self.module.app.test_client()
         for path in ("/app.py", "/game_analysis.py", "/static/app.py", "/./app.py", "/%2e/app.py", "/.env", "/models/quina_model.json"):
             self.assertEqual(client.get(path).status_code, 404, path)
-        for path in ("/", "/style.css", "/js/main.js"):
+        for path in ("/", "/style.css", "/js/main.js", "/js/gameAnalysis.js"):
             with client.get(path) as response:
                 self.assertEqual(response.status_code, 200, path)
 

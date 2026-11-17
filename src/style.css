@@ -2470,6 +2470,89 @@ select:focus, input[type="number"]:focus {
     overflow-y: auto; /* Enable scrolling for content if it exceeds modal height */
 }
 
+.game-analysis {
+    border-block: 1px solid var(--border-color);
+    color: var(--text-primary);
+    margin: 0 0 24px;
+    text-align: left;
+}
+.game-analysis summary {
+    cursor: pointer;
+    padding: 16px 0;
+    min-height: 48px;
+    font-weight: 750;
+}
+.analysis-premium {
+    color: var(--active-lottery-readable, var(--text-primary));
+    margin-left: 8px;
+    font-size: 0.9em;
+}
+.game-analysis-body { padding: 0 0 20px; }
+.game-analysis h2 { font-size: var(--h2-font-size); margin-bottom: 16px; }
+.game-analysis h3 { font-size: var(--h3-font-size); margin: 24px 0 12px; overflow-wrap: anywhere; }
+.game-analysis p { color: var(--text-secondary); line-height: 1.65; margin: 10px 0; }
+.game-analysis label { display: block; margin: 14px 0 8px; font-weight: 700; }
+.game-analysis input, .game-analysis select {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font: inherit;
+}
+.game-analysis button {
+    margin-top: 16px;
+    padding: 12px 20px;
+    min-height: 48px;
+    background: #0f766e;
+    color: #fff;
+    border-radius: 6px;
+    font: inherit;
+    font-weight: 700;
+}
+.game-analysis button:disabled { opacity: 0.65; cursor: wait; }
+.game-analysis :focus-visible { outline: 3px solid var(--active-lottery-readable, #0f766e); outline-offset: 4px; }
+.game-analysis .analysis-verdict { font-weight: 750; color: var(--text-primary); }
+.analysis-warning, .analysis-disclaimer { border-left: 3px solid var(--active-lottery-readable, #0f766e); padding-left: 12px; }
+.analysis-strategies { display: flex; flex-wrap: wrap; gap: 8px 20px; padding-left: 20px; list-style: disc; line-height: 1.6; }
+.analysis-occurrences { padding-left: 24px; list-style: decimal; }
+.analysis-occurrences li { padding: 8px 0; overflow-wrap: anywhere; }
+.analysis-occurrences { max-height: 400px; overflow-y: auto; }
+.radar-table-scroll table { min-width: 780px; }
+.radar-table-scroll th, .radar-table-scroll td { font-size: 0.95em; }
+.radar-bar-track { display: block; height: 6px; margin-top: 8px; background: var(--border-color); border-radius: 3px; }
+.radar-bar { display: block; height: 100%; background: var(--active-lottery-readable, #0f766e); border-radius: 3px; }
+.game-analysis [role="region"] { overflow-x: auto; margin: 16px 0; }
+.game-analysis table { width: 100%; border-collapse: collapse; text-align: left; }
+.game-analysis caption { text-align: left; padding-bottom: 10px; color: var(--text-secondary); }
+.game-analysis th, .game-analysis td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+.game-analysis th { background: var(--bg-primary); }
+.game-analysis a { color: var(--active-lottery-readable, #0f766e); text-decoration: underline; overflow-wrap: anywhere; }
+.analysis-entry { border: 0; border-bottom: 1px solid var(--border-color); margin: 16px 0; padding: 0 0 16px; min-width: 0; }
+.analysis-entry legend { padding: 0; font-weight: 750; }
+.analysis-entry-fields { display: flex; gap: 12px; align-items: flex-end; }
+.analysis-entry-fields > div:first-child { flex: 1; min-width: 0; }
+.analysis-entry .analysis-remove-game { width: 44px; height: 48px; flex: 0 0 44px; padding: 0; margin: 0; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 1.5em; }
+.analysis-entry .analysis-remove-game:disabled { cursor: default; }
+.analysis-form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#analysis-add-game { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+.comparison-overview table { min-width: 760px; }
+.comparison-overview td:nth-child(2) { min-width: 170px; }
+.analysis-game-detail, .comparison-overlap { border-top: 1px solid var(--border-color); margin-top: 20px; }
+.analysis-game-detail summary { overflow-wrap: anywhere; }
+.comparison-overlap table { min-width: 540px; }
+@media (max-width: 640px) {
+    .game-analysis th, .game-analysis td { padding: 10px 6px; }
+    .game-analysis button { width: 100%; }
+    #accessibility-toolbar { position: static; align-self: flex-end; max-width: 100%; }
+    .analysis-entry-fields { flex-wrap: wrap; }
+    .analysis-entry-fields > div:first-child { flex-basis: calc(100% - 60px); }
+    .analysis-entry-fields .analysis-month-field { order: 1; flex-basis: 100%; }
+    .analysis-entry .analysis-remove-game { width: 44px; }
+}
+
 /* Table styles (from user's style.css, ensure no conflict with ball display) */
 #historico-conteudo-tabela {
     width: 100%;

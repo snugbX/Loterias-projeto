@@ -20,7 +20,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 pt-[100px] gap-4">
 
     <!-- Controles de Tema e Fonte (Movidos para o canto superior direito e fixos) -->
-    <div class="fixed top-4 right-4 z-[1004] flex items-center gap-4 bg-gray-700 p-2 rounded-lg shadow-lg">
+    <div id="accessibility-toolbar" class="fixed top-4 right-4 z-[1004] flex items-center gap-4 bg-gray-700 p-2 rounded-lg shadow-lg">
         <!-- Alternar Tema -->
         <button id="theme-toggle" class="bg-gray-600 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75 text-sm" aria-label="Alternar entre tema claro e escuro">
             Tema
@@ -349,11 +349,41 @@
                 <div>
                     <span>Premium: aqui você manda</span>
                     <strong>Quer gerar jogo usando sua superstição favorita?</strong>
-                    <p>Mude para Premium e escolha sua melhor estratégia em um clique: pares, ímpares, quentes, frios, datas da sorte e filtros históricos. No Premium, o palpite sai do seu jeito.</p>
+                    <p>Mude para Premium e escolha sua melhor estratégia em um clique: pares, ímpares, quentes, frios, datas da sorte e filtros históricos. Consulte também seu próprio jogo: acertos no histórico, perfil e chances por faixa. Estratégias personalizam o palpite, sem garantir prêmios.</p>
                 </div>
                 <button id="premium-upsell-btn" type="button">Quero mandar no jogo</button>
             </div>
         </section>
+
+        <details id="game-analysis-panel" class="game-analysis hidden">
+            <summary>Consultar e comparar jogos <span class="analysis-premium">Premium</span></summary>
+            <div class="game-analysis-body">
+                <h2 id="game-analysis-title">Raio-X dos seus palpites</h2>
+                <form id="game-analysis-form" aria-labelledby="game-analysis-title">
+                    <p id="analysis-lottery-label"></p>
+                    <p id="analysis-number-hint"></p>
+                    <div id="analysis-games"></div>
+                    <div class="analysis-form-actions">
+                        <button id="analysis-add-game" type="button">Adicionar jogo</button>
+                        <button type="submit">Consultar e comparar</button>
+                    </div>
+                    <p id="analysis-feedback" role="status" aria-live="polite"></p>
+                </form>
+                <div id="analysis-result" tabindex="-1" hidden></div>
+            </div>
+        </details>
+
+        <details id="pattern-radar-panel" class="game-analysis pattern-radar hidden">
+            <summary>Radar de padrões <span class="analysis-premium">Premium</span></summary>
+            <div class="game-analysis-body">
+                <h2>Pares e ímpares em perspectiva</h2>
+                <p id="radar-latest"></p>
+                <label for="radar-source">Perfil do concurso anterior</label>
+                <select id="radar-source"><option value="">Usar o último concurso</option></select>
+                <p id="radar-status" role="status" aria-live="polite"></p>
+                <div id="radar-content" hidden></div>
+            </div>
+        </details>
 
         <!-- Campo para a quantidade de jogos -->
         <div class="mb-6">

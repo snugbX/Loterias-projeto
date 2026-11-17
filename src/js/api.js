@@ -150,7 +150,43 @@ export async function getDataStatus() {
 export async function getStrategyStats(lotteryType) {
     return requestJson(
         `/strategy_stats/${encodeURIComponent(lotteryType)}`,
-        'Erro ao carregar estatÃ­sticas das estratÃ©gias'
+        'Erro ao carregar estatísticas das estratégias'
+    );
+}
+
+export async function getPatternRadar(lotteryType, previousEven = '', signal) {
+    const params = new URLSearchParams();
+    if (previousEven !== '') params.set('previous_even', previousEven);
+    return requestJson(
+        `/pattern_radar/${encodeURIComponent(lotteryType)}?${params}`,
+        'Erro ao carregar o radar de padrões',
+        { signal, cache: 'no-store' }
+    );
+}
+
+export async function analyzeGame(lotteryType, numbers, month = null, signal) {
+    return requestJson(
+        `/analyze_game/${encodeURIComponent(lotteryType)}`,
+        'Erro ao consultar o jogo',
+        {
+            method: 'POST',
+            headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ numbers, month }),
+            signal,
+        }
+    );
+}
+
+export async function analyzeGames(lotteryType, games, signal) {
+    return requestJson(
+        `/analyze_games/${encodeURIComponent(lotteryType)}`,
+        'Erro ao consultar e comparar os jogos',
+        {
+            method: 'POST',
+            headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ games }),
+            signal,
+        }
     );
 }
 

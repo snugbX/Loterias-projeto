@@ -28,6 +28,8 @@ import {
     state,
 } from './dom.js';
 import { renderDrawCalendar } from './drawCalendar.js';
+import { syncGameAnalysis } from './gameAnalysis.js';
+import { syncPatternRadar, refreshPatternRadar } from './patternRadar.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
@@ -484,6 +486,8 @@ function usageText(user) {
 
 function renderAccountState(user) {
     state.currentUser = user || null;
+    syncGameAnalysis(user, selectedLotteryType());
+    syncPatternRadar(user, selectedLotteryType());
 
     const hasAccess = Boolean(user);
 
@@ -802,6 +806,8 @@ function setSelectedLottery(lotteryType) {
     }
 
     elements.lotterySelect.value = lotteryType;
+    syncGameAnalysis(state.currentUser, lotteryType);
+    syncPatternRadar(state.currentUser, lotteryType);
     const darkTheme = document.body.classList.contains('dark-theme');
 
     document.body.style.setProperty('--active-lottery-primary', colors.primary);
@@ -1028,6 +1034,7 @@ async function handleUpdateData() {
         updateDataStatusTimestamp();
         renderResultsOverview();
         await loadLatestResults();
+        refreshPatternRadar();
         showSuccessMessageModal(data.message || 'Dados atualizados com sucesso.');
     } catch (error) {
         if (handleAdminError(error)) {

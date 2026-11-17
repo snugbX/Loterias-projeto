@@ -71,6 +71,12 @@ O Pix configurado aqui deve ser usado apenas para assinatura Premium do app. A a
 
 ### **Atualização automática dos resultados:**
 
+O **Radar de padrões Premium** acompanha automaticamente os CSVs atualizados.
+Também é possível [consultar e comparar até 10 jogos](docs/consulta-jogos.md),
+com histórico, perfis do radar, jogos repetidos e dezenas em comum.
+Para habilitar também a verificação periódica dos resultados, consulte
+[Radar e atualização periódica](docs/radar-padroes.md).
+
 Para baixar os resultados mais recentes da Mega Sena, Lotofácil, Quina e Dia de Sorte, execute o arquivo:
 
 ```bat

@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, session, send_from_directory
 import game_analysis
+import game_comparison
 import pattern_radar
 import atexit
 import auth_storage
@@ -42,6 +43,8 @@ ALLOWED_STATIC_FILES = {
     'js/preferences.js',
     'js/render.js',
     'js/ui.js',
+    'js/gameAnalysis.js',
+    'js/patternRadar.js',
 }
 
 def env_flag(name, default=False):
@@ -356,6 +359,31 @@ def analyze_game(lottery_type):
     except Exception:
         app.logger.exception("Falha na consulta de jogo de %s", lottery_type)
         return jsonify({"error": "Não foi possível consultar o jogo. Tente novamente."}), 500
+
+
+@app.route('/analyze_games/<lottery_type>', methods=['POST'])
+def analyze_games(lottery_type):
+    access_error = require_premium_access()
+    if access_error is not None:
+        return access_error
+    csrf_error = require_csrf()
+    if csrf_error is not None:
+        return csrf_error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Tipo de loteria inválido.'}), 400
+    payload = request.get_json(silent=True)
+    try:
+        response = jsonify({'comparison': game_comparison.analyze_games(lottery_type, payload)})
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except ValueError as error:
+        return jsonify({'error': str(error)}), 400
+    except game_analysis.HistoryUnavailable as error:
+        return jsonify({'error': str(error)}), 503
+    except Exception:
+        app.logger.exception('Falha na comparação de jogos de %s', lottery_type)
+        return jsonify({'error': 'Não foi possível comparar os jogos. Tente novamente.'}), 500
 
 
 @app.route('/pattern_radar/<lottery_type>')
