@@ -71,6 +71,10 @@ O Pix configurado aqui deve ser usado apenas para assinatura Premium do app. A a
 
 ### **Atualização automática dos resultados:**
 
+Para usar Render gratuito com dados privados persistentes no Supabase e
+atualizações pelo GitHub Actions, siga o [guia de deploy gratuito](docs/deploy-gratuito-supabase.md).
+Prepare o banco e as variáveis antes de publicar essa configuração.
+
 O **Radar de padrões Premium** acompanha automaticamente os CSVs atualizados.
 Também é possível [consultar e comparar até 10 jogos](docs/consulta-jogos.md),
 com histórico, perfis do radar, jogos repetidos e dezenas em comum.

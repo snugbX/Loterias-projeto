@@ -1,9 +1,12 @@
 # Persistencia no Render
 
+Para o plano gratuito, use o [guia Render + Supabase + GitHub Actions](deploy-gratuito-supabase.md).
+As instrucoes de disco abaixo sao uma alternativa para planos pagos.
+
 No Render, o filesystem do app e efemero por padrao. Em rebuild, redeploy ou restart,
 tudo que foi gravado fora do disco persistente pode sumir.
 
-## Solucao recomendada
+## Alternativa com disco pago
 
 Crie um Persistent Disk no servico do Render com:
 
