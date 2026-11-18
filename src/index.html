@@ -245,7 +245,7 @@
                     <span class="lottery-option-balls" aria-hidden="true">
                         <span>06</span><span>12</span><span>24</span><span>33</span><span>45</span><span>58</span>
                     </span>
-                    <span class="lottery-option-days">Ter, Qui, Sab</span>
+                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
                 </button>
 
                 <button type="button" class="lottery-option" data-lottery="lotofacil" role="radio" aria-checked="false" style="--lottery-primary: #930089; --lottery-secondary: #C87FC3;">
@@ -258,7 +258,7 @@
                     <span class="lottery-option-balls" aria-hidden="true">
                         <span>01</span><span>03</span><span>07</span><span>11</span><span>19</span><span>25</span>
                     </span>
-                    <span class="lottery-option-days">Seg a Sab</span>
+                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
                 </button>
 
                 <button type="button" class="lottery-option" data-lottery="quina" role="radio" aria-checked="false" style="--lottery-primary: #260085; --lottery-secondary: #927FC1;">
@@ -271,7 +271,7 @@
                     <span class="lottery-option-balls" aria-hidden="true">
                         <span>05</span><span>17</span><span>32</span><span>48</span><span>66</span><span>80</span>
                     </span>
-                    <span class="lottery-option-days">Seg a Sab</span>
+                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
                 </button>
 
                 <button type="button" class="lottery-option" data-lottery="diadesorte" role="radio" aria-checked="false" style="--lottery-primary: #C76A00; --lottery-secondary: #F4C56A;">
@@ -284,7 +284,7 @@
                     <span class="lottery-option-balls" aria-hidden="true">
                         <span>04</span><span>09</span><span>14</span><span>18</span><span>23</span><span>31</span>
                     </span>
-                    <span class="lottery-option-days">Ter, Qui, Sab</span>
+                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
                 </button>
             </div>
         </section>
@@ -426,11 +426,21 @@
 
     <aside class="draw-calendar-panel" aria-labelledby="draw-calendar-title">
         <div class="draw-calendar-header">
-            <span>Sorteios</span>
-            <h2 id="draw-calendar-title">Calendário Semanal</h2>
-            <p>Dias regulares</p>
+            <span>Sorteios da semana</span>
+            <div class="calendar-title-row">
+                <h2 id="draw-calendar-title">Sua agenda de sorteios</h2>
+                <button id="draw-calendar-refresh" type="button" class="calendar-refresh" aria-label="Consultar atualização do calendário" title="Consultar atualização do calendário">↻</button>
+            </div>
+            <p>Datas e concursos, direto do cronograma.</p>
         </div>
         <div id="draw-calendar-grid" class="draw-calendar-grid" aria-live="polite"></div>
+        <p id="draw-calendar-status" class="calendar-status" role="status">Consultando cronograma oficial...</p>
+        <a class="calendar-source" href="https://loterias.caixa.gov.br/Paginas/regras-sorteios.aspx" target="_blank" rel="noopener noreferrer">Ver cronograma na CAIXA (nova aba)</a>
+        <section class="daily-tips" aria-labelledby="daily-tips-title">
+            <div class="daily-tips-heading"><h2 id="daily-tips-title">Dicas do dia</h2><span id="daily-tips-date"></span></div>
+            <div id="daily-tips-content">Preparando as dicas de hoje...</div>
+            <p class="daily-tips-note">Para maiores de 18 anos. Jogue com responsabilidade.</p>
+        </section>
     </aside>
     </main>
 

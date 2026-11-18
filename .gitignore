@@ -20,6 +20,7 @@ ENV/
 *.log
 *.tmp
 *.bak
+tmp/
 *.enc
 *.dump
 *.pem

@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, session, send_from_directory
 import game_analysis
 import game_comparison
 import pattern_radar
+import draw_calendar
 import atexit
 import auth_storage
 import database
@@ -777,6 +778,13 @@ def get_hot_cold_numbers_api(lottery_type):
     except Exception as e:
         gerador_loterias.logging.error(f"Erro ao obter números quentes/frios para {lottery_type}: {e}")
         return jsonify({"error": "Erro ao obter números quentes e frios"}), 500
+
+@app.route('/draw_calendar')
+def draw_calendar_data():
+    response = jsonify(draw_calendar.get_calendar(background=True))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
 
 @app.route('/latest_results')
 def latest_results():

@@ -1257,16 +1257,19 @@ body.dark-theme .admin-users-panel {
     }
 }
 
+/* Preserve layout sizing even before the external CSS framework finishes loading. */
+*, *::before, *::after { box-sizing: border-box; }
+
 /* Draw Calendar */
 .draw-calendar-panel {
+    min-width: 0;
     background: var(--brand-panel-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
     color: var(--text-primary);
     padding: 16px;
-    position: sticky;
-    top: 92px;
+    position: static;
 }
 .draw-calendar-header {
     border-bottom: 1px solid var(--border-color);
@@ -1356,6 +1359,57 @@ body.dark-theme .admin-users-panel {
     border-color: var(--border-color);
     color: var(--text-secondary);
 }
+
+.calendar-title-row, .daily-tips-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.calendar-refresh {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+    color: var(--text-primary);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1.6rem;
+}
+.calendar-refresh:focus-visible, .calendar-source:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
+.calendar-refresh:disabled { opacity: 0.6; cursor: wait; }
+.calendar-status, .calendar-source, .daily-tips-note {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+.calendar-source { display: inline-block; text-decoration: underline; margin-top: 4px; }
+.calendar-warning { font-weight: 700; }
+.calendar-screen-reader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+.draw-calendar-empty { white-space: normal; }
+.draw-calendar-pill { white-space: normal; overflow-wrap: anywhere; }
+.daily-tips { border-top: 1px solid var(--border-color); margin-top: 20px; padding-top: 18px; }
+.daily-tips-heading h2 { font-size: 1.05rem; font-weight: 800; margin: 0; }
+.daily-tips-heading span { color: var(--text-secondary); font-size: 0.85rem; }
+.daily-tip { margin-top: 18px; }
+.daily-tip h3 { color: var(--text-primary); font-size: 0.95rem; font-weight: 750; margin: 0 0 6px; }
+.daily-tip p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; margin: 0; }
 
 /* Latest Results */
 .latest-results-section {
@@ -1487,7 +1541,7 @@ body.dark-theme .admin-users-panel {
 
 @media (max-width: 900px) {
     .app-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
     .draw-calendar-panel {
         position: static;
