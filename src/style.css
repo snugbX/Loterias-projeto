@@ -2596,7 +2596,46 @@ select:focus, input[type="number"]:focus {
 .comparison-overview td:nth-child(2) { min-width: 170px; }
 .analysis-game-detail, .comparison-overlap { border-top: 1px solid var(--border-color); margin-top: 20px; }
 .analysis-game-detail summary { overflow-wrap: anywhere; }
+.analysis-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 24px;
+    padding: 20px 0;
+    margin: 16px 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+.analysis-highlights > div { min-width: 0; }
+.analysis-highlights dt { font-size: 0.9rem; color: var(--text-secondary); font-weight: 700; }
+.analysis-highlights dd { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 6px 0; overflow-wrap: anywhere; }
+.game-analysis .analysis-highlights p { margin: 0; font-size: 0.85rem; }
+.analysis-alternative { padding: 4px 0 20px; border-bottom: 1px solid var(--border-color); }
+.game-analysis .alternative-profile { color: var(--active-lottery-readable, var(--text-primary)); font-size: 1.05rem; font-weight: 800; }
+.alternative-numbers { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.alternative-number {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.alternative-number.is-changed { border: 3px solid var(--active-lottery-readable, #0f766e); }
+.alternative-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.game-analysis .alternative-actions button { margin-top: 4px; }
+.game-analysis .alternative-actions button:first-child { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+.game-analysis .alternative-actions button:disabled { cursor: default; }
+.alternative-action-status:empty { display: none; }
 .comparison-overlap table { min-width: 540px; }
+@media (max-width: 420px) {
+    .analysis-highlights { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 640px) {
     .game-analysis th, .game-analysis td { padding: 10px 6px; }
     .game-analysis button { width: 100%; }

@@ -60,11 +60,100 @@ function table(caption, columns, rows, target = result) {
     target.append(wrapper);
 }
 
+function renderHighlights(data, target) {
+    const highlights = node('dl', undefined, 'analysis-highlights');
+    const items = [
+        ['Faixas no histórico', `${integer(data.history.prize_draws)} concursos`, 'Simulação, não prêmios recebidos'],
+        ['Maior acerto numérico', `${data.history.best_matches} acertos`, `Em ${integer(data.coverage.total_draws)} concursos válidos`],
+        ['Seu perfil', `${data.profile.even} pares · ${data.profile.odd} ímpares`, 'Distribuição do jogo informado'],
+        ['Prêmio principal numérico', `1 em ${integer(data.probabilities.jackpot_one_in)}`, 'Chance matemática da aposta simples'],
+    ];
+    for (const [label, value, note] of items) {
+        const item = node('div');
+        item.append(node('dt', label), node('dd', value), node('p', note));
+        highlights.append(item);
+    }
+    target.append(highlights);
+}
+
+function renderAlternative(data, target) {
+    const alternative = data.alternative;
+    if (!alternative) return;
+    const section = node('section', undefined, 'analysis-alternative');
+    const title = node('h3', alternative.status === 'already_aligned'
+        ? 'Seu jogo já segue o perfil de referência' : 'Uma alternativa para o seu jogo');
+    title.id = `alternative-title-${data.game_id}`;
+    section.setAttribute('aria-labelledby', title.id);
+    section.append(title, node('p', `Perfil de referência: ${alternative.target_label}`, 'alternative-profile'));
+    const balls = node('div', undefined, 'alternative-numbers');
+    balls.setAttribute('aria-label', 'Dezenas da alternativa');
+    for (const number of alternative.numbers) {
+        const changed = alternative.changes.some(change => change.to === number);
+        const ball = node('span', String(number).padStart(2, '0'), `alternative-number${changed ? ' is-changed' : ''}`);
+        if (changed) ball.setAttribute('aria-label', `${number}, nova dezena`);
+        balls.append(ball);
+    }
+    section.append(balls);
+    if (alternative.month) section.append(node('p', `Mês da Sorte mantido: ${months[alternative.month - 1]}.`));
+    if (alternative.changes.length) {
+        section.append(node('p', `Trocas: ${alternative.changes.map(change => `${String(change.from).padStart(2, '0')} → ${String(change.to).padStart(2, '0')}`).join('; ')}. ${alternative.preserved_numbers.length} de ${data.numbers.length} dezenas mantidas.`, 'analysis-verdict'));
+    } else {
+        section.append(node('p', 'Nenhuma troca necessária: mantivemos suas dezenas. Não há motivo estatístico para substituir um número por outro do mesmo perfil.'));
+    }
+    if (alternative.small_sample) {
+        section.append(node('p', `Amostra pequena (${integer(alternative.sample)} transições). Referência usada: distribuição matemática, não tendência do próximo sorteio.`, 'analysis-warning'));
+    } else {
+        section.append(node('p', `Após ${alternative.source_label}, esse perfil apareceu ${integer(alternative.matches)} vezes em ${integer(alternative.sample)} transições (${percentage(alternative.conditional_probability * 100)}). Frequência do perfil, não chance de ganhar com estas dezenas.`));
+    }
+    section.append(node('p', `Base do radar: concurso ${integer(alternative.source_contest)}, de ${alternative.source_date}.`));
+    if (alternative.changes.length) {
+        section.append(node('p', `Na mesma base, a alternativa teria faixa em ${integer(alternative.history.prize_draws)} concursos; seu jogo, em ${integer(data.history.prize_draws)}. Mais ocorrências passadas não significam maior chance futura.`));
+        const actions = node('div', undefined, 'alternative-actions');
+        const copy = node('button', 'Copiar alternativa');
+        copy.type = 'button';
+        const compare = node('button', 'Comparar com meu jogo');
+        compare.type = 'button';
+        compare.disabled = entries.children.length >= MAX_GAMES || alternative.duplicates_game_ids.length > 0;
+        if (compare.disabled) {
+            section.append(node('p', alternative.duplicates_game_ids.length
+                ? `Esta alternativa já está na consulta: ${alternative.duplicates_game_ids.map(id => `Jogo ${id}`).join(', ')}.`
+                : `A consulta atingiu o limite de ${MAX_GAMES} jogos. Remova um jogo para comparar a alternativa.`));
+        }
+        const status = node('p', '', 'alternative-action-status');
+        status.setAttribute('role', 'status');
+        copy.addEventListener('click', async () => {
+            const text = alternative.numbers.map(n => String(n).padStart(2, '0')).join(' ')
+                + (alternative.month ? ` · Mês da Sorte: ${months[alternative.month - 1]}` : '');
+            try {
+                await navigator.clipboard.writeText(text);
+                status.textContent = 'Alternativa copiada.';
+            } catch {
+                status.textContent = 'Não foi possível copiar automaticamente. Selecione as dezenas para copiar.';
+            }
+        });
+        compare.addEventListener('click', () => {
+            if (!allowed || entries.children.length >= MAX_GAMES) return;
+            addEntry(false);
+            const row = entries.lastElementChild;
+            row.querySelector('input').value = alternative.numbers.map(n => String(n).padStart(2, '0')).join(' ');
+            if (alternative.month) row.querySelector('select').value = String(alternative.month);
+            form.requestSubmit();
+        });
+        actions.append(copy, compare);
+        section.append(actions, status);
+    }
+    const explanation = node('details');
+    explanation.append(node('summary', 'Como esta referência foi escolhida'), node('p', alternative.note));
+    section.append(explanation, node('p', `Mesma chance individual: 1 em ${integer(alternative.jackpot_one_in)} no prêmio principal numérico. Esta sugestão não aumenta a probabilidade da aposta simples.`, 'analysis-disclaimer'));
+    target.append(section);
+}
+
 function renderAnalysis(data, result) {
     result.replaceChildren();
     result.append(node('h3', `${data.lottery_name || lotteries[currentLottery].name}: ${data.numbers.map(n => String(n).padStart(2, '0')).join(' · ')}`));
     if (data.month) result.append(node('p', `Mês da Sorte: ${months[data.month - 1]}`));
     const { history, coverage, profile, probabilities } = data;
+    renderHighlights(data, result);
     result.append(node('p', history.prize_draws
         ? `Seu jogo teria faixa de premiação em ${integer(history.prize_draws)} dos ${integer(coverage.total_draws)} concursos analisados (${percentage(history.percentage)}).`
         : 'Não encontramos faixa de premiação para esse jogo nos concursos analisados.', 'analysis-verdict'));
@@ -72,6 +161,7 @@ function renderAnalysis(data, result) {
     if (coverage.skipped_rows || coverage.missing_contests || coverage.missing_months) {
         result.append(node('p', `Base incompleta: ${integer(coverage.skipped_rows)} linhas inválidas ou duplicadas desconsideradas; ${integer(coverage.missing_contests)} concursos ausentes entre os extremos; ${integer(coverage.missing_months)} concursos sem mês válido. A simulação não cobre dados ausentes.`, 'analysis-warning'));
     }
+    renderAlternative(data, result);
     heading('Faixas encontradas no histórico', result);
     const historicalRows = history.tiers.map(tier => [`${tier.matches} acertos`, integer(tier.count)]);
     if (data.month) historicalRows.push(['Mês da Sorte (pode coincidir com acertos)', integer(history.month_matches)]);
@@ -126,6 +216,15 @@ function renderComparison(data) {
     if (summary.duplicate_groups.length) {
         result.append(node('p', `Jogos repetidos: ${summary.duplicate_groups.map(ids => ids.join(' e ')).join('; ')}. Repetir a mesma aposta não amplia a cobertura de resultados.`, 'analysis-warning'));
     }
+    analyses.forEach(game => {
+        const detail = node('details', undefined, 'analysis-game-detail');
+        detail.open = analyses.length === 1;
+        detail.append(node('summary', `Jogo ${game.game_id} · ${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''} · ${integer(game.history.prize_draws)} concursos com faixa`));
+        const body = node('div');
+        renderAnalysis(game, body);
+        detail.append(body);
+        result.append(detail);
+    });
     if (analyses.length > 1) {
         result.append(node('p', `No conjunto, pelo menos um jogo teria faixa de premiação em ${integer(summary.historical_prize_draws)} concursos (${percentage(summary.historical_percentage)}). Cada concurso é contado apenas uma vez.`));
         if (summary.most_historical_prizes > 0) {
@@ -170,15 +269,6 @@ function renderComparison(data) {
             ]), overlap);
         result.append(overlap);
     }
-    analyses.forEach(game => {
-        const detail = node('details', undefined, 'analysis-game-detail');
-        detail.open = analyses.length === 1;
-        detail.append(node('summary', `Jogo ${game.game_id} · ${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''}`));
-        const body = node('div');
-        renderAnalysis(game, body);
-        detail.append(body);
-        result.append(detail);
-    });
     result.hidden = false;
     result.focus({ preventScroll: true });
 }

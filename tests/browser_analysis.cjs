@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const path = require('node:path');
 const os = require('node:os');
+const http = require('node:http');
 let playwright;
 try { playwright = require('playwright'); }
 catch {
@@ -16,8 +17,14 @@ async function main() {
     let browser;
     try {
         for (let attempt = 0; ; attempt++) {
-            try { if ((await fetch('http://127.0.0.1:5098/')).ok) break; }
-            catch {}
+            const ready = await new Promise(resolve => {
+                const request = http.get('http://127.0.0.1:5098/', response => {
+                    response.resume();
+                    response.on('end', () => resolve(response.statusCode === 200));
+                });
+                request.on('error', () => resolve(false));
+            });
+            if (ready) break;
             if (attempt > 60 || server.exitCode !== null) throw new Error(`Preview did not start: ${serverOutput}`);
             await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -42,6 +49,40 @@ async function main() {
         await login('premium');
         const section = page.locator('#game-analysis-form');
         await page.locator('#game-analysis-form').evaluate(form => { form.closest('details').open = true; });
+        await page.locator('#analysis-numbers').fill('1 3 5 7 9 11');
+        await section.locator('button[type="submit"]').click();
+        await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');
+        assert.equal(await page.locator('.analysis-highlights dt').count(), 4);
+        const suggested = await page.locator('.alternative-number').allTextContents();
+        assert.equal(suggested.length, 6);
+        assert.ok(suggested.some(n => Number(n) % 2 === 0));
+        assert.match(await page.locator('.analysis-alternative').innerText(), /mesma chance|Mesma chance/);
+        await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', {
+            configurable: true, value: { writeText: async text => { window.__copiedAlternative = text; } },
+        }));
+        await page.getByRole('button', { name: 'Copiar alternativa', exact: true }).click();
+        assert.equal(await page.evaluate(() => window.__copiedAlternative), suggested.join(' '));
+        assert.match(await page.locator('.alternative-action-status').innerText(), /copiada/);
+        for (const width of [1440, 390]) {
+            await page.setViewportSize({ width, height: 1000 });
+            for (const dark of [false, true]) {
+                if (await page.evaluate(() => document.body.classList.contains('dark-theme')) !== dark) {
+                    await page.locator('#theme-toggle').click();
+                }
+                await page.locator('.analysis-alternative').screenshot({ path: path.join(__dirname, `alternative-${width}-${dark ? 'dark' : 'light'}.png`) });
+                await page.locator('.analysis-highlights').screenshot({ path: path.join(__dirname, `highlights-${width}-${dark ? 'dark' : 'light'}.png`) });
+                assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+            }
+        }
+        await page.setViewportSize({ width: 1440, height: 1000 });
+        if (await page.evaluate(() => document.body.classList.contains('dark-theme'))) await page.locator('#theme-toggle').click();
+        await page.getByRole('button', { name: 'Comparar com meu jogo', exact: true }).click();
+        await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');
+        assert.equal(await page.locator('.analysis-entry').count(), 2);
+        assert.equal(await page.locator('#analysis-numbers-2').inputValue(), suggested.join(' '));
+        await page.locator('.analysis-game-detail').first().locator('summary').first().click();
+        assert.equal(await page.locator('.analysis-game-detail').first().getByRole('button', { name: 'Comparar com meu jogo' }).isDisabled(), true);
+        await page.locator('.analysis-entry').last().getByRole('button').click();
         await page.locator('#analysis-numbers').fill('1 2 3 4 5 6');
         await section.locator('button[type="submit"]').click();
         await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');
@@ -126,7 +167,7 @@ async function main() {
         assert.equal(denied, 403);
         assert.equal(await page.evaluate(async () => (await fetch('/analyze_games/megasena', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ games: [{ numbers: [1, 2, 3, 4, 5, 6] }] }) })).status), 403);
         assert.deepEqual(errors, []);
-        console.log('Browser OK: batch comparison, duplicates, radar context, add/remove/limit, individual months, automatic radar refresh, light/dark, mobile and access control.');
+        console.log('Browser OK: highlights, minimal alternative, copy, compare alternative, duplicates, batch, radar, months, automatic refresh, light/dark, mobile and premium access control.');
     } finally {
         await browser?.close();
         server.kill();

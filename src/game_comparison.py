@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from itertools import combinations
 
 import game_analysis
+import game_alternative
 import pattern_radar
 
 
@@ -41,7 +42,18 @@ def analyze_games(lottery_type, payload):
         data, contests = cached[key]
         all_prize_contests.update(contests)
         target = targets[data['profile']['even']]
-        results.append({**data, 'game_id': index, 'radar_context': {
+        alternative = game_alternative.suggest_alternative(lottery_type, numbers, month, radar)
+        alternative_key = (tuple(alternative['numbers']), month)
+        if alternative_key not in cached:
+            cached[alternative_key] = game_analysis.analyze_validated_game(
+                lottery_type, alternative['numbers'], month, draws, skipped)
+        alternative_data = cached[alternative_key][0]
+        alternative['history'] = {key: alternative_data['history'][key]
+                                  for key in ('prize_draws', 'best_matches', 'percentage')}
+        alternative['jackpot_one_in'] = data['probabilities']['jackpot_one_in']
+        alternative['duplicates_game_ids'] = [other for other, (values, other_month) in enumerate(validated, 1)
+                                             if other != index and (tuple(values), other_month) == alternative_key]
+        results.append({**data, 'game_id': index, 'alternative': alternative, 'radar_context': {
             'source_label': source['label'], 'target_label': target['label'],
             'sample': source['sample'], 'matches': target['matches'],
             'conditional_probability': target['conditional_probability'],

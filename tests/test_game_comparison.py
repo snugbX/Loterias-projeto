@@ -123,6 +123,29 @@ class ComparisonTests(unittest.TestCase):
         self.assertEqual(first['coverage']['total_draws'], 1)
         self.assertEqual(second['coverage']['total_draws'], 2)
         self.assertEqual(second['radar']['latest']['contest'], 2)
+        self.assertEqual(second['analyses'][0]['alternative']['source_contest'], 2)
+
+    def test_alternative_uses_same_snapshot_and_does_not_expand_submitted_coverage(self):
+        numbers = [2, 15, 18, 23, 47, 55]
+        self.seed('megasena', [numbers])
+        with patch.object(game_analysis, 'load_validated_history', wraps=game_analysis.load_validated_history) as load:
+            result = comparison.analyze_games('megasena', {'games': [{'numbers': numbers}]})
+        load.assert_called_once()
+        game = result['analyses'][0]
+        self.assertEqual(game['alternative']['numbers'], [2, 15, 18, 23, 47, 56])
+        expected = game_analysis.analyze_game('megasena', {'numbers': game['alternative']['numbers']})
+        self.assertEqual(game['alternative']['history']['prize_draws'], expected['history']['prize_draws'])
+        self.assertEqual(game['alternative']['jackpot_one_in'], game['probabilities']['jackpot_one_in'])
+        self.assertEqual(result['summary']['submitted'], 1)
+        self.assertEqual(result['summary']['unique_number_combinations'], 1)
+        self.assertEqual(result['summary']['numeric_jackpot_one_in'], 50063860)
+
+    def test_alternative_flags_duplicate_of_another_submitted_game(self):
+        numbers = [2, 15, 18, 23, 47, 55]
+        self.seed('megasena', [numbers])
+        result = comparison.analyze_games('megasena', {'games': [
+            {'numbers': numbers}, {'numbers': [2, 15, 18, 23, 47, 56]}]})
+        self.assertEqual(result['analyses'][0]['alternative']['duplicates_game_ids'], [2])
 
 
 class BatchRouteTests(unittest.TestCase):
