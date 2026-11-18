@@ -56,6 +56,8 @@ async function main() {
         const suggested = await page.locator('.alternative-number').allTextContents();
         assert.equal(suggested.length, 6);
         assert.ok(suggested.some(n => Number(n) % 2 === 0));
+        assert.ok(await page.locator('.alternative-affinities li').count() > 0);
+        assert.match(await page.locator('.alternative-affinities').innerText(), /coocorrência acima da referência/);
         assert.match(await page.locator('.analysis-alternative').innerText(), /mesma chance|Mesma chance/);
         await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', {
             configurable: true, value: { writeText: async text => { window.__copiedAlternative = text; } },
@@ -83,6 +85,19 @@ async function main() {
         await page.locator('.analysis-game-detail').first().locator('summary').first().click();
         assert.equal(await page.locator('.analysis-game-detail').first().getByRole('button', { name: 'Comparar com meu jogo' }).isDisabled(), true);
         await page.locator('.analysis-entry').last().getByRole('button').click();
+        await page.route('**/analyze_games/megasena', async route => {
+            const response = await route.fetch();
+            const payload = await response.json();
+            payload.comparison.analyses[0].alternative.status = 'insufficient_synergy';
+            payload.comparison.analyses[0].alternative.changes = [];
+            payload.comparison.analyses[0].alternative.synergy.evidence = [];
+            await route.fulfill({ response, json: payload });
+        });
+        await section.locator('button[type="submit"]').click();
+        await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');
+        assert.match(await page.locator('.analysis-alternative').innerText(), /Sem alternativa com afinidade suficiente/);
+        assert.equal(await page.getByRole('button', { name: 'Copiar alternativa', exact: true }).count(), 0);
+        await page.unroute('**/analyze_games/megasena');
         await page.locator('#analysis-numbers').fill('1 2 3 4 5 6');
         await section.locator('button[type="submit"]').click();
         await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');

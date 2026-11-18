@@ -2632,6 +2632,8 @@ select:focus, input[type="number"]:focus {
 .game-analysis .alternative-actions button:first-child { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
 .game-analysis .alternative-actions button:disabled { cursor: default; }
 .alternative-action-status:empty { display: none; }
+.alternative-affinities { padding-left: 22px; list-style: disc; color: var(--text-primary); line-height: 1.7; }
+.alternative-affinities li { margin: 8px 0; overflow-wrap: anywhere; }
 .comparison-overlap table { min-width: 540px; }
 @media (max-width: 420px) {
     .analysis-highlights { grid-template-columns: minmax(0, 1fr); }

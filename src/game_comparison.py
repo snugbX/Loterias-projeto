@@ -26,6 +26,7 @@ def analyze_games(lottery_type, payload):
             raise ValueError(f'Jogo {index}: {error}') from error
     draws, skipped, stat = game_analysis.load_validated_history(lottery_type)
     radar = pattern_radar.build_radar_from_draws(lottery_type, draws, skipped, stat.st_mtime_ns)
+    synergy = game_alternative.build_synergy(lottery_type, draws)
     source = radar['groups'][radar['latest']['even']]
     targets = {profile['even']: profile for profile in source['profiles']}
     all_prize_contests = set()
@@ -42,7 +43,7 @@ def analyze_games(lottery_type, payload):
         data, contests = cached[key]
         all_prize_contests.update(contests)
         target = targets[data['profile']['even']]
-        alternative = game_alternative.suggest_alternative(lottery_type, numbers, month, radar)
+        alternative = game_alternative.suggest_alternative(lottery_type, numbers, month, radar, synergy)
         alternative_key = (tuple(alternative['numbers']), month)
         if alternative_key not in cached:
             cached[alternative_key] = game_analysis.analyze_validated_game(

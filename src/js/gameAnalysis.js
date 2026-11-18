@@ -81,10 +81,18 @@ function renderAlternative(data, target) {
     if (!alternative) return;
     const section = node('section', undefined, 'analysis-alternative');
     const title = node('h3', alternative.status === 'already_aligned'
-        ? 'Seu jogo já segue o perfil de referência' : 'Uma alternativa para o seu jogo');
+        ? 'Seu jogo já segue o perfil de referência' : alternative.status === 'insufficient_synergy'
+            ? 'Sem alternativa com afinidade suficiente' : 'Alternativa por afinidade histórica');
     title.id = `alternative-title-${data.game_id}`;
     section.setAttribute('aria-labelledby', title.id);
     section.append(title, node('p', `Perfil de referência: ${alternative.target_label}`, 'alternative-profile'));
+    if (alternative.status === 'insufficient_synergy') {
+        section.append(node('p', 'Não encontramos trocas que atendam ao perfil e tenham coocorrência positiva com a maioria das dezenas de referência, com suporte mínimo na base. Mantivemos seu jogo; ele ainda não foi adaptado ao perfil indicado.', 'analysis-warning'));
+        section.append(node('p', `Base de afinidade: ${integer(alternative.synergy.total_draws)} concursos. Suporte exigido: ${alternative.synergy.min_number_support} aparições por dezena e ${alternative.synergy.min_pair_support} coocorrências por par.`));
+        section.append(node('p', 'Nenhuma sugestão foi inventada. Afinidade histórica não é previsão de prêmio.'));
+        target.append(section);
+        return;
+    }
     const balls = node('div', undefined, 'alternative-numbers');
     balls.setAttribute('aria-label', 'Dezenas da alternativa');
     for (const number of alternative.numbers) {
@@ -97,6 +105,15 @@ function renderAlternative(data, target) {
     if (alternative.month) section.append(node('p', `Mês da Sorte mantido: ${months[alternative.month - 1]}.`));
     if (alternative.changes.length) {
         section.append(node('p', `Trocas: ${alternative.changes.map(change => `${String(change.from).padStart(2, '0')} → ${String(change.to).padStart(2, '0')}`).join('; ')}. ${alternative.preserved_numbers.length} de ${data.numbers.length} dezenas mantidas.`, 'analysis-verdict'));
+        heading('Por que essas dezenas?', section);
+        section.append(node('p', 'Sinergia aqui significa coocorrência no histórico, ajustada à frequência de cada dezena. Não é atração entre números nem chance de prêmio.'));
+        if (alternative.synergy.reference === 'submitted') section.append(node('p', 'O perfil exige trocar todas as dezenas. A afinidade usa o jogo original como referência, pois nenhuma dezena foi mantida.'));
+        const affinities = node('ul', undefined, 'alternative-affinities');
+        alternative.synergy.evidence.forEach(item => {
+            affinities.append(node('li', `${String(item.number).padStart(2, '0')}: coocorrência acima da referência com ${item.positive_count} de ${item.anchor_count} dezenas ${alternative.synergy.reference === 'preserved' ? 'mantidas' : 'originais'} (${item.positive_numbers.map(n => String(n).padStart(2, '0')).join(', ')}).`));
+        });
+        section.append(affinities, node('p', `Base de afinidade: ${integer(alternative.synergy.total_draws)} concursos. Cada par considerado precisa de pelo menos ${alternative.synergy.min_pair_support} coocorrências e cada dezena, de ${alternative.synergy.min_number_support} aparições.`));
+        section.append(node('p', 'As associações são entre pares de dezenas; não significam que todo esse grupo tenha saído junto.'));
     } else {
         section.append(node('p', 'Nenhuma troca necessária: mantivemos suas dezenas. Não há motivo estatístico para substituir um número por outro do mesmo perfil.'));
     }

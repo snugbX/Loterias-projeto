@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import importlib
+import random
 from pathlib import Path
 import sys
 import tempfile
@@ -127,12 +128,15 @@ class ComparisonTests(unittest.TestCase):
 
     def test_alternative_uses_same_snapshot_and_does_not_expand_submitted_coverage(self):
         numbers = [2, 15, 18, 23, 47, 55]
-        self.seed('megasena', [numbers])
+        rng = random.Random(42)
+        self.seed('megasena', [rng.sample(range(1, 61), 6) for _ in range(1000)])
         with patch.object(game_analysis, 'load_validated_history', wraps=game_analysis.load_validated_history) as load:
             result = comparison.analyze_games('megasena', {'games': [{'numbers': numbers}]})
         load.assert_called_once()
         game = result['analyses'][0]
-        self.assertEqual(game['alternative']['numbers'], [2, 15, 18, 23, 47, 56])
+        self.assertEqual(game['alternative']['status'], 'alternative')
+        self.assertEqual(len(game['alternative']['preserved_numbers']), 5)
+        self.assertEqual(game['alternative']['synergy']['total_draws'], 1000)
         expected = game_analysis.analyze_game('megasena', {'numbers': game['alternative']['numbers']})
         self.assertEqual(game['alternative']['history']['prize_draws'], expected['history']['prize_draws'])
         self.assertEqual(game['alternative']['jackpot_one_in'], game['probabilities']['jackpot_one_in'])
@@ -142,9 +146,13 @@ class ComparisonTests(unittest.TestCase):
 
     def test_alternative_flags_duplicate_of_another_submitted_game(self):
         numbers = [2, 15, 18, 23, 47, 55]
-        self.seed('megasena', [numbers])
+        rng = random.Random(42)
+        self.seed('megasena', [rng.sample(range(1, 61), 6) for _ in range(1000)])
+        first = comparison.analyze_games('megasena', {'games': [{'numbers': numbers}]})
+        suggested = first['analyses'][0]['alternative']['numbers']
+        self.assertNotEqual(numbers, suggested)
         result = comparison.analyze_games('megasena', {'games': [
-            {'numbers': numbers}, {'numbers': [2, 15, 18, 23, 47, 56]}]})
+            {'numbers': numbers}, {'numbers': suggested}]})
         self.assertEqual(result['analyses'][0]['alternative']['duplicates_game_ids'], [2])
 
 
