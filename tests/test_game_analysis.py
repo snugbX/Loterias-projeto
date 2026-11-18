@@ -1,4 +1,5 @@
 import importlib
+import os
 from math import comb
 from pathlib import Path
 import sys
@@ -120,6 +121,8 @@ class AnalysisTests(unittest.TestCase):
 class RouteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.environment_patch = patch.dict(os.environ, {'DATABASE_URL': '', 'RENDER': ''})
+        cls.environment_patch.start()
         cls.module = importlib.import_module("app")
         cls.temp = tempfile.TemporaryDirectory()
         cls.db_patch = patch.object(cls.module.auth_storage, "AUTH_DB_PATH", str(Path(cls.temp.name) / "auth.sqlite3"))
@@ -132,6 +135,7 @@ class RouteTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.db_patch.stop()
+        cls.environment_patch.stop()
         cls.temp.cleanup()
 
     def client_for(self, kind):

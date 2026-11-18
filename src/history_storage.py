@@ -6,6 +6,7 @@ import pandas as pd
 
 import gerador_loterias
 import history_database
+import database
 
 
 LOTTERY_TYPES_PATTERN = "|".join(
@@ -61,6 +62,8 @@ def history_file_path(filename, owner_key):
 
 
 def list_history_files(lottery_type, owner_key):
+    if database.postgres_enabled():
+        return history_database.list_history_files(lottery_type, owner_key)
     history_dir = owner_history_dir(owner_key)
     files = set(history_database.list_history_files(lottery_type, owner_key))
 
@@ -91,6 +94,9 @@ def read_history_file(filename, owner_key):
     if db_data is not None:
         return db_data
 
+    if database.postgres_enabled():
+        return None
+
     file_path = history_file_path(filename, owner_key)
 
     if file_path is None or not file_path.exists() or not file_path.is_file():
@@ -107,6 +113,8 @@ def read_history_file(filename, owner_key):
 
 
 def clear_history(lottery_type, owner_key):
+    if database.postgres_enabled():
+        return len(history_database.clear_history(lottery_type, owner_key))
     history_dir = owner_history_dir(owner_key)
     deleted_filenames = set(history_database.clear_history(lottery_type, owner_key))
 
@@ -137,6 +145,8 @@ def delete_history_file(filename, owner_key):
         return "invalid"
 
     deleted_from_db = history_database.delete_history_file(filename, owner_key)
+    if database.postgres_enabled():
+        return 'deleted' if deleted_from_db else 'missing'
     file_exists = file_path.exists() and file_path.is_file()
 
     if not deleted_from_db and not file_exists:

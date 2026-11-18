@@ -9,6 +9,8 @@ import tempfile
 
 def main():
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as directory:
+        os.environ['DATABASE_URL'] = ''
+        os.environ['RENDER'] = ''
         for key, filename in {
             "AUTH_DB_PATH": "auth.sqlite3", "LOTTERY_HISTORY_DB": "history.sqlite3",
             "LOTTERY_OUTPUT_DIR": "history", "LOTTERY_LOG_FILE": "preview.log",

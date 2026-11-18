@@ -1449,6 +1449,16 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir, owner_key=None)
     target_output_dir = resolve_history_output_dir(output_dir, owner_key)
     file_path = os.path.join(target_output_dir, file_name)
 
+    import database
+    import history_database
+    history_database.save_history_record(
+        file_name, lottery_type,
+        [[serialize_game_value(value) for value in jogo] for jogo in jogos],
+        now.isoformat(timespec="seconds"), owner_key=owner_key or "legacy",
+    )
+    if database.postgres_enabled():
+        return file_name
+
     try:
         config = LOTTERY_CONFIGS[lottery_type]
 
@@ -1461,22 +1471,6 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir, owner_key=None)
         df_jogos = pd.DataFrame(jogos, columns=columns)
         os.makedirs(target_output_dir, exist_ok=True)
         df_jogos.to_csv(file_path, index=False, encoding='utf-8')
-
-        try:
-            import history_database
-
-            history_database.save_history_record(
-                file_name,
-                lottery_type,
-                [
-                    [serialize_game_value(value) for value in jogo]
-                    for jogo in jogos
-                ],
-                now.isoformat(timespec="seconds"),
-                owner_key=owner_key or "legacy",
-            )
-        except Exception as e:
-            logging.error(f"Erro ao salvar histórico no banco SQLite: {e}")
 
         logging.info(
             f"{len(jogos)} jogos de {lottery_type} salvos em '{file_path}'"

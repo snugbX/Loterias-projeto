@@ -9,6 +9,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!.env.admin.example
 venv/
 env/
 ENV/
@@ -19,6 +20,13 @@ ENV/
 *.log
 *.tmp
 *.bak
+*.enc
+*.dump
+*.pem
+*.key
+*.crt
+*.cer
+backups_privados/
 backups_loterias/
 
 # Resultados gerados pela aplicacao

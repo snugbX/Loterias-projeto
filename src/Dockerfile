@@ -15,7 +15,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app/src
 
-COPY src/requirements.txt /app/src/
+COPY src/requirements.txt src/requirements-admin.txt /app/src/
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ /app/src/

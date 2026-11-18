@@ -4,6 +4,7 @@ import game_comparison
 import pattern_radar
 import atexit
 import auth_storage
+import database
 import datetime
 import hmac
 import history_storage
@@ -20,6 +21,10 @@ from lottery_validation import normalize_lottery_type
 
 # Arquivos públicos são servidos somente pelas rotas com lista de permissões.
 app = Flask(__name__, static_folder=None)
+if os.environ.get('RENDER', '').lower() == 'true' and not database.postgres_enabled():
+    raise RuntimeError('Configure DATABASE_URL antes de publicar no Render: o armazenamento local não é persistente.')
+if database.postgres_enabled() and not os.environ.get('APP_SECRET_KEY', '').strip():
+    raise RuntimeError('Configure uma APP_SECRET_KEY fixa para preservar as sessões no banco externo.')
 app.secret_key = os.environ.get("APP_SECRET_KEY") or secrets.token_urlsafe(48)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
@@ -32,6 +37,11 @@ app.config.update(
 LOGIN_ATTEMPTS = {}
 LOGIN_ATTEMPT_LIMIT = 5
 LOGIN_LOCK_SECONDS = 10 * 60
+
+
+@app.errorhandler(database.DatabaseUnavailable)
+def database_unavailable(error):
+    return jsonify({'error': 'Os dados persistentes estão indisponíveis. Tente novamente em instantes.'}), 503
 
 ALLOWED_STATIC_FILES = {
     'index.html',
@@ -317,6 +327,16 @@ def clear_failed_logins(email):
     LOGIN_ATTEMPTS.pop(login_rate_key(email), None)
 
 
+@app.route('/health')
+def health():
+    connection = auth_storage._connect()
+    try:
+        connection.execute('SELECT 1 FROM users LIMIT 1')
+    finally:
+        connection.close()
+    return jsonify({'status': 'ok'})
+
+
 @app.route('/')
 def home():
     """
@@ -435,7 +455,10 @@ def auth_register():
     if is_configured_admin and not auth_storage.admin_exists():
         setup_code = os.environ.get("ADMIN_SETUP_CODE", "").strip()
 
-        if setup_code and not hmac.compare_digest(
+        if not setup_code:
+            return jsonify({'error': 'Cadastro inicial do administrador bloqueado. Configure ADMIN_SETUP_CODE no servidor.'}), 403
+
+        if not hmac.compare_digest(
             data.get("setup_code", "").strip(),
             setup_code
         ):

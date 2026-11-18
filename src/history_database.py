@@ -5,6 +5,7 @@ import sqlite3
 from pathlib import Path
 
 import gerador_loterias
+import database
 
 
 HISTORY_DB_PATH = gerador_loterias.resolve_project_path(
@@ -16,6 +17,8 @@ HISTORY_DB_PATH = gerador_loterias.resolve_project_path(
 
 
 def _connect():
+    if database.postgres_enabled():
+        return database.open_postgres()
     db_path = Path(HISTORY_DB_PATH)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(db_path)
@@ -86,9 +89,13 @@ def save_history_record(filename, lottery_type, games, created_at=None, owner_ke
     try:
         connection.execute(
             """
-            INSERT OR REPLACE INTO generated_games
+            INSERT INTO generated_games
                 (owner_key, filename, lottery_type, created_at, games_json)
             VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(owner_key, filename) DO UPDATE SET
+                lottery_type = excluded.lottery_type,
+                created_at = excluded.created_at,
+                games_json = excluded.games_json
             """,
             (owner_key, filename, lottery_type, created_at, games_json)
         )

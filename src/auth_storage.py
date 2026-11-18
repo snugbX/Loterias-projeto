@@ -8,6 +8,7 @@ from pathlib import Path
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import gerador_loterias
+import database
 
 
 ROLE_ADMIN = "admin"
@@ -58,6 +59,8 @@ def validate_password(password):
 
 
 def _connect():
+    if database.postgres_enabled():
+        return database.open_postgres()
     db_path = Path(AUTH_DB_PATH)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(db_path)
@@ -250,7 +253,7 @@ def create_user(
                     terms_accepted_at,
                     terms_version
                 )
-            VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?) RETURNING id
             """,
             (
                 name,
@@ -264,13 +267,13 @@ def create_user(
                 terms_version,
             )
         )
+        user_id = cursor.fetchone()['id']
         connection.commit()
-        user_id = cursor.lastrowid
         row = connection.execute(
             "SELECT * FROM users WHERE id = ?",
             (user_id,)
         ).fetchone()
-    except sqlite3.IntegrityError:
+    except (sqlite3.IntegrityError, database.IntegrityError):
         raise ValueError("Ja existe uma conta com este e-mail.")
     finally:
         connection.close()
@@ -383,7 +386,7 @@ def record_generated_games(user_id, generated_games):
             INSERT INTO usage_days (user_id, usage_date, generated_games)
             VALUES (?, ?, ?)
             ON CONFLICT(user_id, usage_date)
-            DO UPDATE SET generated_games = generated_games + excluded.generated_games
+            DO UPDATE SET generated_games = usage_days.generated_games + excluded.generated_games
             """,
             (user_id, usage_date, generated_games)
         )
