@@ -3,6 +3,7 @@ import datetime
 import subprocess
 import sys
 from pathlib import Path
+from gerador_loterias import LOTTERY_CONFIGS
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +38,7 @@ def run_git(args, check=True):
 
 def normalize_paths(paths):
     normalized = []
+    allowed = {Path(config['FILE_PATH']).name for config in LOTTERY_CONFIGS.values()}
 
     for raw_path in paths:
         path = Path(raw_path)
@@ -45,6 +47,9 @@ def normalize_paths(paths):
             path = PROJECT_ROOT / path
 
         path = path.resolve()
+
+        if path.parent != PROJECT_ROOT or path.name not in allowed:
+            raise ValueError('A publicação aceita somente os quatro CSVs públicos de resultados na raiz do projeto.')
 
         try:
             path.relative_to(PROJECT_ROOT)
@@ -118,7 +123,7 @@ def publish(paths, message, dry_run=False):
         print("Nenhuma mudanca nova para commitar.")
         return 0
 
-    run_git(["commit", "-m", message])
+    run_git(["commit", "--only", "-m", message, "--", *normalized_paths])
     run_git(["push", "origin", branch])
     print(f"Atualização enviada para origin/{branch}.")
     return 0
