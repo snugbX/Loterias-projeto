@@ -13,6 +13,41 @@ import gerador_loterias as lottery
 MIN_SAMPLE = 30
 TRAIN_FRACTION = 0.7
 PRIOR_WEIGHT = 20
+MONTH_NAMES = ('Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro').split()
+
+
+def build_month_radar(raw):
+    chronological = list(reversed(raw))
+    draws = [(contest, date, month) for contest, date, _, month in chronological
+             if type(month) is int and 1 <= month <= 12]
+    probabilities = {month: 1 / 12 for month in range(1, 13)}
+    frequencies = Counter(row[2] for row in draws)
+    transitions = defaultdict(Counter)
+    for previous, current in zip(draws, draws[1:]):
+        if current[0] == previous[0] + 1:
+            transitions[previous[2]][current[2]] += 1
+    groups = {}
+    for month in probabilities:
+        observed = transitions[month]
+        sample = sum(observed.values())
+        groups[month] = {
+            'month': month, 'label': MONTH_NAMES[month - 1], 'sample': sample, 'small_sample': sample < MIN_SAMPLE,
+            'profiles': [{'month': target, 'label': MONTH_NAMES[target - 1], 'matches': observed[target],
+                          'conditional_probability': observed[target] / sample if sample else None,
+                          'historical_probability': frequencies[target] / len(draws) if draws else None,
+                          'theoretical_probability': 1 / 12,
+                          'difference_pp': (observed[target] / sample - 1 / 12) * 100 if sample else None,
+                          'interval': wilson_interval(observed[target], sample)} for target in probabilities],
+        }
+    latest = chronological[-1]
+    month = latest[3] if type(latest[3]) is int and latest[3] in probabilities else None
+    return {'latest': {'contest': latest[0], 'date': latest[1], 'month': month,
+                       'label': MONTH_NAMES[month - 1] if month else 'Mês indisponível'},
+            'coverage': {'total_draws': len(draws), 'missing_months': len(raw) - len(draws),
+                         'valid_transitions': sum(sum(values.values()) for values in transitions.values())},
+            'profiles': [{'month': key, 'label': MONTH_NAMES[key - 1]} for key in probabilities],
+            'groups': groups, 'validation': validate_chronologically(draws, probabilities),
+            'disclaimer': 'Frequências e transições dos meses são descritivas. Cada mês tem chance matemática de 1 em 12; o mês anterior não altera essa chance em sorteios independentes.'}
 
 
 def parity_probabilities(count, maximum):
@@ -125,6 +160,7 @@ def build_radar_from_draws(lottery_type, raw, skipped, modified_ns):
                      "skipped_rows": skipped, "excluded_gaps": max(0, len(draws) - 1 - sum(sum(group.values()) for group in transitions.values()))},
         "profiles": [{"even": key, "label": profile_label(key, count)} for key in probabilities],
         "groups": groups, "validation": validate_chronologically(draws, probabilities),
+        "months": build_month_radar(raw) if lottery_type == 'diadesorte' else None,
         "data_updated_at": datetime.fromtimestamp(modified_ns / 1e9, timezone.utc).isoformat(),
         "disclaimer": ("Análise exploratória de pares e ímpares, não previsão de prêmios. "
                        "Em sorteios independentes, o concurso anterior não altera a probabilidade matemática. "
@@ -134,7 +170,7 @@ def build_radar_from_draws(lottery_type, raw, skipped, modified_ns):
     }
 
 
-def get_radar(lottery_type, previous_even=None):
+def get_radar(lottery_type, previous_even=None, previous_month=None):
     if lottery_type not in lottery.LOTTERY_CONFIGS:
         raise ValueError("Loteria inválida.")
     config = lottery.LOTTERY_CONFIGS[lottery_type]
@@ -146,4 +182,12 @@ def get_radar(lottery_type, previous_even=None):
     source = snapshot["latest"]["even"] if previous_even is None else previous_even
     if type(source) is not int or source not in snapshot["groups"]:
         raise ValueError("Perfil de pares e ímpares inválido para esta loteria.")
-    return {key: value for key, value in snapshot.items() if key != "groups"} | {"selected": snapshot["groups"][source]}
+    result = {key: value for key, value in snapshot.items() if key not in {'groups', 'months'}} | {"selected": snapshot["groups"][source]}
+    if previous_month is not None and (lottery_type != 'diadesorte' or type(previous_month) is not int or not 1 <= previous_month <= 12):
+        raise ValueError('Mês de referência inválido para esta loteria.')
+    if snapshot['months'] is not None:
+        months = snapshot['months']
+        selected_month = months['latest']['month'] if previous_month is None else previous_month
+        result['months'] = {key: value for key, value in months.items() if key != 'groups'} | {
+            'selected': months['groups'].get(selected_month)}
+    return result

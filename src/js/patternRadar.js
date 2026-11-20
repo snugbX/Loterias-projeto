@@ -5,6 +5,8 @@ const source = document.getElementById('radar-source');
 const content = document.getElementById('radar-content');
 const status = document.getElementById('radar-status');
 const latest = document.getElementById('radar-latest');
+const monthControls = document.getElementById('radar-month-controls');
+const monthSource = document.getElementById('radar-month-source');
 const REFRESH_MS = 60_000;
 let lottery = 'megasena';
 let identity = null;
@@ -20,6 +22,64 @@ function node(tag, text, className) {
     if (text !== undefined) element.textContent = text;
     if (className) element.className = className;
     return element;
+}
+
+function renderMonths(data) {
+    if (!data) return;
+    const previous = monthSource.value;
+    monthSource.replaceChildren(node('option', 'Usar o mês do último concurso'));
+    monthSource.firstElementChild.value = '';
+    data.profiles.forEach(profile => {
+        const option = node('option', profile.label);
+        option.value = String(profile.month);
+        monthSource.append(option);
+    });
+    monthSource.value = previous;
+    const section = node('section', undefined, 'radar-months');
+    section.append(node('h3', 'Mês da Sorte no radar'), node('p', `Último concurso: ${number(data.latest.contest, 0)} · ${data.latest.date} · ${data.latest.label}.`));
+    section.append(node('p', `${number(data.coverage.total_draws, 0)} concursos com mês válido · ${number(data.coverage.valid_transitions, 0)} transições consecutivas · ${number(data.coverage.missing_months, 0)} concursos sem mês válido. Não ligamos transições através de dados ausentes.`));
+    const selected = data.selected;
+    if (!selected) {
+        section.append(node('p', 'O último concurso não possui mês válido. Escolha um mês de referência para consultar as transições históricas.', 'analysis-warning'));
+    } else {
+        section.append(node('p', `Depois de ${selected.label}: ${number(selected.sample, 0)} transições analisadas.`, 'analysis-verdict'));
+        if (selected.small_sample) section.append(node('p', 'Amostra pequena: menos de 30 transições. As porcentagens dos meses são instáveis.', 'analysis-warning'));
+        const region = node('div', undefined, 'radar-table-scroll');
+        region.tabIndex = 0;
+        region.setAttribute('role', 'region');
+        region.setAttribute('aria-label', 'Transições do Mês da Sorte');
+        const table = node('table');
+        table.append(node('caption', 'Meses: histórico observado, não previsão. Chance matemática: 1 em 12 para cada mês.'));
+        const head = node('thead');
+        const headings = node('tr');
+        ['Mês seguinte', 'Após o mês escolhido', 'Histórico geral', 'Chance matemática', 'Diferença', 'Intervalo aprox. 95%'].forEach(text => {
+            const cell = node('th', text); cell.scope = 'col'; headings.append(cell);
+        });
+        head.append(headings);
+        const body = node('tbody');
+        selected.profiles.forEach(profile => {
+            const row = node('tr');
+            const label = node('th', profile.label); label.scope = 'row'; row.append(label);
+            [`${percent(profile.conditional_probability)} (${number(profile.matches, 0)}/${number(selected.sample, 0)})`,
+                percent(profile.historical_probability), percent(profile.theoretical_probability),
+                profile.difference_pp === null ? 'Sem amostra' : `${number(profile.difference_pp)} pp`,
+                profile.interval ? `${percent(profile.interval[0])} a ${percent(profile.interval[1])}` : 'Sem amostra',
+            ].forEach(text => row.append(node('td', text)));
+            body.append(row);
+        });
+        table.append(head, body); region.append(table); section.append(region);
+    }
+    const validation = node('details');
+    validation.append(node('summary', 'Teste dos meses em concursos posteriores'));
+    const test = data.validation;
+    if (test.test_transitions) {
+        validation.append(node('p', `${number(test.test_transitions, 0)} transições de teste, após treino nos primeiros 70% dos concursos com mês válido. Acerto: transições ${percent(test.model_accuracy)}; referência uniforme ${percent(test.baseline_accuracy)}.`));
+        validation.append(node('p', `Erro Brier (menor é melhor): transições ${number(test.model_brier, 4)}; referência ${number(test.baseline_brier, 4)}.`));
+    }
+    if (!test.enough_data) validation.append(node('p', 'Poucos concursos de teste para uma comparação estável.', 'analysis-warning'));
+    validation.append(node('p', test.note));
+    section.append(validation, node('p', data.disclaimer, 'analysis-disclaimer'));
+    content.append(section);
 }
 
 function render(data) {
@@ -93,6 +153,7 @@ function render(data) {
     if (!test.enough_data) validation.append(node('p', 'Poucos concursos de teste para uma comparação estável.', 'analysis-warning'));
     validation.append(node('p', test.note));
     content.append(validation, node('p', data.disclaimer, 'analysis-disclaimer'));
+    renderMonths(data.months);
     content.hidden = false;
 }
 
@@ -105,9 +166,9 @@ async function load(silent = false) {
     if (!silent) status.textContent = 'Analisando os padrões da base local…';
     panel.setAttribute('aria-busy', 'true');
     try {
-        const { radar } = await getPatternRadar(lottery, source.value, controller.signal);
+        const { radar } = await getPatternRadar(lottery, source.value, controller.signal, lottery === 'diadesorte' ? monthSource.value : '');
         if (pending !== controller || controller.signal.aborted) return;
-        const nextRevision = `${radar.data_updated_at}:${radar.selected.even}`;
+        const nextRevision = `${radar.data_updated_at}:${radar.selected.even}:${radar.months?.selected?.month}`;
         if (nextRevision !== revision) {
             render(radar);
             revision = nextRevision;
@@ -136,6 +197,8 @@ export function syncPatternRadar(user, lotteryType) {
         revision = null;
         source.replaceChildren(node('option', 'Usar o último concurso'));
         source.firstElementChild.value = '';
+        monthSource.replaceChildren(node('option', 'Usar o mês do último concurso'));
+        monthSource.firstElementChild.value = '';
         content.replaceChildren();
         content.hidden = true;
         status.textContent = '';
@@ -146,6 +209,9 @@ export function syncPatternRadar(user, lotteryType) {
     identity = nextIdentity;
     lottery = lotteryType;
     allowed = Boolean(user?.is_premium);
+    monthControls.hidden = lotteryType !== 'diadesorte';
+    document.getElementById('radar-heading').textContent = lotteryType === 'diadesorte'
+        ? 'Pares, ímpares e Mês da Sorte' : 'Pares e ímpares em perspectiva';
     panel.classList.toggle('hidden', !allowed);
     clearInterval(timer);
     timer = allowed ? setInterval(() => load(true), REFRESH_MS) : null;
@@ -165,6 +231,11 @@ panel.addEventListener('toggle', () => {
     }
 });
 source.addEventListener('change', () => {
+    revision = null;
+    content.hidden = true;
+    load();
+});
+monthSource.addEventListener('change', () => {
     revision = null;
     content.hidden = true;
     load();

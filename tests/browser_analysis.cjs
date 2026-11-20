@@ -149,6 +149,18 @@ async function main() {
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false, 'Radar overflows mobile page');
         assert.equal(await page.locator('.radar-table-scroll').evaluate(element => element.scrollWidth > element.clientWidth), true);
         await page.locator('button[data-lottery="diadesorte"]').click();
+        await page.locator('#pattern-radar-panel').evaluate(element => { element.open = true; });
+        await page.locator('.radar-months').waitFor({ state: 'visible' });
+        assert.equal(await page.locator('#radar-month-source option').count(), 13);
+        assert.equal(await page.locator('.radar-months tbody tr').count(), 12);
+        assert.match(await page.locator('.radar-months').innerText(), /1 em 12/);
+        await page.locator('#radar-month-source').selectOption('1');
+        await page.waitForFunction(() => document.querySelector('.radar-months').textContent.includes('Depois de Janeiro:'));
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'Month radar overflows mobile page');
+        await page.locator('.radar-months').screenshot({ path: path.join(__dirname, 'radar-months-mobile-dark.png') });
+        await page.setViewportSize({ width: 1440, height: 1000 });
+        await page.locator('#theme-toggle').click();
+        await page.locator('.radar-months').screenshot({ path: path.join(__dirname, 'radar-months-desktop-light.png') });
         assert.equal(await page.locator('#analysis-result').isVisible(), false, 'Lottery change must clear previous result');
         await page.locator('#analysis-numbers').fill('01, 02, 03, 04, 05, 06, 07');
         await page.locator('#analysis-month').selectOption('1');
@@ -182,7 +194,7 @@ async function main() {
         assert.equal(denied, 403);
         assert.equal(await page.evaluate(async () => (await fetch('/analyze_games/megasena', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ games: [{ numbers: [1, 2, 3, 4, 5, 6] }] }) })).status), 403);
         assert.deepEqual(errors, []);
-        console.log('Browser OK: highlights, minimal alternative, copy, compare alternative, duplicates, batch, radar, months, automatic refresh, light/dark, mobile and premium access control.');
+        console.log('Browser OK: highlights, synergy, batch, parity/month radar, month selection, automatic refresh, light/dark, mobile and premium access control.');
     } finally {
         await browser?.close();
         server.kill();

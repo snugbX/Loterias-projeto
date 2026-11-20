@@ -138,6 +138,56 @@ class RadarTests(unittest.TestCase):
             self.assertTrue(next_cycle)
 
 
+class MonthRadarTests(unittest.TestCase):
+    def raw(self, months, contests=None):
+        return tuple(reversed([(contests[i] if contests else i + 1, '01/01/2026', (1, 2, 3, 4, 5, 6, 7), month)
+                               for i, month in enumerate(months)]))
+
+    def test_month_frequencies_transitions_and_uniform_reference(self):
+        result = radar.build_month_radar(self.raw([1, 2, 1, 2, 3]))
+        self.assertEqual(result['latest']['month'], 3)
+        selected = result['groups'][1]
+        self.assertEqual(selected['sample'], 2)
+        february = selected['profiles'][1]
+        self.assertEqual(february['matches'], 2)
+        self.assertEqual(february['conditional_probability'], 1)
+        self.assertEqual(february['historical_probability'], 2 / 5)
+        self.assertAlmostEqual(sum(p['theoretical_probability'] for p in selected['profiles']), 1)
+        self.assertTrue(all(p['theoretical_probability'] == 1 / 12 for p in selected['profiles']))
+        self.assertIsNotNone(february['interval'])
+
+    def test_missing_month_and_contest_gaps_do_not_bridge_transitions(self):
+        result = radar.build_month_radar(self.raw([1, None, 2, 3], [1, 2, 3, 5]))
+        self.assertEqual(result['coverage']['missing_months'], 1)
+        self.assertEqual(result['coverage']['valid_transitions'], 0)
+        self.assertEqual(result['groups'][1]['sample'], 0)
+        self.assertIsNone(result['groups'][1]['profiles'][0]['conditional_probability'])
+
+    def test_missing_latest_and_all_missing_months_are_explicit(self):
+        result = radar.build_month_radar(self.raw([None, None]))
+        self.assertIsNone(result['latest']['month'])
+        self.assertEqual(result['coverage']['total_draws'], 0)
+        self.assertIsNone(result['groups'][1]['profiles'][0]['historical_probability'])
+        self.assertIsNone(result['validation']['model_brier'])
+
+    def test_month_holdout_does_not_learn_future_months(self):
+        result = radar.build_month_radar(self.raw([1] * 7 + [12] * 3))
+        self.assertEqual(result['validation']['train_last_contest'], 7)
+        self.assertEqual(result['validation']['model_accuracy'], 0)
+        self.assertEqual(result['validation']['test_transitions'], 3)
+
+    def test_selection_rejects_invalid_month_and_hides_internal_groups(self):
+        snapshot = radar.build_radar_from_draws('diadesorte', self.raw([1, 2, 1]), 0, 1)
+        with patch.object(radar, '_build_radar', return_value=snapshot):
+            for month in (0, 13, True, '1'):
+                with self.assertRaises(ValueError):
+                    radar.get_radar('diadesorte', previous_month=month)
+            result = radar.get_radar('diadesorte', previous_month=2)
+            self.assertEqual(result['months']['selected']['month'], 2)
+            self.assertNotIn('groups', result['months'])
+            self.assertEqual(radar.get_radar('diadesorte')['months']['selected']['month'], 1)
+
+
 class RadarRouteTests(unittest.TestCase):
     def test_premium_only_and_query_validation(self):
         module = importlib.import_module('app')
@@ -156,6 +206,19 @@ class RadarRouteTests(unittest.TestCase):
                 service.assert_called_once_with('megasena', 3)
             with patch.object(radar, 'get_radar', side_effect=game_analysis.HistoryUnavailable('Indisponível')):
                 self.assertEqual(client.get('/pattern_radar/megasena').status_code, 503)
+
+    def test_month_query_validation_and_premium_access(self):
+        module = importlib.import_module('app')
+        client = module.app.test_client()
+        with patch.object(module, 'current_access_payload', return_value={'is_premium': True}):
+            for month in ('0', '13', '-1', 'x', '1.5', '٣', ''):
+                self.assertEqual(client.get('/pattern_radar/diadesorte', query_string={'previous_month': month}).status_code, 400)
+            self.assertEqual(client.get('/pattern_radar/megasena?previous_month=1').status_code, 400)
+            with patch.object(radar, 'get_radar', return_value={'months': {}}) as service:
+                response = client.get('/pattern_radar/diadesorte?previous_month=12')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.headers['Cache-Control'], 'no-store')
+                service.assert_called_once_with('diadesorte', None, 12)
 
 
 if __name__ == '__main__':

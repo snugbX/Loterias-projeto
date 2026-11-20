@@ -376,10 +376,14 @@
         <details id="pattern-radar-panel" class="game-analysis pattern-radar hidden">
             <summary>Radar de padrões <span class="analysis-premium">Premium</span></summary>
             <div class="game-analysis-body">
-                <h2>Pares e ímpares em perspectiva</h2>
+                <h2 id="radar-heading">Pares e ímpares em perspectiva</h2>
                 <p id="radar-latest"></p>
                 <label for="radar-source">Perfil do concurso anterior</label>
                 <select id="radar-source"><option value="">Usar o último concurso</option></select>
+                <div id="radar-month-controls" hidden>
+                    <label for="radar-month-source">Mês da Sorte do concurso anterior</label>
+                    <select id="radar-month-source"><option value="">Usar o mês do último concurso</option></select>
+                </div>
                 <p id="radar-status" role="status" aria-live="polite"></p>
                 <div id="radar-content" hidden></div>
             </div>

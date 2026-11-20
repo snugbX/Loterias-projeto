@@ -416,10 +416,16 @@ def get_pattern_radar(lottery_type):
     if lottery_type is None:
         return jsonify({"error": "Tipo de loteria inválido."}), 400
     source = request.args.get('previous_even')
+    month = request.args.get('previous_month')
+    if month is not None and (not month.isascii() or not month.isdigit() or len(month) > 2):
+        return jsonify({'error': 'Mês de referência inválido.'}), 400
     if source is not None and (not source.isascii() or not source.isdigit() or len(source) > 2):
         return jsonify({"error": "Perfil de pares e ímpares inválido."}), 400
     try:
-        response = jsonify({"radar": pattern_radar.get_radar(lottery_type, int(source) if source is not None else None)})
+        args = [lottery_type, int(source) if source is not None else None]
+        if month is not None:
+            args.append(int(month))
+        response = jsonify({"radar": pattern_radar.get_radar(*args)})
         response.headers['Cache-Control'] = 'no-store'
         return response
     except ValueError as error:

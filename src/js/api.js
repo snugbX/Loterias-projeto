@@ -154,9 +154,10 @@ export async function getStrategyStats(lotteryType) {
     );
 }
 
-export async function getPatternRadar(lotteryType, previousEven = '', signal) {
+export async function getPatternRadar(lotteryType, previousEven = '', signal, previousMonth = '') {
     const params = new URLSearchParams();
     if (previousEven !== '') params.set('previous_even', previousEven);
+    if (previousMonth !== '') params.set('previous_month', previousMonth);
     return requestJson(
         `/pattern_radar/${encodeURIComponent(lotteryType)}?${params}`,
         'Erro ao carregar o radar de padrões',
