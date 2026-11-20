@@ -312,8 +312,8 @@
                 </button>
                 <button type="button" class="generation-mode-option is-recommended" data-generation-mode="balanced_never_prize" role="radio" aria-checked="false">
                     <small>Recomendado</small>
-                    <strong>Pares/ímpares + sem prêmio</strong>
-                    <span>Equilibra o jogo e evita faixas históricas premiadas.</span>
+                    <strong>Pares/ímpares + filtro histórico</strong>
+                    <span>Equilibra o jogo e evita faixas históricas fortes, não todas as premiações.</span>
                 </button>
                 <button type="button" class="generation-mode-option" data-generation-mode="spread" role="radio" aria-checked="false">
                     <strong>Bem distribuído</strong>
@@ -370,6 +370,16 @@
                     <p id="analysis-feedback" role="status" aria-live="polite"></p>
                 </form>
                 <div id="analysis-result" tabindex="-1" hidden></div>
+            </div>
+        </details>
+
+        <details id="user-assistance-panel" class="game-analysis user-assistance">
+            <summary>Ajuda para usar o app <span id="help-lottery-name"></span></summary>
+            <div class="game-analysis-body">
+                <label for="help-topic">Sobre o que você precisa de ajuda?</label>
+                <select id="help-topic" disabled></select>
+                <p id="help-status" role="status"></p>
+                <div id="help-content" aria-live="polite"></div>
             </div>
         </details>
 
@@ -612,6 +622,7 @@
                 </button>
             </div>
             <div id="assistencia-container-modal">
+                <p>Frequências passadas não indicam quais números sairão no próximo sorteio.</p>
                 <div id="hot-numbers-display-modal" class="mb-4 p-4 bg-red-50 rounded-lg shadow-sm" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
                     <h3 class="text-xl font-semibold text-red-700 mb-2" style="color: var(--text-secondary);">Números Quentes <span class="text-sm font-normal text-red-500">(Mais Sorteados)</span></h3>
                     <div class="flex flex-wrap justify-center" id="hot-numbers-list-modal">
@@ -625,6 +636,7 @@
                         <!-- Números frios serão inseridos aqui -->
                     </div>
                 </div>
+                <section id="assistance-details" class="assistance-details" aria-live="polite"></section>
             </div>
         </div>
     </div>

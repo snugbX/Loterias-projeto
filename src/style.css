@@ -2634,6 +2634,16 @@ select:focus, input[type="number"]:focus {
 .alternative-action-status:empty { display: none; }
 .alternative-affinities { padding-left: 22px; list-style: disc; color: var(--text-primary); line-height: 1.7; }
 .alternative-affinities li { margin: 8px 0; overflow-wrap: anywhere; }
+.user-assistance { border-top: 1px solid var(--border-color); margin: 20px 0; padding-top: 12px; }
+.user-assistance summary { overflow-wrap: anywhere; }
+.user-assistance summary span { color: var(--text-secondary); font-size: 0.9rem; }
+.assistance-details { border-top: 1px solid var(--border-color); padding-top: 16px; }
+.assistance-details p { color: var(--text-secondary); line-height: 1.7; margin: 12px 0; }
+.assistance-details h3 { color: var(--text-primary); font-size: 1.1rem; margin: 18px 0 12px; }
+.help-month-frequencies { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.help-month-frequencies dt { color: var(--text-primary); font-weight: 700; }
+.help-month-frequencies dd { color: var(--text-secondary); margin: 4px 0; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .help-month-frequencies { grid-template-columns: minmax(0, 1fr); } }
 .comparison-overlap table { min-width: 540px; }
 @media (max-width: 420px) {
     .analysis-highlights { grid-template-columns: minmax(0, 1fr); }

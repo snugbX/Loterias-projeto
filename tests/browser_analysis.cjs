@@ -47,6 +47,32 @@ async function main() {
             await page.waitForFunction(() => !document.getElementById('app-shell').classList.contains('hidden'));
         }
         await login('premium');
+        for (const [kind, count, threshold] of [['megasena', 6, 4], ['quina', 5, 4], ['lotofacil', 15, 13], ['diadesorte', 7, 5]]) {
+            await page.locator(`button[data-lottery="${kind}"]`).click();
+            await page.locator('#user-assistance-panel').evaluate(element => { element.open = true; });
+            await page.waitForFunction(count => document.getElementById('help-content').textContent.includes(`${count} dezenas diferentes`), count);
+            await page.locator('#help-topic').selectOption('filter');
+            assert.match(await page.locator('#help-content').innerText(), new RegExp(`${threshold} ou mais acertos`));
+            if (await page.locator('#generation-mode-toggle').getAttribute('aria-expanded') !== 'true') await page.locator('#generation-mode-toggle').click();
+            const available = await page.evaluate(async kind => (await (await fetch(`/user_assistance/${kind}`)).json()).guide.available_modes, kind);
+            for (const option of await page.locator('.generation-mode-option').all()) {
+                assert.equal(await option.isVisible(), available.includes(await option.getAttribute('data-generation-mode')));
+            }
+        }
+        await page.locator('#assistencia-btn').click();
+        await page.waitForFunction(() => document.querySelectorAll('.help-month-frequencies dt').length === 12);
+        assert.match(await page.locator('#assistance-details').innerText(), /1 em 12/);
+        await page.locator('#assistencia-modal-close-btn').click();
+        await page.locator('#help-topic').selectOption('radar');
+        for (const dark of [false, true]) {
+            if (await page.evaluate(() => document.body.classList.contains('dark-theme')) !== dark) await page.locator('#theme-toggle').click();
+            await page.setViewportSize({ width: 390, height: 844 });
+            await page.locator('#user-assistance-panel').screenshot({ path: path.join(__dirname, `help-mobile-${dark ? 'dark' : 'light'}.png`) });
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+        }
+        await page.setViewportSize({ width: 1440, height: 1000 });
+        if (await page.evaluate(() => document.body.classList.contains('dark-theme'))) await page.locator('#theme-toggle').click();
+        await page.locator('button[data-lottery="megasena"]').click();
         const section = page.locator('#game-analysis-form');
         await page.locator('#game-analysis-form').evaluate(form => { form.closest('details').open = true; });
         await page.locator('#analysis-numbers').fill('1 3 5 7 9 11');
@@ -187,6 +213,11 @@ async function main() {
         await section.locator('button[type="submit"]').click();
         await page.waitForFunction(() => document.getElementById('analysis-numbers').getAttribute('aria-invalid') === 'true');
         await login('free');
+        await page.locator('#user-assistance-panel').evaluate(element => { element.open = true; });
+        await page.locator('#help-topic').waitFor({ state: 'visible' });
+        await page.waitForFunction(() => !document.getElementById('help-topic').disabled);
+        await page.locator('#help-topic').selectOption('privacy');
+        assert.match(await page.locator('#help-content').innerText(), /histórico é separado/);
         assert.equal(await page.locator('#game-analysis-form').isVisible(), false, 'Free user sees premium consultation');
         assert.equal(await page.locator('#pattern-radar-panel').isVisible(), false, 'Free user sees radar');
         assert.equal(await page.evaluate(async () => (await fetch('/pattern_radar/megasena')).status), 403);

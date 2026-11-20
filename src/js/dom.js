@@ -192,6 +192,8 @@ export function adjustableFontElements() {
         elements.dataStatusGrid,
         elements.dataStatusUpdatedAt,
         elements.generationModeSection,
+        document.getElementById('user-assistance-panel'),
+        document.getElementById('assistance-details'),
         elements.selectedGenerationModeLabel,
         elements.premiumUpsellPanel,
         elements.lotteryOptionGrid,

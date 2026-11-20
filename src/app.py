@@ -3,6 +3,7 @@ import game_analysis
 import game_comparison
 import pattern_radar
 import draw_calendar
+import user_assistance
 import atexit
 import auth_storage
 import database
@@ -56,6 +57,7 @@ ALLOWED_STATIC_FILES = {
     'js/ui.js',
     'js/gameAnalysis.js',
     'js/patternRadar.js',
+    'js/userAssistance.js',
 }
 
 def env_flag(name, default=False):
@@ -763,6 +765,19 @@ def get_file_content(filename):
         gerador_loterias.logging.error(f"Erro ao ler conteúdo do arquivo {filename}: {e}")
         return jsonify({"error": "Erro ao carregar conteúdo do arquivo"}), 500
 
+@app.route('/user_assistance/<lottery_type>')
+def user_assistance_api(lottery_type):
+    access_error = require_access()
+    if access_error is not None:
+        return access_error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Tipo de loteria inválido.'}), 400
+    response = jsonify({'guide': user_assistance.get_guide(lottery_type)})
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
 @app.route('/get_hot_cold_numbers/<lottery_type>')
 def get_hot_cold_numbers_api(lottery_type):
     """
@@ -780,7 +795,11 @@ def get_hot_cold_numbers_api(lottery_type):
     
     try:
         hot_cold_data = gerador_loterias.get_hot_cold_numbers(lottery_type)
-        return jsonify(hot_cold_data)
+        response = jsonify(hot_cold_data)
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except game_analysis.HistoryUnavailable as error:
+        return jsonify({'error': str(error)}), 503
     except Exception as e:
         gerador_loterias.logging.error(f"Erro ao obter números quentes/frios para {lottery_type}: {e}")
         return jsonify({"error": "Erro ao obter números quentes e frios"}), 500
@@ -821,7 +840,11 @@ def strategy_stats(lottery_type):
         if stats is None:
             return jsonify({"error": "Tipo de loteria inválido"}), 400
 
-        return jsonify({"stats": stats})
+        response = jsonify({"stats": stats})
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except game_analysis.HistoryUnavailable as error:
+        return jsonify({'error': str(error)}), 503
     except Exception as e:
         gerador_loterias.logging.error(f"Erro ao obter estatísticas de estratégia: {e}")
         return jsonify({"error": "Erro ao obter estatísticas de estratégia"}), 500

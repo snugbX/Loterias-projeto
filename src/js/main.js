@@ -30,6 +30,7 @@ import {
 import { renderDrawCalendar } from './drawCalendar.js';
 import { syncGameAnalysis } from './gameAnalysis.js';
 import { syncPatternRadar, refreshPatternRadar } from './patternRadar.js';
+import { syncUserAssistance, renderAssistanceDetails } from './userAssistance.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
@@ -63,13 +64,13 @@ const generationModeLabels = {
     hot_cold_mix: 'Quentes e frios',
     lucky_dates: 'Datas da sorte',
     high_numbers: 'Números altos',
-    never_prize: 'Sem prêmio histórico',
+    never_prize: 'Filtro histórico forte',
     mixed: 'Tudo misturado',
 };
 
 const generationModeSummaries = {
     normal: 'Probabilidade e filtros atuais.',
-    balanced_never_prize: 'Pares/ímpares + filtro sem prêmio histórico.',
+    balanced_never_prize: 'Pares/ímpares + filtro de faixas históricas fortes.',
     balanced_parity: 'Equilibra a divisão do jogo.',
     even_only: 'Uma superstição direta e ousada.',
     odd_only: 'Para quem joga no instinto.',
@@ -180,6 +181,7 @@ function setGenerationModeStatsLoading() {
     getGenerationModeButtons().forEach(button => {
         const badge = getGenerationModeStatBadge(button);
 
+
         badge.classList.add('is-muted');
         badge.textContent = 'Calculando histórico...';
         badge.removeAttribute('title');
@@ -205,6 +207,13 @@ function renderGenerationStrategyStats(stats) {
         const mode = button.dataset.generationMode;
         const stat = modes[mode];
         const badge = getGenerationModeStatBadge(button);
+        if (stat?.filter_note) {
+            const description = button.querySelector('span');
+            if (description) description.textContent = stat.filter_note;
+            if (selectedGenerationMode() === mode && elements.selectedGenerationModeSummary) {
+                elements.selectedGenerationModeSummary.textContent = stat.filter_note;
+            }
+        }
 
         if (!stat) {
             badge.classList.add('is-muted');
@@ -294,7 +303,8 @@ function setSelectedGenerationMode(mode) {
 
     if (elements.selectedGenerationModeSummary) {
         elements.selectedGenerationModeSummary.textContent = (
-            generationModeSummaries[nextMode] || generationModeSummaries.normal
+            state.strategyStatsByLottery[selectedLotteryType()]?.modes?.[nextMode]?.filter_note
+                || generationModeSummaries[nextMode] || generationModeSummaries.normal
         );
     }
 
@@ -488,6 +498,7 @@ function renderAccountState(user) {
     state.currentUser = user || null;
     syncGameAnalysis(user, selectedLotteryType());
     syncPatternRadar(user, selectedLotteryType());
+    syncUserAssistance(user, selectedLotteryType());
 
     const hasAccess = Boolean(user);
 
@@ -808,6 +819,7 @@ function setSelectedLottery(lotteryType) {
     elements.lotterySelect.value = lotteryType;
     syncGameAnalysis(state.currentUser, lotteryType);
     syncPatternRadar(state.currentUser, lotteryType);
+    syncUserAssistance(state.currentUser, lotteryType);
     const darkTheme = document.body.classList.contains('dark-theme');
 
     document.body.style.setProperty('--active-lottery-primary', colors.primary);
@@ -1222,11 +1234,14 @@ async function loadHistoricalFile(filename, lotteryType) {
 
 async function fetchHotColdNumbers(lotteryType) {
     showLoading('Obtendo números de assistência...');
+    document.getElementById('assistance-details').textContent = 'Carregando a base desta loteria...';
 
     try {
         const data = await getHotColdNumbers(lotteryType);
+        if (selectedLotteryType() !== lotteryType || !hasPremiumAccess() || elements.assistenciaModalOverlay.classList.contains('hidden')) return;
         displayNumberBalls(data.hot_numbers, elements.hotNumbersList, 'hot');
         displayNumberBalls(data.cold_numbers, elements.coldNumbersList, 'cold');
+        renderAssistanceDetails(data);
         updateDynamicElementColors();
     } catch (error) {
         showError(`Erro: ${error.message}`);
