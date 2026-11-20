@@ -19,7 +19,7 @@ RULES_URLS = {
     "megasena": "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx",
     "quina": "https://loterias.caixa.gov.br/Paginas/Quina.aspx",
     "lotofacil": "https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx",
-    "diadesorte": "https://www.caixa.gov.br/Downloads/loterias-manual-de-produtos/MANUAL_DE_PRODUTOS_v19.pdf",
+    "diadesorte": "https://loterias.caixa.gov.br/Paginas/Dia-de-Sorte.aspx",
 }
 
 

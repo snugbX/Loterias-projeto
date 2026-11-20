@@ -202,7 +202,7 @@ LOTTERY_DISPLAY_NAMES = {
 
 GENERATION_MODES = {
     "normal": "Jogo normal",
-    "balanced_never_prize": "Recomendado: pares/ímpares + sem prêmio histórico",
+    "balanced_never_prize": "Pares/ímpares + filtro de faixas históricas fortes",
     "balanced_parity": "Pares e ímpares equilibrados",
     "even_only": "Somente pares",
     "odd_only": "Somente ímpares",
@@ -210,7 +210,7 @@ GENERATION_MODES = {
     "hot_cold_mix": "Quentes e frios misturados",
     "lucky_dates": "Datas da sorte",
     "high_numbers": "Números altos",
-    "never_prize": "Sem prêmio histórico",
+    "never_prize": "Filtro de faixas históricas fortes",
     "mixed": "Tudo junto e misturado",
 }
 PREMIUM_GENERATION_MODES = set(GENERATION_MODES) - {"normal"}
@@ -971,16 +971,9 @@ def get_generation_strategy_stats(lottery_type):
         return None
 
     config = LOTTERY_CONFIGS[lottery_type]
-    df = load_data(config['FILE_PATH'], config['SKIP_ROWS'])
-
-    if df is None or df.empty:
-        return {
-            "lottery_type": lottery_type,
-            "total_draws": 0,
-            "modes": {},
-        }
-
-    historical_draws = get_historical_number_lists(df, config)
+    from game_analysis import load_validated_history
+    draws, skipped, _ = load_validated_history(lottery_type)
+    historical_draws = [row[2] for row in draws]
     total_draws = len(historical_draws)
     modes = {}
 
@@ -995,6 +988,11 @@ def get_generation_strategy_stats(lottery_type):
             "total": total_draws,
             "percentage": None,
         }
+        if mode in {'never_prize', 'balanced_never_prize'}:
+            threshold = HISTORICAL_PRIZE_FILTERS[lottery_type]['min_matches']
+            stat_payload['filter_note'] = f'Evita {threshold} ou mais acertos numéricos na base; não exclui necessariamente todas as faixas.'
+            if lottery_type == 'diadesorte':
+                stat_payload['filter_note'] += ' Não considera o Mês da Sorte.'
 
         if mode == "normal":
             stat_payload["message"] = "Base padr\u00e3o"
@@ -1042,6 +1040,7 @@ def get_generation_strategy_stats(lottery_type):
         "lottery_type": lottery_type,
         "lottery_name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
         "total_draws": total_draws,
+        "skipped_rows": skipped,
         "modes": modes,
     }
 
@@ -1483,75 +1482,32 @@ def save_generated_games_to_csv(jogos, lottery_type, output_dir, owner_key=None)
 
 
 def get_hot_cold_numbers(lottery_type, top_n=10):
+    # Import at call time: the validated history reader itself uses this module.
+    from collections import Counter
+    from game_analysis import load_validated_history
+
     if lottery_type not in LOTTERY_CONFIGS:
-        logging.error(f"Tipo de loteria inválido: {lottery_type}")
-        return {
-            "hot_numbers": [],
-            "cold_numbers": []
-        }
-
+        raise ValueError('Loteria inválida.')
+    if type(top_n) is not int or not 1 <= top_n <= LOTTERY_CONFIGS[lottery_type]['MAX_NUMBER']:
+        raise ValueError('Quantidade inválida para o ranking.')
+    draws, skipped, _ = load_validated_history(lottery_type)
     config = LOTTERY_CONFIGS[lottery_type]
-    df = load_data(config['FILE_PATH'], config['SKIP_ROWS'])
-
-    if df is None:
-        return {
-            "hot_numbers": [],
-            "cold_numbers": []
-        }
-
-    number_cols = [
-        col for col in df.columns
-        if col.startswith(config['CSV_COLUMNS_PREFIX'])
-    ]
-
-    if not number_cols:
-        logging.error(f"Nenhuma coluna encontrada para {lottery_type}")
-        return {
-            "hot_numbers": [],
-            "cold_numbers": []
-        }
-
-    bolas_df = pd.concat([df[col] for col in number_cols])
-    bolas_df = pd.to_numeric(bolas_df, errors='coerce').dropna().astype(int)
-
-    bolas_validas = bolas_df[
-        (bolas_df >= config['MIN_NUMBER']) &
-        (bolas_df <= config['MAX_NUMBER'])
-    ]
-
-    if bolas_validas.empty:
-        return {
-            "hot_numbers": [],
-            "cold_numbers": []
-        }
-
-    value_counts = bolas_validas.value_counts()
-
-    all_possible_numbers = set(
-        range(config['MIN_NUMBER'], config['MAX_NUMBER'] + 1)
-    )
-
-    drawn_numbers = set(value_counts.index)
-    never_drawn = sorted(list(all_possible_numbers - drawn_numbers))
-
-    hot_numbers = value_counts.head(top_n).index.astype(int).tolist()
-
-    cold_numbers_drawn = (
-        value_counts
-        .sort_values(ascending=True)
-        .head(max(0, top_n - len(never_drawn)))
-        .index
-        .astype(int)
-        .tolist()
-    )
-
-    cold_numbers = sorted(
-        list(set(never_drawn + cold_numbers_drawn))
-    )[:top_n]
-
+    counts = Counter(number for _, _, numbers, _ in draws for number in numbers)
+    universe = all_main_numbers(config)
+    hot = sorted(universe, key=lambda number: (-counts[number], number))[:top_n]
+    cold = sorted(universe, key=lambda number: (counts[number], number))[:top_n]
+    months = Counter(month for _, _, _, month in draws if month is not None)
+    valid_months = sum(months.values())
     return {
-        "hot_numbers": hot_numbers,
-        "cold_numbers": cold_numbers
+        'hot_numbers': hot, 'cold_numbers': cold,
+        'frequencies': [{'number': number, 'count': counts[number]} for number in universe],
+        'coverage': {'total_draws': len(draws), 'skipped_rows': skipped,
+                     'last_contest': draws[0][0], 'last_date': draws[0][1]},
+        'months': [{'month': i + 1, 'label': label, 'count': months[i + 1],
+                    'percentage': months[i + 1] / valid_months * 100 if valid_months else None}
+                   for i, label in enumerate(config.get('EXTRA_CHOICES', {}).get('Mês da Sorte', []))],
+        'month_coverage': {'valid': valid_months, 'missing': len(draws) - valid_months} if lottery_type == 'diadesorte' else None,
+        'note': 'Ranking descritivo da base validada. Empates usam a ordem numérica e podem aparecer nas duas listas. Frequência não prevê o próximo sorteio.',
     }
 
 
