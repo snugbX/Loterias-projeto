@@ -1,0 +1,936 @@
+{
+  "schema": 1,
+  "months": [
+    {
+      "year": 2026,
+      "month": 11,
+      "days": {
+        "2026-11-01": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3819
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7157
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3080
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1337
+          }
+        ],
+        "2026-11-02": [],
+        "2026-11-03": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3820
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7158
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1338
+          }
+        ],
+        "2026-11-04": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3821
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7159
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3081
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1339
+          }
+        ],
+        "2026-11-05": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3822
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7160
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1340
+          }
+        ],
+        "2026-11-06": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3823
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7161
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3082
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1341
+          }
+        ],
+        "2026-11-07": [],
+        "2026-11-08": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3824
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7162
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3083
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1342
+          }
+        ],
+        "2026-11-09": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3825
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7163
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1343
+          }
+        ],
+        "2026-11-10": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3826
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7164
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3084
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1344
+          }
+        ],
+        "2026-11-11": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3827
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7165
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1345
+          }
+        ],
+        "2026-11-12": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3828
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7166
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3085
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1346
+          }
+        ],
+        "2026-11-13": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3829
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7167
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1347
+          }
+        ],
+        "2026-11-14": [],
+        "2026-11-15": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3830
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7168
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3086
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1348
+          }
+        ],
+        "2026-11-16": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3831
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7169
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1349
+          }
+        ],
+        "2026-11-17": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3832
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7170
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3087
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1350
+          }
+        ],
+        "2026-11-18": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3833
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7171
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1351
+          }
+        ],
+        "2026-11-19": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3834
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7172
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3088
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1352
+          }
+        ],
+        "2026-11-20": [],
+        "2026-11-21": [],
+        "2026-11-22": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3835
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3089
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1353
+          }
+        ],
+        "2026-11-23": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3836
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1354
+          }
+        ],
+        "2026-11-24": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3837
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3090
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1355
+          }
+        ],
+        "2026-11-25": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3838
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1356
+          }
+        ],
+        "2026-11-26": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3839
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3091
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1357
+          }
+        ],
+        "2026-11-27": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3840
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1358
+          }
+        ],
+        "2026-11-28": [],
+        "2026-11-29": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3841
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7173
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3092
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1359
+          }
+        ],
+        "2026-11-30": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3842
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7174
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1360
+          }
+        ]
+      },
+      "source": "https://www.caixa.gov.br/Downloads/caixa-loterias/Cronograma_11_novembro_2026.pdf",
+      "checked_at": "2026-11-19T15:06:01.805772-03:00"
+    },
+    {
+      "year": 2026,
+      "month": 12,
+      "days": {
+        "2026-12-01": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3843
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7175
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3093
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1361
+          }
+        ],
+        "2026-12-02": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3844
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7176
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1362
+          }
+        ],
+        "2026-12-03": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3845
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7177
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3094
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1363
+          }
+        ],
+        "2026-12-04": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3846
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7178
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1364
+          }
+        ],
+        "2026-12-05": [],
+        "2026-12-06": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3847
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7179
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3095
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1365
+          }
+        ],
+        "2026-12-07": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3848
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7180
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1366
+          }
+        ],
+        "2026-12-08": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3849
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7181
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3096
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1367
+          }
+        ],
+        "2026-12-09": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3850
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7182
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1368
+          }
+        ],
+        "2026-12-10": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3851
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7183
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3097
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1369
+          }
+        ],
+        "2026-12-11": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3852
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7184
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1370
+          }
+        ],
+        "2026-12-12": [],
+        "2026-12-13": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3853
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7185
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3098
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1371
+          }
+        ],
+        "2026-12-14": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3854
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7186
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1372
+          }
+        ],
+        "2026-12-15": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3855
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7187
+          },
+          {
+            "lottery": "megasena",
+            "name": "Mega-Sena",
+            "contest": 3099
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1373
+          }
+        ],
+        "2026-12-16": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3856
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7188
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1374
+          }
+        ],
+        "2026-12-17": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3857
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7189
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1375
+          }
+        ],
+        "2026-12-18": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3858
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7190
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1376
+          }
+        ],
+        "2026-12-19": [],
+        "2026-12-20": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3859
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7191
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1377
+          }
+        ],
+        "2026-12-21": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3860
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7192
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1378
+          }
+        ],
+        "2026-12-22": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3861
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7193
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1379
+          }
+        ],
+        "2026-12-23": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3862
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7194
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1380
+          }
+        ],
+        "2026-12-24": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3863
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7195
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1381
+          }
+        ],
+        "2026-12-25": [],
+        "2026-12-26": [],
+        "2026-12-27": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3864
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7196
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1382
+          }
+        ],
+        "2026-12-28": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3865
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7197
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1383
+          }
+        ],
+        "2026-12-29": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3866
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7198
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1384
+          }
+        ],
+        "2026-12-30": [
+          {
+            "lottery": "lotofacil",
+            "name": "Lotofácil",
+            "contest": 3867
+          },
+          {
+            "lottery": "quina",
+            "name": "Quina",
+            "contest": 7199
+          },
+          {
+            "lottery": "diadesorte",
+            "name": "Dia de Sorte",
+            "contest": 1385
+          }
+        ],
+        "2026-12-31": []
+      },
+      "source": "https://www.caixa.gov.br/Downloads/caixa-loterias/Cronograma_12_dezembro_2026.pdf",
+      "checked_at": "2026-11-19T15:06:02.918841-03:00"
+    }
+  ]
+}

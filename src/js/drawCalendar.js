@@ -62,6 +62,7 @@ export function renderDrawCalendar(target) {
     let pending = false;
     let lastRefresh = 0;
     let displayedDay = '';
+    let loadingSince = null;
     const refresh = document.getElementById('draw-calendar-refresh');
     async function load(force = false) {
         const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
@@ -75,6 +76,12 @@ export function renderDrawCalendar(target) {
             const response = await fetch('/draw_calendar', { cache: 'no-store', signal: controller.signal });
             if (!response.ok) throw new Error('Agenda indisponível');
             const data = await response.json();
+            if (data.status === 'loading') {
+                loadingSince ??= Date.now();
+                if (Date.now() - loadingSince >= 30000) data.status = 'unavailable';
+            } else {
+                loadingSince = null;
+            }
             paintCalendar(target, data);
             displayedDay = day;
             lastRefresh = Date.now();
@@ -95,7 +102,7 @@ export function renderDrawCalendar(target) {
             target.setAttribute('aria-busy', 'false');
         }
     }
-    refresh.addEventListener('click', () => load(true));
+    refresh.addEventListener('click', () => { loadingSince = null; load(true); });
     // Detects the date change in Brazil, including tabs left open overnight.
     setInterval(() => { if (!document.hidden) load(); }, 60000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });

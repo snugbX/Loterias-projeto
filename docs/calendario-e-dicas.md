@@ -10,9 +10,19 @@ constam no cronograma publicado.
 - Semana de segunda a domingo, com datas no horário de Brasília.
 - Cache em memória por processo: uma hora após sucesso; novas tentativas após
   cinco minutos em caso de falha. Não armazena dados de usuários.
+- O deploy inclui `src/public_draw_calendar.json`, cópia validada do cronograma
+  atual e, quando disponível, do mês seguinte. O Render usa essa cópia sem
+  precisar baixar PDFs para atender cada reinício ou processo do servidor.
+- A cópia pública é consultada nos horários do atualizador do GitHub Actions.
+  Mudanças de programação são publicadas; sem mudanças, a data de verificação
+  só é renovada após 12 horas, evitando commits a cada consulta. A validade de
+  atualização é de 36 horas. Depois disso, a agenda fica marcada como antiga
+  e a atualização direta em segundo plano continua disponível como tentativa.
 - Downloads ocorrem em segundo plano. A rota responde imediatamente para que
   lentidão na CAIXA não ocupe o atendimento do app. Na primeira carga, a tela
-  consulta a conclusão a cada cinco segundos enquanto a aba estiver visível.
+  consulta a conclusão a cada cinco segundos, por até 30 segundos, enquanto a
+  aba estiver visível. A rota também limita o estado de carregamento: falhas
+  não deixam a mensagem “Consultando” eternamente.
 - A tela verifica novidades a cada 15 minutos enquanto visível, ao voltar à aba
   e ao detectar uma nova data no Brasil. O botão consulta o cache compartilhado,
   sem disparar um download para cada clique.
@@ -22,8 +32,10 @@ constam no cronograma publicado.
 - Datas sem sorteio só são indicadas após leitura válida do cronograma mensal.
   Alterações no formato do PDF são rejeitadas em vez de adivinhadas. O link
   oficial continua disponível para conferência de avisos, horários e prazos.
-- Não precisa de secret, banco, disco persistente ou alteração no agendamento do
-  GitHub. Depois de um reinício, consulta novamente a fonte oficial.
+- Não precisa de novo secret, banco ou disco persistente. O workflow existente
+  publica a cópia validada e solicita o deploy mesmo quando só o calendário muda.
+  A publicação aceita exclusivamente os quatro CSVs já permitidos e o caminho
+  exato dessa cópia pública, com validação de campos; não inclui arquivos privados.
 
 As dicas são editoriais, gratuitas e rotacionam por dia no Brasil. Incluem uma
 orientação de uso/segurança/jogo responsável e um resumo da agenda do dia. Não

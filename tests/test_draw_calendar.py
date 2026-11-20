@@ -1,6 +1,8 @@
 from datetime import date, datetime, timedelta
 import importlib
 import os
+import json
+import tempfile
 from pathlib import Path
 import sys
 import unittest
@@ -35,6 +37,10 @@ class CalendarTests(unittest.TestCase):
         calendar._cache.clear()
         calendar._next_attempt.clear()
         calendar._refreshing.clear()
+        calendar._refresh_started.clear()
+        self.snapshot_patch = patch.object(calendar, 'SNAPSHOT_PATH', Path(__file__).with_name('nonexistent-calendar-test.json'))
+        self.snapshot_patch.start()
+        self.addCleanup(self.snapshot_patch.stop)
 
     def tearDown(self):
         calendar._cache.clear()
@@ -142,6 +148,73 @@ class CalendarTests(unittest.TestCase):
         with patch.object(calendar, 'PdfReader', return_value=MagicMock(pages=[page])):
             with self.assertRaises(ValueError):
                 calendar.parse_schedule(b'%PDF-fixture', 2026, 11)
+
+    def snapshot(self, checked=None):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        path = Path(directory.name) / 'public_draw_calendar.json'
+        record = {'year': 2026, 'month': 11, 'days': month_days(), 'source': calendar.SOURCE,
+                  'checked_at': (checked or datetime.now(calendar.TIMEZONE)).isoformat()}
+        payload = {'schema': 1, 'months': [record]}
+        path.write_text(json.dumps(payload), encoding='utf-8')
+        return path, payload
+
+    def test_bundled_snapshot_works_without_network_or_background_job(self):
+        path, _ = self.snapshot()
+        with patch.object(calendar, 'SNAPSHOT_PATH', path), patch.object(calendar.threading, 'Thread') as thread:
+            result = calendar.get_calendar(date(2026, 11, 19), background=True)
+        self.assertEqual(result['status'], 'current')
+        self.assertTrue(all(day['available'] for day in result['days']))
+        thread.assert_not_called()
+
+    def test_stale_snapshot_is_shown_as_stale_not_permanent_loading(self):
+        path, _ = self.snapshot(datetime.now(calendar.TIMEZONE) - timedelta(days=3))
+        with patch.object(calendar, 'SNAPSHOT_PATH', path), patch.object(calendar.threading, 'Thread'):
+            result = calendar.get_calendar(date(2026, 11, 19), background=True)
+        self.assertEqual(result['status'], 'stale')
+        self.assertTrue(all(day['available'] and not day['confirmed'] for day in result['days']))
+
+    def test_loading_has_server_side_deadline(self):
+        calendar._refreshing.add((2026, 11))
+        calendar._refresh_started[(2026, 11)] = 1
+        calendar._next_attempt[(2026, 11)] = 1000
+        with patch.object(calendar.time, 'monotonic', return_value=40):
+            result = calendar.get_calendar(date(2026, 11, 19), background=True)
+        self.assertEqual(result['status'], 'unavailable')
+
+    def test_snapshot_rejects_extra_fields_and_incomplete_month(self):
+        for invalid in ('extra', 'missing_date', 'bad_lottery'):
+            path, payload = self.snapshot()
+            if invalid == 'extra':
+                payload['secret'] = 'not-allowed'
+            elif invalid == 'missing_date':
+                payload['months'][0]['days'].pop('2026-11-30')
+            else:
+                payload['months'][0]['days']['2026-11-01'] = [{'lottery': 'invalid', 'name': 'x', 'contest': 1}]
+            path.write_text(json.dumps(payload), encoding='utf-8')
+            with self.assertRaises(ValueError):
+                calendar.read_snapshot(path)
+
+    def test_snapshot_update_failure_preserves_previous_copy(self):
+        path, _ = self.snapshot()
+        before = path.read_bytes()
+        with patch.object(calendar, 'SNAPSHOT_PATH', path), patch.object(calendar, 'load_month', return_value=None):
+            with self.assertRaises(RuntimeError):
+                calendar.update_snapshot()
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_publisher_accepts_only_exact_public_snapshot_with_valid_schema(self):
+        import publish_lottery_data as publisher
+        path, _ = self.snapshot()
+        root = path.parent
+        (root / 'src').mkdir()
+        destination = root / 'src' / path.name
+        path.rename(destination)
+        with patch.object(publisher, 'PROJECT_ROOT', root):
+            self.assertEqual(publisher.normalize_paths([destination]), ['src/public_draw_calendar.json'])
+            destination.write_text('{"private_data": "not-allowed"}', encoding='utf-8')
+            with self.assertRaises(ValueError):
+                publisher.normalize_paths([destination])
 
 
 if __name__ == '__main__':

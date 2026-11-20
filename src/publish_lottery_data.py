@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 from gerador_loterias import LOTTERY_CONFIGS
+import draw_calendar
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -48,7 +49,9 @@ def normalize_paths(paths):
 
         path = path.resolve()
 
-        if path.parent != PROJECT_ROOT or path.name not in allowed:
+        if path == (PROJECT_ROOT / 'src' / 'public_draw_calendar.json').resolve():
+            draw_calendar.read_snapshot(path)
+        elif path.parent != PROJECT_ROOT or path.name not in allowed:
             raise ValueError('A publicação aceita somente os quatro CSVs públicos de resultados na raiz do projeto.')
 
         try:

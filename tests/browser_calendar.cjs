@@ -45,11 +45,14 @@ async function main() {
         const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
         await page.clock.install({ time: new Date('2026-11-18T02:59:30Z') });
         let unavailable = false;
+        let stuckLoading = false;
         let today = '2026-11-17';
         let requests = 0;
         await page.route('**/draw_calendar', route => {
             requests++;
-            return route.fulfill({ json: fixture(unavailable, today) });
+            const payload = fixture(unavailable, today);
+            if (stuckLoading) payload.status = 'loading';
+            return route.fulfill({ json: payload });
         });
         const errors = [];
         page.on('pageerror', e => errors.push(e.message));
@@ -98,6 +101,18 @@ async function main() {
         await page.getByRole('button', { name: 'Consultar atualização do calendário' }).click();
         await page.waitForFunction(() => document.getElementById('draw-calendar-status').textContent.includes('não confirmada'));
         assert.equal(await page.getByText('A confirmar', { exact: true }).count(), 7);
+        stuckLoading = true;
+        await page.getByRole('button', { name: 'Consultar atualização do calendário' }).click();
+        await page.waitForFunction(() => document.getElementById('draw-calendar-status').textContent.includes('Consultando'));
+        for (let attempt = 0; attempt < 7; attempt++) {
+            const beforePoll = requests;
+            await page.clock.fastForward(5100);
+            await page.waitForFunction(() => !document.querySelector('#draw-calendar-refresh').disabled);
+            await page.waitForTimeout(50);
+            if ((await page.locator('#draw-calendar-status').innerText()).includes('não confirmada')) break;
+            assert.ok(requests > beforePoll);
+        }
+        assert.match(await page.locator('#draw-calendar-status').innerText(), /não confirmada/);
         assert.deepEqual(errors, []);
         console.log('Calendar OK: Sunday, holiday, free access, login gate, refresh, Brazil midnight, unavailable source, 320/390/1440px light/dark.');
     } finally {

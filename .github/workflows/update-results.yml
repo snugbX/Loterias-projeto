@@ -37,6 +37,19 @@ jobs:
             src/requirements-admin.txt
       - run: python -m pip install -r src/requirements.txt
       - run: python -m unittest discover -s tests -v
+      - name: Atualizar e publicar calendario oficial
+        id: calendar
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          previous=$(git rev-parse HEAD)
+          if ! python src/draw_calendar.py --update-snapshot; then
+            echo 'Fonte do calendario indisponivel; mantendo a copia publica anterior.'
+          fi
+          python src/publish_lottery_data.py src/public_draw_calendar.json --message 'data: atualiza cronograma publico da CAIXA'
+          if [ "$previous" != "$(git rev-parse HEAD)" ]; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
       - name: Atualizar e publicar somente CSVs novos
         id: update
         run: |
@@ -48,7 +61,7 @@ jobs:
             echo 'changed=true' >> "$GITHUB_OUTPUT"
           fi
       - name: Solicitar deploy com os novos resultados
-        if: steps.update.outputs.changed == 'true'
+        if: ${{ !cancelled() && (steps.update.outputs.changed == 'true' || steps.calendar.outputs.changed == 'true') }}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: python src/trigger_render_deploy.py

@@ -5,6 +5,8 @@ from html.parser import HTMLParser
 from http.cookiejar import CookieJar
 from io import BytesIO
 import logging
+import json
+from pathlib import Path
 import re
 import threading
 import time
@@ -26,6 +28,79 @@ _cache = {}
 _next_attempt = {}
 _jobs_lock = threading.Lock()
 _refreshing = set()
+_refresh_started = {}
+SNAPSHOT_PATH = Path(__file__).with_name('public_draw_calendar.json')
+SNAPSHOT_TTL = 36 * 3600
+
+
+def read_snapshot(path=None):
+    path = Path(path or SNAPSHOT_PATH)
+    if path.stat().st_size > 300_000:
+        raise ValueError('Cópia pública acima do limite.')
+    payload = json.loads(path.read_text(encoding='utf-8'))
+    if set(payload) != {'schema', 'months'} or payload['schema'] != 1 or not isinstance(payload['months'], list) or not 1 <= len(payload['months']) <= 3:
+        raise ValueError('Formato da cópia pública inválido.')
+    result = {}
+    for item in payload['months']:
+        if set(item) != {'year', 'month', 'days', 'source', 'checked_at'}:
+            raise ValueError('Campos não permitidos na cópia pública.')
+        year, month = item['year'], item['month']
+        first = date(year, month, 1)
+        last = (first.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        expected = {(first + timedelta(days=i)).isoformat() for i in range(last.day)}
+        if set(item['days']) != expected or not allowed_url(item['source']):
+            raise ValueError('Datas ou fonte inválidas na cópia pública.')
+        checked = datetime.fromisoformat(item['checked_at'])
+        if checked.tzinfo is None or checked > datetime.now(TIMEZONE) + timedelta(minutes=5):
+            raise ValueError('Data de consulta inválida.')
+        for draws in item['days'].values():
+            if not isinstance(draws, list) or len(draws) > len(NAMES):
+                raise ValueError('Modalidades inválidas.')
+            seen = set()
+            for draw in draws:
+                if (set(draw) != {'lottery', 'name', 'contest'} or draw['lottery'] not in NAMES
+                        or draw['lottery'] in seen or draw['name'] != NAMES[draw['lottery']]
+                        or type(draw['contest']) is not int or draw['contest'] < 1):
+                    raise ValueError('Concurso inválido na cópia pública.')
+                seen.add(draw['lottery'])
+        if (year, month) in result:
+            raise ValueError('Mês duplicado.')
+        age = max(0, (datetime.now(TIMEZONE) - checked).total_seconds())
+        result[(year, month)] = {**item, 'checked_monotonic': time.monotonic() - age, 'ttl': SNAPSHOT_TTL}
+    return result
+
+
+def update_snapshot():
+    today = datetime.now(TIMEZONE).date()
+    following = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
+    records = []
+    for day in (today, following):
+        cached = load_month(day.year, day.month)
+        if cached:
+            records.append({'year': day.year, 'month': day.month,
+                            **{key: cached[key] for key in ('days', 'source', 'checked_at')}})
+        elif day == today:
+            raise RuntimeError('Não foi possível confirmar o cronograma do mês atual; a cópia anterior foi preservada.')
+    payload = {'schema': 1, 'months': records}
+    try:
+        old = read_snapshot()
+        same = len(old) == len(records) and all(
+            (item['year'], item['month']) in old
+            and old[item['year'], item['month']]['days'] == item['days']
+            and old[item['year'], item['month']]['source'] == item['source']
+            and (datetime.now(TIMEZONE) - datetime.fromisoformat(old[item['year'], item['month']]['checked_at'])).total_seconds() < 12 * 3600
+            for item in records)
+        if same:
+            print('Cronograma público já atualizado; nenhuma alteração necessária.')
+            return False
+    except (OSError, ValueError, TypeError, KeyError):
+        pass
+    temporary = SNAPSHOT_PATH.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    read_snapshot(temporary)
+    temporary.replace(SNAPSHOT_PATH)
+    print('Cópia pública do cronograma atualizada.')
+    return True
 
 
 def normalize(value):
@@ -149,9 +224,20 @@ def load_month(year, month):
 
 def cached_month(year, month):
     key = (year, month)
+    if key not in _cache:
+        try:
+            bundled = read_snapshot().get(key)
+            if bundled:
+                _cache[key] = bundled
+                remaining = bundled['ttl'] - (time.monotonic() - bundled['checked_monotonic'])
+                if remaining > 0:
+                    _next_attempt[key] = time.monotonic() + min(3600, remaining)
+        except (OSError, ValueError, TypeError, KeyError):
+            pass
     with _jobs_lock:
         if key not in _refreshing and time.monotonic() >= _next_attempt.get(key, 0):
             _refreshing.add(key)
+            _refresh_started[key] = time.monotonic()
 
             def refresh():
                 try:
@@ -159,6 +245,7 @@ def cached_month(year, month):
                 finally:
                     with _jobs_lock:
                         _refreshing.discard(key)
+                        _refresh_started.pop(key, None)
 
             threading.Thread(target=refresh, daemon=True, name='caixa-calendar').start()
     return _cache.get(key)
@@ -193,15 +280,27 @@ def get_calendar(today=None, background=False):
     days = []
     for day in dates:
         cached = months[(day.year, day.month)]
-        fresh = bool(cached and time.monotonic() - cached['checked_monotonic'] < 3600)
+        fresh = bool(cached and time.monotonic() - cached['checked_monotonic'] < cached.get('ttl', 3600))
         days.append({'date': day.isoformat(), 'label': LABELS[day.weekday()], 'today': day == today,
                      'confirmed': fresh, 'available': bool(cached),
                      'draws': cached['days'].get(day.isoformat(), []) if cached else []})
     checked = [value['checked_at'] for value in months.values() if value]
     status = 'current' if all(day['confirmed'] for day in days) else 'unavailable' if not checked else 'stale'
-    if status != 'current' and background and any(key in _refreshing for key in months):
+    if not checked and background and any(key in _refreshing and time.monotonic() - _refresh_started.get(key, 0) < 30 for key in months):
         status = 'loading'
     return {'today': today.isoformat(), 'timezone': 'America/Sao_Paulo', 'days': days,
             'status': status,
             'checked_at': min(checked) if checked else None,
             'source': SOURCE, 'tips': daily_tips(today, days[today.weekday()])}
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Atualiza somente a cópia pública do calendário oficial.')
+    parser.add_argument('--update-snapshot', action='store_true', required=True)
+    parser.parse_args()
+    try:
+        update_snapshot()
+    except Exception as error:
+        logging.error('Falha na atualização do cronograma público (%s).', type(error).__name__)
+        raise SystemExit(1)
