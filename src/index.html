@@ -604,13 +604,35 @@
     <!-- Novo Modal para Jogos Gerados -->
     <div id="generated-games-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="generated-games-modal-title">
         <div class="modal-content max-w-2xl w-full">
-            <div class="flex justify-between items-center mb-4">
+            <div class="draw-modal-header">
                 <h3 id="generated-games-modal-title" class="text-xl font-bold">Seus Jogos Gerados</h3>
                 <!-- Ajustado a classe para display flex-col e items-center para alinhar os jogos verticalmente -->
                 <button id="generated-games-modal-close-btn" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-full p-2" aria-label="Fechar jogos gerados">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
+            <section id="draw-experience" class="draw-experience" aria-label="Apresentação dos jogos">
+                <div class="draw-heading">
+                    <div><p class="draw-eyebrow">SEU PRÓXIMO PALPITE</p><h4 id="draw-lottery-name"></h4></div>
+                    <span id="draw-format" class="draw-format"></span>
+                </div>
+                <p id="draw-status" class="draw-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                <p id="draw-batch-summary" class="draw-batch-summary" hidden></p>
+                <ol id="draw-batch-progress" class="draw-batch-progress" aria-label="Prévia dos jogos do lote" hidden></ol>
+                <div class="draw-scene" aria-hidden="true">
+                    <canvas id="draw-canvas" width="720" height="350"></canvas>
+                    <span class="draw-scene-label">SNUGBX · ESTÚDIO DE PALPITES</span>
+                </div>
+                <div id="draw-preview" class="draw-preview" aria-label="Prévia do primeiro jogo"></div>
+                <div class="draw-controls">
+                    <button id="draw-pause" type="button">Pausar</button>
+                    <button id="draw-skip" type="button">Ver jogos agora</button>
+                    <button id="draw-replay" type="button" hidden>Rever animação</button>
+                    <label class="draw-preference"><input id="draw-enabled" type="checkbox" checked> Animação ao gerar</label>
+                </div>
+                <p id="draw-motion-note" class="draw-motion-note" hidden>Movimento reduzido ativado no seu dispositivo.</p>
+                <p class="draw-disclaimer">Sugestões de jogos, não um sorteio oficial. A animação não altera suas chances.</p>
+            </section>
             <!-- MANTIDO: A classe é flex flex-col items-center para os jogos aparecerem um embaixo do outro -->
             <div id="jogos-gerados-modal-display" class="mb-6 space-y-2 text-lg flex flex-col items-center">
                 <!-- Os jogos gerados serão inseridos aqui pelo JavaScript -->

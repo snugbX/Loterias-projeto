@@ -1,5 +1,6 @@
 import { generateConstrainedGames } from './api.js';
 import { compareGeneratedGames } from './gameAnalysis.js';
+import { beginDrawPreparation, cancelDrawPreparation } from './drawExperience.js';
 
 const panel = document.getElementById('constrained-panel');
 const form = document.getElementById('constrained-form');
@@ -104,9 +105,10 @@ form.addEventListener('submit', async event => {
     const timeout = setTimeout(() => controller.abort(), 25000);
     fields.disabled = true; summary.replaceChildren(); status.textContent = 'Buscando um lote compatível...';
     form.setAttribute('aria-busy', 'true');
+    const preparation = beginDrawPreparation(kind);
     try {
         const data = await generateConstrainedGames(kind, payload, controller.signal);
-        if (pending !== controller) return;
+        if (pending !== controller) { cancelDrawPreparation(preparation); return; }
         status.textContent = 'Lote gerado e salvo no histórico da sua conta.';
         const p = data.portfolio;
         summary.append(node('p', `${p.unique_combinations} combinações distintas · ${p.distinct_numbers} dezenas diferentes no conjunto · maior sobreposição: ${p.max_overlap ?? 'não se aplica'}.`),
@@ -116,8 +118,9 @@ form.addEventListener('submit', async event => {
         compare.disabled = data.games.length > 10;
         if (compare.disabled) compare.title = 'A consulta aceita até 10 jogos por vez.';
         compare.addEventListener('click', () => compareGeneratedGames(data.games, kind)); summary.append(compare);
-        onGenerated(data, kind);
+        onGenerated(data, kind, preparation);
     } catch (error) {
+        cancelDrawPreparation(preparation);
         if (pending === controller) status.textContent = controller.signal.aborted
             ? 'A resposta demorou demais. Confira seu histórico antes de tentar novamente.' : error.message;
     } finally {

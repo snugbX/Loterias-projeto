@@ -64,6 +64,7 @@ ALLOWED_STATIC_FILES = {
     'js/researchReports.js',
     'js/constrainedGeneration.js',
     'js/drawDigest.js',
+    'js/drawExperience.js',
 }
 
 def env_flag(name, default=False):

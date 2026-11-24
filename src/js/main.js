@@ -35,6 +35,7 @@ import { syncUserAssistance, renderAssistanceDetails } from './userAssistance.js
 import { syncResearchReports, refreshResearchReports } from './researchReports.js';
 import { syncConstrainedGeneration, initConstrainedGeneration, openConstrainedGeneration } from './constrainedGeneration.js';
 import { refreshDrawDigest } from './drawDigest.js';
+import { presentDrawExperience, beginDrawPreparation, cancelDrawPreparation, refreshDrawResultLabels } from './drawExperience.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
@@ -1017,11 +1018,12 @@ function handleAdminError(error) {
 }
 
 
-function presentGeneratedGames(data, lotteryType) {
+function presentGeneratedGames(data, lotteryType, preparation) {
     const jogos = data.games || data;
     state.currentGeneratedGames = jogos;
     if (data.usage && state.currentUser) renderAccountState({ ...state.currentUser, usage: data.usage });
     displayGamesAsBalls(jogos, elements.jogosGeradosModalDisplay, lotteryType);
+    if (!presentDrawExperience(jogos, lotteryType, preparation)) return;
     openModal(elements.generatedGamesModalOverlay);
     elements.copyGamesButtonModal.classList.remove('hidden');
     elements.generatedGamesModalCloseBtn.focus();
@@ -1037,14 +1039,14 @@ async function handleGenerateGames() {
         return;
     }
 
-    showLoading('Gerando jogos...');
     setActionButtonsDisabled(true);
+    const preparation = beginDrawPreparation(lotteryType);
 
     try {
         const data = await generateGames(lotteryType, String(numGames), selectedGenerationMode());
-        presentGeneratedGames(data, lotteryType);
-        showSuccessMessageModal(`Foram gerados ${(data.games || data).length} jogos para ${formatLotteryName(lotteryType)}.`);
+        presentGeneratedGames(data, lotteryType, preparation);
     } catch (error) {
+        cancelDrawPreparation(preparation);
         showError(`Erro: ${error.message}`);
         console.error('Erro ao buscar jogos:', error);
     } finally {
@@ -1330,6 +1332,7 @@ function handleFontChanged() {
 
     if (!elements.generatedGamesModalOverlay.classList.contains('hidden') && state.currentGeneratedGames.length > 0) {
         displayGamesAsBalls(state.currentGeneratedGames, elements.jogosGeradosModalDisplay, lotteryType);
+        refreshDrawResultLabels();
     }
 
     if (!elements.assistenciaModalOverlay.classList.contains('hidden')) {
