@@ -1151,7 +1151,7 @@ def generate_candidate_by_mode(lottery_type, mode, probabilidades, model, df, co
             strict=True
         )
 
-    return generate_default_main_numbers(lottery_type, probabilidades, model, df, config)
+    raise ValueError('Estratégia sem implementação de geração.')
 
 
 def generate_main_numbers_with_mode(
