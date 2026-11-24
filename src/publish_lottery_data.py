@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from gerador_loterias import LOTTERY_CONFIGS
 import draw_calendar
+import public_reports
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -51,8 +52,12 @@ def normalize_paths(paths):
 
         if path == (PROJECT_ROOT / 'src' / 'public_draw_calendar.json').resolve():
             draw_calendar.read_snapshot(path)
+        elif path == (PROJECT_ROOT / 'src' / 'public_lottery_reports.json').resolve():
+            bundle = public_reports.read_bundle(path)
+            if any(bundle['reports'][kind]['fingerprint'] != public_reports.fingerprint(kind) for kind in LOTTERY_CONFIGS):
+                raise ValueError('O relatório não corresponde às bases atuais.')
         elif path.parent != PROJECT_ROOT or path.name not in allowed:
-            raise ValueError('A publicação aceita somente os quatro CSVs públicos de resultados na raiz do projeto.')
+            raise ValueError('A publicação aceita somente os CSVs públicos e as duas cópias públicas validadas em caminhos autorizados.')
 
         try:
             path.relative_to(PROJECT_ROOT)

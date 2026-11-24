@@ -60,8 +60,18 @@ jobs:
           if [ "$previous" != "$(git rev-parse HEAD)" ]; then
             echo 'changed=true' >> "$GITHUB_OUTPUT"
           fi
+      - name: Gerar e publicar relatorios e boletins correspondentes
+        id: reports
+        if: ${{ !cancelled() && steps.update.outcome == 'success' }}
+        run: |
+          previous=$(git rev-parse HEAD)
+          python src/build_statistical_reports.py
+          python src/publish_lottery_data.py src/public_lottery_reports.json --message 'data: atualiza auditorias e boletins publicos'
+          if [ "$previous" != "$(git rev-parse HEAD)" ]; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
       - name: Solicitar deploy com os novos resultados
-        if: ${{ !cancelled() && (steps.update.outputs.changed == 'true' || steps.calendar.outputs.changed == 'true') }}
+        if: ${{ !cancelled() && (steps.update.outputs.changed == 'true' || steps.calendar.outputs.changed == 'true' || steps.reports.outputs.changed == 'true') }}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: python src/trigger_render_deploy.py
