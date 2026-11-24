@@ -54,6 +54,7 @@ async function main() {
             await page.locator('#help-topic').selectOption('filter');
             assert.match(await page.locator('#help-content').innerText(), new RegExp(`${threshold} ou mais acertos`));
             if (await page.locator('#generation-mode-toggle').getAttribute('aria-expanded') !== 'true') await page.locator('#generation-mode-toggle').click();
+            await page.waitForFunction(kind => document.getElementById('generation-mode-grid').dataset.catalogLottery === kind && document.querySelectorAll('[data-generation-mode]').length === 11, kind);
             const available = await page.evaluate(async kind => (await (await fetch(`/user_assistance/${kind}`)).json()).guide.available_modes, kind);
             for (const option of await page.locator('.generation-mode-option').all()) {
                 assert.equal(await option.isVisible(), available.includes(await option.getAttribute('data-generation-mode')));

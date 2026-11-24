@@ -213,6 +213,11 @@
                 Carregando últimos resultados...
             </div>
             <div id="data-status-grid" class="data-status-grid hidden" aria-live="polite"></div>
+            <details id="draw-digest-panel" class="draw-digest-panel">
+                <summary>Boletim dos últimos concursos</summary>
+                <p id="draw-digest-status" role="status"></p>
+                <div id="draw-digest-content"></div>
+            </details>
         </section>
 
         <!-- Seletor visual do tipo de loteria -->
@@ -306,44 +311,9 @@
             </div>
 
             <div id="generation-mode-grid" class="generation-mode-grid hidden" role="radiogroup" aria-labelledby="generation-mode-title">
-                <button type="button" class="generation-mode-option is-selected" data-generation-mode="normal" role="radio" aria-checked="true">
-                    <strong>Normal</strong>
-                    <span>Probabilidade e filtros atuais.</span>
-                </button>
-                <button type="button" class="generation-mode-option is-recommended" data-generation-mode="balanced_never_prize" role="radio" aria-checked="false">
-                    <small>Recomendado</small>
-                    <strong>Pares/ímpares + filtro histórico</strong>
-                    <span>Equilibra o jogo e evita faixas históricas fortes, não todas as premiações.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="spread" role="radio" aria-checked="false">
-                    <strong>Bem distribuído</strong>
-                    <span>Espalha por faixas numéricas.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="hot_cold_mix" role="radio" aria-checked="false">
-                    <strong>Quentes e frios</strong>
-                    <span>Mistura frequentes e esquecidos.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="even_only" role="radio" aria-checked="false">
-                    <strong>Só pares</strong>
-                    <span>Uma superstição direta e ousada.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="odd_only" role="radio" aria-checked="false">
-                    <strong>Só ímpares</strong>
-                    <span>Para quem joga no instinto.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="lucky_dates" role="radio" aria-checked="false">
-                    <strong>Datas da sorte</strong>
-                    <span>Prioriza dezenas até 31.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="high_numbers" role="radio" aria-checked="false">
-                    <strong>Números altos</strong>
-                    <span>Foca na metade superior.</span>
-                </button>
-                <button type="button" class="generation-mode-option" data-generation-mode="mixed" role="radio" aria-checked="false">
-                    <strong>Tudo misturado</strong>
-                    <span>Alterna estratégias a cada jogo.</span>
-                </button>
+                Carregando estratégias...
             </div>
+            <div id="generation-mode-tools" class="generation-mode-tools hidden" aria-label="Geração configurável"></div>
 
             <div id="premium-upsell-panel" class="premium-upsell-panel">
                 <div>
@@ -354,6 +324,37 @@
                 <button id="premium-upsell-btn" type="button">Quero mandar no jogo</button>
             </div>
         </section>
+
+        <details id="constrained-panel" class="game-analysis hidden">
+            <summary>Monte seu estilo <span class="analysis-premium">Premium</span></summary>
+            <div class="game-analysis-body">
+                <p id="constrained-lottery"></p>
+                <form id="constrained-form">
+                    <fieldset id="constrained-fields" class="constrained-fields" disabled>
+                        <legend>Preferências do lote</legend>
+                        <div class="constrained-grid">
+                            <div><label for="constrained-method">Seleção</label><select id="constrained-method"><option value="constraints">Minhas regras</option><option value="uniform">Aleatório uniforme</option></select></div>
+                            <div><label for="constrained-quantity">Quantidade de jogos</label><input id="constrained-quantity" type="number" min="1" max="20" value="5" required></div>
+                        </div>
+                        <div id="constrained-rules">
+                            <div class="constrained-grid">
+                                <div><label for="constrained-fixed">Dezenas fixas</label><input id="constrained-fixed" type="text" maxlength="240" autocomplete="off"></div>
+                                <div><label for="constrained-excluded">Dezenas excluídas</label><input id="constrained-excluded" type="text" maxlength="240" autocomplete="off"></div>
+                                <div><label for="constrained-parity">Pares e ímpares</label><select id="constrained-parity"></select></div>
+                                <div><label for="constrained-overlap">Máximo de dezenas em comum entre jogos</label><input id="constrained-overlap" type="number" min="0" max="14" value="5" required aria-describedby="constrained-overlap-note"></div>
+                                <div><label for="constrained-min-sum">Soma mínima (opcional)</label><input id="constrained-min-sum" type="number" min="0"></div>
+                                <div><label for="constrained-max-sum">Soma máxima (opcional)</label><input id="constrained-max-sum" type="number" min="0"></div>
+                            </div>
+                            <p id="constrained-overlap-note"></p>
+                        </div>
+                        <div id="constrained-month-field" hidden><label for="constrained-month">Mês da Sorte</label><select id="constrained-month"></select></div>
+                        <button type="submit">Gerar meu lote</button>
+                    </fieldset>
+                </form>
+                <p id="constrained-status" role="status" aria-live="polite"></p>
+                <div id="constrained-summary"></div>
+            </div>
+        </details>
 
         <details id="game-analysis-panel" class="game-analysis hidden">
             <summary>Consultar e comparar jogos <span class="analysis-premium">Premium</span></summary>
@@ -396,6 +397,14 @@
                 </div>
                 <p id="radar-status" role="status" aria-live="polite"></p>
                 <div id="radar-content" hidden></div>
+            </div>
+        </details>
+
+        <details id="research-report-panel" class="game-analysis hidden">
+            <summary>Confiabilidade das análises <span class="analysis-premium">Premium</span></summary>
+            <div class="game-analysis-body">
+                <p id="research-report-status" role="status"></p>
+                <div id="research-report-content"></div>
             </div>
         </details>
 

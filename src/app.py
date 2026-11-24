@@ -4,6 +4,9 @@ import game_comparison
 import pattern_radar
 import draw_calendar
 import user_assistance
+import public_reports
+import constrained_generation
+import strategy_catalog
 import atexit
 import auth_storage
 import database
@@ -58,6 +61,9 @@ ALLOWED_STATIC_FILES = {
     'js/gameAnalysis.js',
     'js/patternRadar.js',
     'js/userAssistance.js',
+    'js/researchReports.js',
+    'js/constrainedGeneration.js',
+    'js/drawDigest.js',
 }
 
 def env_flag(name, default=False):
@@ -716,6 +722,61 @@ def gerar_jogos(lottery_type):
         gerador_loterias.logging.error(f"Erro na rota /gerar_jogos/{lottery_type}: {e}")
         return jsonify({"error": "Erro interno ao gerar ou salvar jogos"}), 500
 
+@app.route('/strategy_catalog/<lottery_type>')
+def strategy_catalog_api(lottery_type):
+    error = require_access()
+    if error is not None:
+        return error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    response = jsonify(strategy_catalog.catalog_for(lottery_type))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.route('/generation_rules/<lottery_type>')
+def generation_rules_api(lottery_type):
+    error = require_premium_access()
+    if error is not None:
+        return error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    response = jsonify(constrained_generation.capabilities(lottery_type))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.route('/generate_constrained/<lottery_type>', methods=['POST'])
+def generate_constrained_api(lottery_type):
+    error = require_premium_access()
+    if error is not None:
+        return error
+    error = require_csrf()
+    if error is not None:
+        return error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    try:
+        rules = constrained_generation.validate_request(lottery_type, request.get_json(silent=True))
+        user = current_access_payload()
+        permitted, message = can_generate_for_access(user, rules.num_games)
+        if not permitted:
+            return jsonify({'error': message}), 403
+        data = constrained_generation.generate_batch(lottery_type, rules)
+        gerador_loterias.save_generated_games_to_csv(data['games'], lottery_type, gerador_loterias.OUTPUT_DIR, owner_key=history_owner_key(user))
+        data['usage'] = record_generated_for_access(user, len(data['games']))
+        response = jsonify(data)
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    except ValueError as error:
+        return jsonify({'error': str(error)}), 422
+    except constrained_generation.GenerationBusy as error:
+        return jsonify({'error': str(error)}), 503
+
+
 @app.route('/get_history_files/<lottery_type>')
 def get_history_files(lottery_type):
     """
@@ -765,6 +826,19 @@ def get_file_content(filename):
         gerador_loterias.logging.error(f"Erro ao ler conteúdo do arquivo {filename}: {e}")
         return jsonify({"error": "Erro ao carregar conteúdo do arquivo"}), 500
 
+@app.route('/statistical_report/<lottery_type>')
+def statistical_report_api(lottery_type):
+    error = require_premium_access()
+    if error is not None:
+        return error
+    lottery_type = normalize_lottery_type(lottery_type)
+    if lottery_type is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    response = jsonify(public_reports.get_report(lottery_type))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
 @app.route('/user_assistance/<lottery_type>')
 def user_assistance_api(lottery_type):
     access_error = require_access()
@@ -807,6 +881,13 @@ def get_hot_cold_numbers_api(lottery_type):
 @app.route('/draw_calendar')
 def draw_calendar_data():
     response = jsonify(draw_calendar.get_calendar(background=True))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.route('/draw_digest')
+def draw_digest_api():
+    response = jsonify({'digests': public_reports.get_digests()})
     response.headers['Cache-Control'] = 'no-store'
     return response
 

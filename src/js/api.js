@@ -125,6 +125,17 @@ export async function listHistoryFiles(lotteryType) {
     );
 }
 
+export async function generateConstrainedGames(lotteryType, payload, signal) {
+    return requestJson(`/generate_constrained/${encodeURIComponent(lotteryType)}`, 'Não foi possível gerar o lote', {
+        method: 'POST', headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(payload), signal,
+    });
+}
+
+export async function getStrategyCatalog(lotteryType) {
+    return requestJson(`/strategy_catalog/${encodeURIComponent(lotteryType)}`, 'Não foi possível carregar as estratégias', { cache: 'no-store' });
+}
+
 export async function getHistoryFileContent(filename) {
     return requestJson(
         `/get_file_content/${encodeURIComponent(filename)}`,

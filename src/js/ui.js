@@ -66,6 +66,7 @@ export function setActionButtonsDisabled(disabled) {
             button.disabled = disabled || button.dataset.available === 'false';
         });
     }
+    document.querySelectorAll('[data-strategy-tool]').forEach(button => { button.disabled = disabled; });
 
     if (elements.lotteryOptionGrid) {
         elements.lotteryOptionGrid.querySelectorAll('button').forEach(button => {

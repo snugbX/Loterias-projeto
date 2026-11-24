@@ -2544,7 +2544,7 @@ select:focus, input[type="number"]:focus {
 .game-analysis-body { padding: 0 0 20px; }
 .game-analysis h2 { font-size: var(--h2-font-size); margin-bottom: 16px; }
 .game-analysis h3 { font-size: var(--h3-font-size); margin: 24px 0 12px; overflow-wrap: anywhere; }
-.game-analysis p { color: var(--text-secondary); line-height: 1.65; margin: 10px 0; }
+.game-analysis p { color: var(--text-secondary); line-height: 1.65; margin: 10px 0; overflow-wrap: anywhere; }
 .game-analysis label { display: block; margin: 14px 0 8px; font-weight: 700; }
 .game-analysis input, .game-analysis select {
     width: 100%;
@@ -2632,6 +2632,21 @@ select:focus, input[type="number"]:focus {
 .game-analysis .alternative-actions button:first-child { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
 .game-analysis .alternative-actions button:disabled { cursor: default; }
 .alternative-action-status:empty { display: none; }
+.constrained-fields { min-width: 0; border: 0; padding: 0; margin: 0; }
+.constrained-fields legend { font-weight: 700; }
+.generation-mode-tools { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 18px; }
+.generation-mode-tools button { padding: 10px 14px; min-height: 44px; background: var(--surface-subtle); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; font-weight: 700; text-align: left; overflow-wrap: anywhere; }
+.generation-mode-tools button:focus-visible { outline: 3px solid var(--active-lottery-readable, #0f766e); outline-offset: 3px; }
+.generation-mode-tools button:disabled { opacity: 0.6; }
+.draw-digest-panel { margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 12px; }
+.draw-digest-panel summary { min-height: 44px; cursor: pointer; font-weight: 750; color: var(--text-primary); }
+.draw-digest-panel article { border-top: 1px solid var(--border-color); padding: 14px 0; }
+.draw-digest-panel h3 { color: var(--lottery-readable, var(--text-primary)); font-size: 1rem; margin: 0 0 8px; overflow-wrap: anywhere; }
+.draw-digest-panel p { color: var(--text-secondary); line-height: 1.7; margin: 8px 0; overflow-wrap: anywhere; }
+.constrained-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+.constrained-grid > div { min-width: 0; }
+.constrained-fields:disabled { opacity: 0.65; }
+@media (max-width: 640px) { .constrained-grid { grid-template-columns: minmax(0, 1fr); } }
 .alternative-affinities { padding-left: 22px; list-style: disc; color: var(--text-primary); line-height: 1.7; }
 .alternative-affinities li { margin: 8px 0; overflow-wrap: anywhere; }
 .user-assistance { border-top: 1px solid var(--border-color); margin: 20px 0; padding-top: 12px; }

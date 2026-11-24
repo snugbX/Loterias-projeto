@@ -31,6 +31,7 @@ def get_guide(lottery_type):
                     f'As faixas numéricas consideradas são {tiers} acertos. O app simula resultados; não registra apostas nem confirma prêmios recebidos.',
                     'Visitantes e contas Free usam o modo normal, com limite diário. Premium e admin liberam as estratégias, a consulta e o radar.' + normal]},
                 {'id': 'strategies', 'title': 'Qual estratégia posso usar?', 'paragraphs': [
+                    'Em Monte seu estilo, Premium/admin podem fixar ou excluir dezenas, escolher paridade, limitar a soma e a sobreposição do lote. O modo Aleatório uniforme é separado da seleção por restrições; os dois evitam jogos repetidos.',
                     f'Equilíbrio nesta loteria significa {parity}. Isso é um estilo de seleção, não uma previsão.',
                     ('Modos ocultos nesta loteria: ' + ', '.join(unavailable) + '. Não há dezenas suficientes ou o filtro não muda o universo disponível.') if unavailable else 'Os filtros de pares, ímpares, datas e números altos são viáveis nesta loteria.',
                     'Quentes/frios e ponderação histórica descrevem a base; dezenas atrasadas não ficam obrigadas a sair. Nenhum modo melhora comprovadamente a chance individual.']},
@@ -42,6 +43,7 @@ def get_guide(lottery_type):
                     'A alternativa preserva o máximo de dezenas e usa o perfil de paridade do radar e coocorrências com as dezenas mantidas. Afinidade não é previsão. Se faltarem dados, nenhuma sinergia é inventada.',
                     'A alternativa só entra no conjunto consultado quando você a adiciona. Jogos repetidos não ampliam a cobertura numérica.']},
                 {'id': 'radar', 'title': 'Como leio o radar?', 'paragraphs': [
+                    'O teste do radar inclui três janelas posteriores com treino expansivo, sem usar o futuro para treinar cada janela. O painel Confiabilidade das análises separa auditoria de coincidências e intervalos por dezena; relatórios de uma base antiga não são apresentados como atuais.',
                     'A porcentagem “após o perfil” conta transições de concursos consecutivos. Compare-a com a referência matemática e o intervalo; amostras abaixo de 30 são sinalizadas como pequenas.',
                     ('No Dia de Sorte há também transições entre meses, cada um com referência matemática de 1 em 12. Meses ausentes não são ligados artificialmente.' if lottery_type == 'diadesorte' else 'Esta loteria não possui Mês da Sorte; o radar de meses não se aplica.'),
                     'Teste histórico não comprova capacidade de antecipar sorteios. Uma frequência do perfil não é a chance de um jogo específico ganhar.']},

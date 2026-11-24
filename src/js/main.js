@@ -11,6 +11,7 @@ import {
     getHotColdNumbers,
     getLatestResults,
     getStrategyStats,
+    getStrategyCatalog,
     listAdminUsers,
     listHistoryFiles,
     loginAccount,
@@ -31,6 +32,9 @@ import { renderDrawCalendar } from './drawCalendar.js';
 import { syncGameAnalysis } from './gameAnalysis.js';
 import { syncPatternRadar, refreshPatternRadar } from './patternRadar.js';
 import { syncUserAssistance, renderAssistanceDetails } from './userAssistance.js';
+import { syncResearchReports, refreshResearchReports } from './researchReports.js';
+import { syncConstrainedGeneration, initConstrainedGeneration, openConstrainedGeneration } from './constrainedGeneration.js';
+import { refreshDrawDigest } from './drawDigest.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
     createHistoryFileRow,
@@ -54,38 +58,56 @@ import {
 
 let adminConfigured = true;
 
-const generationModeLabels = {
-    normal: 'Jogo normal',
-    balanced_never_prize: 'Recomendado',
-    balanced_parity: 'Pares e ímpares',
-    even_only: 'Só pares',
-    odd_only: 'Só ímpares',
-    spread: 'Bem distribuído',
-    hot_cold_mix: 'Quentes e frios',
-    lucky_dates: 'Datas da sorte',
-    high_numbers: 'Números altos',
-    never_prize: 'Filtro histórico forte',
-    mixed: 'Tudo misturado',
-};
+const generationCatalogs = {};
+let generationCatalogLoading = null;
 
-const generationModeSummaries = {
-    normal: 'Probabilidade e filtros atuais.',
-    balanced_never_prize: 'Pares/ímpares + filtro de faixas históricas fortes.',
-    balanced_parity: 'Equilibra a divisão do jogo.',
-    even_only: 'Uma superstição direta e ousada.',
-    odd_only: 'Para quem joga no instinto.',
-    spread: 'Espalha por faixas numéricas.',
-    hot_cold_mix: 'Mistura frequentes e esquecidos.',
-    lucky_dates: 'Prioriza dezenas até 31.',
-    high_numbers: 'Foca na metade superior.',
-    never_prize: 'Foge das faixas históricas fortes.',
-    mixed: 'Alterna estratégias a cada jogo.',
-};
+function generationModeDefinition(mode, kind = selectedLotteryType()) {
+    return generationCatalogs[kind]?.modes.find(item => item.id === mode);
+}
 
-const unavailableGenerationModesByLottery = {
-    lotofacil: new Set(['even_only', 'odd_only', 'high_numbers', 'lucky_dates']),
-    diadesorte: new Set(['lucky_dates']),
-};
+function renderGenerationCatalog(catalog) {
+    const grid = elements.generationModeGrid;
+    const tools = document.getElementById('generation-mode-tools');
+    if (grid.dataset.catalogLottery !== catalog.lottery_type || !getGenerationModeButtons().length) {
+        grid.replaceChildren(); tools.replaceChildren();
+        catalog.modes.forEach(item => {
+            const button = document.createElement('button'); button.type = 'button';
+            button.className = 'generation-mode-option'; button.dataset.generationMode = item.id;
+            button.setAttribute('role', 'radio');
+            if (item.recommended) {
+                button.classList.add('is-recommended');
+                const badge = document.createElement('small'); badge.textContent = 'Recomendado'; button.append(badge);
+            }
+            const title = document.createElement('strong'); title.textContent = item.label;
+            const description = document.createElement('span'); description.textContent = item.description;
+            button.append(title, description); grid.append(button);
+        });
+        catalog.tools.forEach(item => {
+            const button = document.createElement('button'); button.type = 'button';
+            button.dataset.strategyTool = item.method; button.textContent = item.label;
+            button.title = item.description; tools.append(button);
+        });
+        grid.dataset.catalogLottery = catalog.lottery_type;
+    }
+    setSelectedGenerationMode(state.selectedGenerationMode);
+    if (state.strategyStatsByLottery[catalog.lottery_type]) renderGenerationStrategyStats(state.strategyStatsByLottery[catalog.lottery_type]);
+}
+
+async function loadGenerationCatalog(kind = selectedLotteryType()) {
+    if (!hasPremiumAccess()) return;
+    if (generationCatalogs[kind]) { renderGenerationCatalog(generationCatalogs[kind]); return; }
+    if (generationCatalogLoading === kind) return;
+    generationCatalogLoading = kind;
+    elements.generationModeGrid.textContent = 'Carregando estratégias...';
+    document.getElementById('generation-mode-tools').replaceChildren();
+    try {
+        const catalog = await getStrategyCatalog(kind);
+        generationCatalogs[kind] = catalog;
+        if (selectedLotteryType() === kind && hasPremiumAccess()) renderGenerationCatalog(catalog);
+    } catch {
+        if (selectedLotteryType() === kind && hasPremiumAccess()) elements.generationModeGrid.textContent = 'Estratégias indisponíveis. Feche e reabra o seletor para tentar novamente.';
+    } finally { if (generationCatalogLoading === kind) generationCatalogLoading = null; }
+}
 
 // Tempo da tela de boas-vindas antes de fechar sozinha.
 // Altere este valor em milissegundos: 15000 = 15 segundos.
@@ -140,6 +162,7 @@ function getGenerationModeButtons() {
 
 function setGenerationModePickerOpen(open) {
     elements.generationModeGrid?.classList.toggle('hidden', !open);
+    document.getElementById('generation-mode-tools').classList.toggle('hidden', !open);
     elements.generationModeToggle?.setAttribute('aria-expanded', String(open));
 }
 
@@ -147,6 +170,7 @@ function setGenerationModePickerOpen(open) {
 function toggleGenerationModePicker() {
     const isOpen = elements.generationModeToggle?.getAttribute('aria-expanded') === 'true';
     setGenerationModePickerOpen(!isOpen);
+    if (!isOpen) loadGenerationCatalog();
 }
 
 
@@ -207,13 +231,6 @@ function renderGenerationStrategyStats(stats) {
         const mode = button.dataset.generationMode;
         const stat = modes[mode];
         const badge = getGenerationModeStatBadge(button);
-        if (stat?.filter_note) {
-            const description = button.querySelector('span');
-            if (description) description.textContent = stat.filter_note;
-            if (selectedGenerationMode() === mode && elements.selectedGenerationModeSummary) {
-                elements.selectedGenerationModeSummary.textContent = stat.filter_note;
-            }
-        }
 
         if (!stat) {
             badge.classList.add('is-muted');
@@ -272,7 +289,7 @@ async function loadGenerationStrategyStats(lotteryType = selectedLotteryType()) 
 
 
 function isGenerationModeAvailableForLottery(mode, lotteryType = selectedLotteryType()) {
-    return !unavailableGenerationModesByLottery[lotteryType]?.has(mode);
+    return mode === 'normal' || Boolean(generationModeDefinition(mode, lotteryType)?.available);
 }
 
 
@@ -298,13 +315,12 @@ function setSelectedGenerationMode(mode) {
     state.selectedGenerationMode = nextMode;
 
     if (elements.selectedGenerationModeLabel) {
-        elements.selectedGenerationModeLabel.textContent = generationModeLabels[nextMode] || 'Jogo normal';
+        elements.selectedGenerationModeLabel.textContent = generationModeDefinition(nextMode)?.label || 'Jogo normal';
     }
 
     if (elements.selectedGenerationModeSummary) {
         elements.selectedGenerationModeSummary.textContent = (
-            state.strategyStatsByLottery[selectedLotteryType()]?.modes?.[nextMode]?.filter_note
-                || generationModeSummaries[nextMode] || generationModeSummaries.normal
+            generationModeDefinition(nextMode)?.description || 'Probabilidade e filtros atuais.'
         );
     }
 
@@ -319,7 +335,7 @@ function setSelectedGenerationMode(mode) {
         button.setAttribute('aria-checked', String(selected));
         button.dataset.available = String(available);
         button.disabled = !available;
-        button.tabIndex = available ? 0 : -1;
+        button.tabIndex = available && selected ? 0 : -1;
         button.removeAttribute('title');
     });
 }
@@ -339,6 +355,7 @@ function renderGenerationModeAccess(user = state.currentUser) {
     }
 
     setSelectedGenerationMode(state.selectedGenerationMode);
+    loadGenerationCatalog();
     loadGenerationStrategyStats();
 }
 
@@ -499,6 +516,8 @@ function renderAccountState(user) {
     syncGameAnalysis(user, selectedLotteryType());
     syncPatternRadar(user, selectedLotteryType());
     syncUserAssistance(user, selectedLotteryType());
+    syncResearchReports(user, selectedLotteryType());
+    syncConstrainedGeneration(user, selectedLotteryType());
 
     const hasAccess = Boolean(user);
 
@@ -820,6 +839,8 @@ function setSelectedLottery(lotteryType) {
     syncGameAnalysis(state.currentUser, lotteryType);
     syncPatternRadar(state.currentUser, lotteryType);
     syncUserAssistance(state.currentUser, lotteryType);
+    syncResearchReports(state.currentUser, lotteryType);
+    syncConstrainedGeneration(state.currentUser, lotteryType);
     const darkTheme = document.body.classList.contains('dark-theme');
 
     document.body.style.setProperty('--active-lottery-primary', colors.primary);
@@ -851,6 +872,7 @@ function setSelectedLottery(lotteryType) {
     setSelectedGenerationMode(state.selectedGenerationMode);
 
     if (hasPremiumAccess()) {
+        loadGenerationCatalog(lotteryType);
         loadGenerationStrategyStats(lotteryType);
     }
 }
@@ -945,6 +967,7 @@ async function loadLatestResults() {
         const data = await getLatestResults();
         state.latestResults = data.results;
         renderResultsOverview();
+        refreshDrawDigest();
     } catch (error) {
         state.latestResults = null;
         elements.latestResultsGrid.textContent = 'Últimos resultados indisponíveis no momento.';
@@ -994,6 +1017,16 @@ function handleAdminError(error) {
 }
 
 
+function presentGeneratedGames(data, lotteryType) {
+    const jogos = data.games || data;
+    state.currentGeneratedGames = jogos;
+    if (data.usage && state.currentUser) renderAccountState({ ...state.currentUser, usage: data.usage });
+    displayGamesAsBalls(jogos, elements.jogosGeradosModalDisplay, lotteryType);
+    openModal(elements.generatedGamesModalOverlay);
+    elements.copyGamesButtonModal.classList.remove('hidden');
+    elements.generatedGamesModalCloseBtn.focus();
+}
+
 async function handleGenerateGames() {
     clearAllDisplays();
 
@@ -1009,19 +1042,8 @@ async function handleGenerateGames() {
 
     try {
         const data = await generateGames(lotteryType, String(numGames), selectedGenerationMode());
-        const jogos = data.games || data;
-        state.currentGeneratedGames = jogos;
-
-        if (data.usage && state.currentUser) {
-            renderAccountState({ ...state.currentUser, usage: data.usage });
-        }
-
-        displayGamesAsBalls(jogos, elements.jogosGeradosModalDisplay, lotteryType);
-        openModal(elements.generatedGamesModalOverlay);
-        elements.copyGamesButtonModal.classList.remove('hidden');
-        elements.generatedGamesModalCloseBtn.focus();
-
-        showSuccessMessageModal(`Foram gerados ${jogos.length} jogos para ${formatLotteryName(lotteryType)}.`);
+        presentGeneratedGames(data, lotteryType);
+        showSuccessMessageModal(`Foram gerados ${(data.games || data).length} jogos para ${formatLotteryName(lotteryType)}.`);
     } catch (error) {
         showError(`Erro: ${error.message}`);
         console.error('Erro ao buscar jogos:', error);
@@ -1047,6 +1069,7 @@ async function handleUpdateData() {
         renderResultsOverview();
         await loadLatestResults();
         refreshPatternRadar();
+        refreshResearchReports();
         showSuccessMessageModal(data.message || 'Dados atualizados com sucesso.');
     } catch (error) {
         if (handleAdminError(error)) {
@@ -1378,12 +1401,26 @@ function bindEvents() {
         elements.generationModeToggle.addEventListener('click', toggleGenerationModePicker);
     }
 
-    getGenerationModeButtons().forEach(button => {
-        button.addEventListener('click', () => {
-            setSelectedGenerationMode(button.dataset.generationMode);
-            setGenerationModePickerOpen(false);
-            elements.generationModeToggle?.focus();
-        });
+    elements.generationModeGrid.addEventListener('click', event => {
+        const button = event.target.closest('[data-generation-mode]');
+        if (!button || button.disabled) return;
+        setSelectedGenerationMode(button.dataset.generationMode);
+        setGenerationModePickerOpen(false);
+        elements.generationModeToggle?.focus();
+    });
+    elements.generationModeGrid.addEventListener('keydown', event => {
+        if (!['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+        const buttons = getGenerationModeButtons().filter(button => !button.disabled && !button.classList.contains('hidden'));
+        const index = buttons.indexOf(event.target.closest('[data-generation-mode]'));
+        if (index < 0) return;
+        event.preventDefault();
+        const next = buttons[(index + (['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : -1) + buttons.length) % buttons.length];
+        setSelectedGenerationMode(next.dataset.generationMode); next.focus();
+    });
+    document.getElementById('generation-mode-tools').addEventListener('click', event => {
+        const button = event.target.closest('[data-strategy-tool]');
+        if (!button || button.disabled || !hasPremiumAccess()) return;
+        if (openConstrainedGeneration(button.dataset.strategyTool)) setGenerationModePickerOpen(false);
     });
 
     if (elements.premiumUpsellButton) {
@@ -1448,6 +1485,7 @@ function setFooterYear() {
 
 
 setFooterYear();
+initConstrainedGeneration(presentGeneratedGames);
 initWelcomeScreen();
 renderDrawCalendar(elements.drawCalendarGrid);
 setSelectedLottery(selectedLotteryType());
