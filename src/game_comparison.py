@@ -7,6 +7,7 @@ from itertools import combinations
 import game_analysis
 import game_alternative
 import pattern_radar
+import public_reports
 
 
 MAX_GAMES = 10
@@ -27,6 +28,7 @@ def analyze_games(lottery_type, payload):
     draws, skipped, stat = game_analysis.load_validated_history(lottery_type)
     radar = pattern_radar.build_radar_from_draws(lottery_type, draws, skipped, stat.st_mtime_ns)
     synergy = game_alternative.build_synergy(lottery_type, draws)
+    audit_report = public_reports.get_report(lottery_type)
     source = radar['groups'][radar['latest']['even']]
     targets = {profile['even']: profile for profile in source['profiles']}
     all_prize_contests = set()
@@ -44,6 +46,15 @@ def analyze_games(lottery_type, payload):
         all_prize_contests.update(contests)
         target = targets[data['profile']['even']]
         alternative = game_alternative.suggest_alternative(lottery_type, numbers, month, radar, synergy)
+        checked_pairs = {(min(item['number'], anchor), max(item['number'], anchor))
+                         for item in alternative['synergy']['evidence'] for anchor in item['positive_numbers']}
+        alternative['synergy']['audit'] = {'status': audit_report['status'], 'examined': len(checked_pairs)}
+        if audit_report['status'] == 'current':
+            audit = audit_report['report']['audit']
+            alternative['synergy']['audit'].update({
+                'significant': sum(audit['q_values'][a - 1][b - 1] <= audit['alpha'] for a, b in checked_pairs),
+                'stable': sum(audit['stable_positive'][a - 1][b - 1] for a, b in checked_pairs),
+                'family_size': audit['family_size']})
         alternative_key = (tuple(alternative['numbers']), month)
         if alternative_key not in cached:
             cached[alternative_key] = game_analysis.analyze_validated_game(

@@ -24,6 +24,16 @@ function node(tag, text, className) {
     return element;
 }
 
+function appendWalkForward(test, target) {
+    const walk = test.walk_forward;
+    if (!walk) return;
+    target.append(node('h4', 'Consistência em janelas posteriores'));
+    walk.folds.forEach((fold, index) => target.append(node('p',
+        `Janela ${index + 1}: treino até ${number(fold.train_last_contest, 0)}, teste ${number(fold.test_first_contest, 0)} a ${number(fold.test_last_contest, 0)} · ${number(fold.sample, 0)} transições. Brier do modelo: ${fold.model_brier === null ? 'sem amostra' : number(fold.model_brier, 4)}; referência: ${fold.baseline_brier === null ? 'sem amostra' : number(fold.baseline_brier, 4)}.`)));
+    if (!walk.enough_data) target.append(node('p', 'Amostras insuficientes para comparar todas as janelas com estabilidade.', 'analysis-warning'));
+    target.append(node('p', walk.note));
+}
+
 function renderMonths(data) {
     if (!data) return;
     const previous = monthSource.value;
@@ -78,6 +88,7 @@ function renderMonths(data) {
     }
     if (!test.enough_data) validation.append(node('p', 'Poucos concursos de teste para uma comparação estável.', 'analysis-warning'));
     validation.append(node('p', test.note));
+    appendWalkForward(test, validation);
     section.append(validation, node('p', data.disclaimer, 'analysis-disclaimer'));
     content.append(section);
 }
@@ -152,6 +163,7 @@ function render(data) {
     }
     if (!test.enough_data) validation.append(node('p', 'Poucos concursos de teste para uma comparação estável.', 'analysis-warning'));
     validation.append(node('p', test.note));
+    appendWalkForward(test, validation);
     content.append(validation, node('p', data.disclaimer, 'analysis-disclaimer'));
     renderMonths(data.months);
     content.hidden = false;

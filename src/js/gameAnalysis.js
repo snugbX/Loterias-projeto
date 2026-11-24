@@ -113,6 +113,10 @@ function renderAlternative(data, target) {
             affinities.append(node('li', `${String(item.number).padStart(2, '0')}: coocorrência acima da referência com ${item.positive_count} de ${item.anchor_count} dezenas ${alternative.synergy.reference === 'preserved' ? 'mantidas' : 'originais'} (${item.positive_numbers.map(n => String(n).padStart(2, '0')).join(', ')}).`));
         });
         section.append(affinities, node('p', `Base de afinidade: ${integer(alternative.synergy.total_draws)} concursos. Cada par considerado precisa de pelo menos ${alternative.synergy.min_pair_support} coocorrências e cada dezena, de ${alternative.synergy.min_number_support} aparições.`));
+        const audit = alternative.synergy.audit;
+        section.append(node('p', audit?.status === 'current'
+            ? `Verificação separada: ${audit.significant} de ${audit.examined} pares com excesso sob referência uniforme após correção entre ${integer(audit.family_size)} pares; ${audit.stable} positivos nas duas metades da base. Isso não comprova capacidade de previsão.`
+            : 'Verificação contra coincidências pendente para esta base. A afinidade acima permanece apenas descritiva.', 'analysis-warning'));
         section.append(node('p', 'As associações são entre pares de dezenas; não significam que todo esse grupo tenha saído junto.'));
     } else {
         section.append(node('p', 'Nenhuma troca necessária: mantivemos suas dezenas. Não há motivo estatístico para substituir um número por outro do mesmo perfil.'));
@@ -378,6 +382,20 @@ export function syncGameAnalysis(user, lotteryType) {
     const config = lotteries[lotteryType];
     document.getElementById('analysis-lottery-label').textContent = config.name;
     document.getElementById('analysis-number-hint').textContent = `${config.count} dezenas diferentes por jogo, de 1 a ${config.max}, separadas por espaço, vírgula ou ponto e vírgula. Limite: ${MAX_GAMES} jogos.`;
+}
+
+export function compareGeneratedGames(games, lotteryType) {
+    if (!allowed || lotteryType !== currentLottery || !games.length || games.length > MAX_GAMES) return;
+    invalidateResult(); entries.replaceChildren();
+    games.forEach(game => {
+        addEntry(false);
+        const row = entries.lastElementChild;
+        row.querySelector('input').value = game.slice(0, lotteries[currentLottery].count).join(' ');
+        if (lotteryType === 'diadesorte') row.querySelector('select').value = String(months.indexOf(game[game.length - 1]) + 1);
+    });
+    panel.open = true;
+    form.requestSubmit();
+    panel.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 
 addButton.addEventListener('click', () => addEntry());

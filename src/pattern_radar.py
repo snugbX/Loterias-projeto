@@ -16,6 +16,45 @@ PRIOR_WEIGHT = 20
 MONTH_NAMES = ('Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro').split()
 
 
+def walk_forward_validation(draws, probabilities):
+    folds = []
+    for fraction in (0.4, 0.6, 0.8):
+        start = max(1, int(len(draws) * fraction))
+        end = min(len(draws), int(len(draws) * (fraction + 0.2) + 1e-8))
+        if end <= start:
+            continue
+        training = defaultdict(Counter)
+        for previous, current in zip(draws[:start], draws[1:start]):
+            if current[0] == previous[0] + 1:
+                training[previous[2]][current[2]] += 1
+        loss = baseline_loss = hits = baseline_hits = tested = 0
+        baseline_choice = max(probabilities, key=probabilities.get)
+        for index in range(start, end):
+            previous, current = draws[index - 1], draws[index]
+            if current[0] != previous[0] + 1:
+                continue
+            observed = training[previous[2]]
+            sample = sum(observed.values())
+            estimated = {key: (observed[key] + PRIOR_WEIGHT * p) / (sample + PRIOR_WEIGHT)
+                         for key, p in probabilities.items()}
+            tested += 1
+            hits += int(max(estimated, key=estimated.get) == current[2])
+            baseline_hits += int(baseline_choice == current[2])
+            loss += sum((p - int(key == current[2])) ** 2 for key, p in estimated.items())
+            baseline_loss += sum((p - int(key == current[2])) ** 2 for key, p in probabilities.items())
+        folds.append({'train_last_contest': draws[start - 1][0], 'test_first_contest': draws[start][0],
+                      'test_last_contest': draws[end - 1][0], 'sample': tested,
+                      'model_accuracy': hits / tested if tested else None,
+                      'baseline_accuracy': baseline_hits / tested if tested else None,
+                      'model_brier': loss / tested if tested else None,
+                      'baseline_brier': baseline_loss / tested if tested else None})
+    total = sum(fold['sample'] for fold in folds)
+    return {'folds': folds, 'sample': total, 'enough_data': len(folds) == 3 and all(f['sample'] >= MIN_SAMPLE for f in folds),
+            'model_brier': sum(f['model_brier'] * f['sample'] for f in folds if f['sample']) / total if total else None,
+            'baseline_brier': sum(f['baseline_brier'] * f['sample'] for f in folds if f['sample']) / total if total else None,
+            'note': 'Três janelas posteriores de 20%, com treino expansivo inicial de 40%, 60% e 80%. Modelo congelado dentro de cada janela; os testes não se sobrepõem. Resultado descritivo, sem vantagem comprovada.'}
+
+
 def build_month_radar(raw):
     chronological = list(reversed(raw))
     draws = [(contest, date, month) for contest, date, _, month in chronological
@@ -102,6 +141,7 @@ def validate_chronologically(draws, probabilities):
         baseline_loss += sum((value - int(key == current[2])) ** 2 for key, value in probabilities.items())
     return {
         "train_draws": split, "test_transitions": tested,
+        "walk_forward": walk_forward_validation(draws, probabilities),
         "train_last_contest": draws[split - 1][0] if split else None,
         "test_first_contest": draws[split][0] if split < len(draws) else None,
         "model_accuracy": model_hits / tested if tested else None,
