@@ -499,14 +499,27 @@ function usageText(user) {
     const usage = user?.usage;
 
     if (!usage) {
-        return 'Uso: carregando...';
+        return 'Carregando...';
     }
 
     if (usage.is_unlimited) {
-        return `Uso hoje: ${usage.used_today} jogos gerados sem limite`;
+        return `${usage.used_today} ${usage.used_today === 1 ? 'jogo' : 'jogos'}`;
     }
 
-    return `Uso hoje: ${usage.used_today}/${usage.free_daily_limit} jogos`;
+    return `${usage.used_today} de ${usage.free_daily_limit}`;
+}
+
+function renderAccountUsage(user) {
+    const usage = user?.usage;
+    elements.accountUsage.textContent = usageText(user);
+    elements.accountUsageDetail.textContent = !usage ? '' : usage.is_unlimited ? 'Geração sem limite diário' : 'Limite diário do acesso gratuito';
+    const limited = usage && !usage.is_unlimited && Number.isFinite(usage.free_daily_limit) && usage.free_daily_limit > 0;
+    elements.accountUsageMeter.classList.toggle('hidden', !limited);
+    if (limited) {
+        elements.accountUsageMeter.max = usage.free_daily_limit;
+        elements.accountUsageMeter.value = Math.max(0, Math.min(usage.used_today, usage.free_daily_limit));
+        elements.accountUsageMeter.setAttribute('aria-valuetext', `${usage.used_today} de ${usage.free_daily_limit} jogos utilizados hoje`);
+    }
 }
 
 
@@ -540,7 +553,7 @@ function renderAccountState(user) {
     if (!hasAccess) {
         elements.accountUserName.textContent = 'Visitante';
         elements.accountUserEmail.textContent = 'Acesso gratuito';
-        elements.accountUsage.textContent = 'Uso: carregando...';
+        renderAccountUsage(null);
         elements.navLoginButton?.classList.add('hidden');
         elements.logoutButton?.classList.add('hidden');
         elements.premiumPixButton?.classList.add('hidden');
@@ -553,8 +566,8 @@ function renderAccountState(user) {
 
     const isGuest = Boolean(user.is_guest);
     elements.accountUserName.textContent = user.name || 'Visitante';
-    elements.accountUserEmail.textContent = isGuest ? 'Versao gratuita sem cadastro' : user.email;
-    elements.accountUsage.textContent = usageText(user);
+    elements.accountUserEmail.textContent = isGuest ? 'Acesso gratuito, sem cadastro' : user.email;
+    renderAccountUsage(user);
     updateAdminVisibility(user);
     elements.navLoginButton?.classList.toggle('hidden', !isGuest);
     elements.logoutButton?.classList.toggle('hidden', isGuest);

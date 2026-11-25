@@ -173,19 +173,24 @@
             </div>
 
             <div id="account-panel" class="account-panel top-account-panel">
-                <span id="account-plan-badge" class="account-plan-badge">Visitante</span>
                 <div class="account-user-summary">
-                    <div>
-                        <strong id="account-user-name">Visitante</strong>
+                    <span class="account-avatar" aria-hidden="true"><span class="lab-icon" style="--icon: url('icons/lucide/circle-user-round.svg')"></span></span>
+                    <div class="account-identity">
+                        <div class="account-name-row"><strong id="account-user-name">Visitante</strong><span id="account-plan-badge" class="account-plan-badge">Visitante</span></div>
                         <span id="account-user-email">Acesso gratuito</span>
                     </div>
-                    <div id="account-usage" class="account-usage">Uso: carregando...</div>
+                </div>
+                <div class="account-daily-usage">
+                    <span class="account-usage-heading">JOGOS HOJE</span>
+                    <strong id="account-usage" class="account-usage">Carregando...</strong>
+                    <span id="account-usage-detail" class="account-usage-detail"></span>
+                    <meter id="account-usage-meter" class="account-usage-meter hidden" min="0" max="5" value="0" aria-label="Jogos utilizados do limite diário"></meter>
                 </div>
                 <div class="account-actions">
-                    <button id="premium-pix-btn" type="button">Pix Premium</button>
-                    <button id="admin-users-btn" type="button" class="hidden">Usuários</button>
-                    <button id="nav-login-btn" type="button" class="nav-login-btn hidden">Entrar</button>
-                    <button id="logout-btn" type="button">Sair</button>
+                    <button id="premium-pix-btn" type="button" title="Consultar o Pix Premium" aria-label="Consultar o Pix Premium"><span class="lab-icon" style="--icon: url('icons/lucide/qr-code.svg')" aria-hidden="true"></span><span>Pix Premium</span></button>
+                    <button id="admin-users-btn" type="button" class="hidden" title="Gerenciar usuários" aria-label="Gerenciar usuários"><span class="lab-icon" style="--icon: url('icons/lucide/users-round.svg')" aria-hidden="true"></span></button>
+                    <button id="nav-login-btn" type="button" class="nav-login-btn hidden" title="Entrar na sua conta"><span class="lab-icon" style="--icon: url('icons/lucide/log-in.svg')" aria-hidden="true"></span><span>Entrar</span></button>
+                    <button id="logout-btn" type="button" title="Sair da conta" aria-label="Sair da conta"><span class="lab-icon" style="--icon: url('icons/lucide/log-out.svg')" aria-hidden="true"></span></button>
                 </div>
             </div>
         </div>

@@ -65,6 +65,8 @@ export const elements = {
     accountUserName: document.getElementById('account-user-name'),
     accountUserEmail: document.getElementById('account-user-email'),
     accountUsage: document.getElementById('account-usage'),
+    accountUsageDetail: document.getElementById('account-usage-detail'),
+    accountUsageMeter: document.getElementById('account-usage-meter'),
     premiumPixButton: document.getElementById('premium-pix-btn'),
     adminUsersButton: document.getElementById('admin-users-btn'),
     navLoginButton: document.getElementById('nav-login-btn'),

@@ -778,30 +778,6 @@ body.dark-theme input::placeholder {
     font-size: 0.78rem;
     font-weight: 750;
 }
-.top-account-panel {
-    align-items: center;
-    background: transparent;
-    border: 0;
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-end;
-    padding: 0;
-}
-.top-account-panel .account-user-summary {
-    flex: 0 1 auto;
-    gap: 10px;
-    justify-content: flex-end;
-    min-width: 250px;
-    text-align: right;
-}
-.top-account-panel .account-actions {
-    margin-top: 0;
-}
-.top-account-panel .nav-login-btn {
-    background: linear-gradient(135deg, #209869, #0f766e);
-}
 
 body.dark-theme .auth-gate::before {
     background:
@@ -901,12 +877,6 @@ body.dark-theme .top-nav {
         align-items: stretch;
         flex-direction: column;
     }
-    .top-account-panel {
-        justify-content: space-between;
-    }
-    .top-account-panel .account-user-summary {
-        text-align: left;
-    }
 }
 
 @media (max-width: 720px) {
@@ -972,17 +942,6 @@ body.dark-theme .top-nav {
     .terms-consent {
         gap: 9px;
         padding: 9px;
-    }
-    .top-account-panel,
-    .top-account-panel .account-user-summary,
-    .top-account-panel .account-actions {
-        align-items: stretch;
-        flex-direction: column;
-        width: 100%;
-    }
-    .top-account-panel .account-plan-badge,
-    .top-account-panel .account-actions button {
-        width: 100%;
     }
 }
 .app-layout {
@@ -1196,6 +1155,61 @@ h3 {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 12px;
+}
+/* Player bar: preserve account control IDs and role-based visibility. */
+.top-nav { box-shadow: 0 3px 14px rgba(0, 0, 0, .06); padding: 16px; }
+.top-nav-brand .brand-mark { display: flex; color: #fff; flex-shrink: 0; }
+.top-account-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+    min-width: 0;
+    padding: 0 0 0 18px;
+    border: 0;
+    border-left: 1px solid var(--border-color);
+    border-radius: 0;
+    background: transparent;
+}
+.top-account-panel .account-user-summary { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; min-width: 0; text-align: left; }
+.account-avatar { display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex: 0 0 42px; width: 42px; height: 42px; }
+.account-avatar .lab-icon { display: block; width: 32px; height: 32px; }
+.account-identity { min-width: 0; }
+.account-name-row { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.account-identity #account-user-name { font-size: .95rem; line-height: 1.4; overflow-wrap: anywhere; }
+.account-identity #account-user-email { font-size: .75rem; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; margin-top: 3px; }
+.top-account-panel .account-plan-badge { display: inline-flex; align-items: center; font-size: .68rem; padding: 3px 7px; line-height: 1.4; border-radius: 4px; color: var(--text-primary); border-color: var(--border-color); }
+.top-account-panel .account-plan-badge.is-premium, .top-account-panel .account-plan-badge.is-admin { color: #065f46; border-color: #047857; background: #ecfdf5; }
+body.dark-theme .top-account-panel .account-plan-badge.is-premium, body.dark-theme .top-account-panel .account-plan-badge.is-admin { color: #a7f3d0; border-color: #34d399; background: #123c32; }
+.top-account-panel .account-plan-badge.is-guest { color: var(--text-secondary); background: var(--bg-secondary); }
+.account-daily-usage { border-left: 1px solid var(--border-color); padding-left: 18px; text-align: left; min-width: 0; }
+.account-usage-heading { display: block; font-size: .65rem; font-weight: 800; color: var(--text-secondary); line-height: 1.5; }
+.account-daily-usage .account-usage { display: block; color: var(--text-primary); font-size: 1.1rem; line-height: 1.5; font-weight: 850; font-variant-numeric: tabular-nums; }
+.account-usage-detail { display: block; color: var(--text-secondary); font-size: .7rem; line-height: 1.5; }
+.account-usage-meter { display: block; width: 100%; max-width: 180px; height: 8px; margin-top: 5px; accent-color: #047857; }
+.account-usage-meter::-webkit-meter-bar { background: var(--border-color); border: 0; }
+.account-usage-meter::-webkit-meter-optimum-value { background: #047857; }
+body.dark-theme .account-usage-meter::-webkit-meter-optimum-value { background: #6ee7b7; }
+.top-account-panel .account-actions { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+.top-account-panel .account-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: transparent; color: var(--text-primary); font-size: .8rem; font-weight: 750; }
+.top-account-panel .account-actions .lab-icon { width: 19px; height: 19px; flex-shrink: 0; }
+.top-account-panel .account-actions #premium-pix-btn, .top-account-panel .account-actions #nav-login-btn { color: #fff; background: #047857; border-color: #047857; }
+.top-account-panel .account-actions button:hover { box-shadow: inset 0 0 0 1px currentColor; }
+.top-account-panel .account-actions button:focus-visible { outline: 3px solid var(--text-primary); outline-offset: 3px; }
+@media (max-width: 1100px) {
+    .top-nav-main { flex-direction: column; align-items: stretch; }
+    .top-account-panel { padding: 14px 0 0; border-left: 0; border-top: 1px solid var(--border-color); }
+}
+@media (max-width: 600px) {
+    .top-account-panel { grid-template-columns: minmax(0, 1fr) auto; gap: 14px 10px; }
+    .top-account-panel .account-user-summary { grid-column: 1 / -1; }
+    .account-daily-usage { padding-left: 0; border-left: 0; }
+    .top-account-panel .account-actions { justify-content: flex-end; max-width: 190px; }
+}
+@media (max-width: 380px) {
+    .top-account-panel { grid-template-columns: minmax(0, 1fr); }
+    .top-account-panel .account-actions { justify-content: flex-start; max-width: none; }
 }
 .billing-pix-panel,
 .admin-users-panel {

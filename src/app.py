@@ -69,7 +69,7 @@ ALLOWED_STATIC_FILES = {
     'js/drawExperience.js',
     'js/historyManager.js',
     'js/workbench.js',
-    *(f'icons/lucide/{name}.svg' for name in ('flask-conical', 'scan-search', 'radar', 'shield-check', 'circle-help', 'history', 'sparkles', 'chart-no-axes-combined', 'newspaper', 'chevron-left', 'chevron-right', 'refresh-cw', 'ticket', 'copy')),
+    *(f'icons/lucide/{name}.svg' for name in ('flask-conical', 'scan-search', 'radar', 'shield-check', 'circle-help', 'history', 'sparkles', 'chart-no-axes-combined', 'newspaper', 'chevron-left', 'chevron-right', 'refresh-cw', 'ticket', 'copy', 'circle-user-round', 'qr-code', 'log-out', 'log-in', 'users-round')),
 }
 
 def env_flag(name, default=False):
