@@ -32,6 +32,7 @@ import { syncUserAssistance, renderAssistanceDetails } from './userAssistance.js
 import { syncResearchReports, refreshResearchReports } from './researchReports.js';
 import { syncConstrainedGeneration, initConstrainedGeneration, openConstrainedGeneration } from './constrainedGeneration.js';
 import { refreshDrawDigest } from './drawDigest.js';
+import { initResultsBoard } from './resultsBoard.js';
 import { openHistoryManager, syncHistoryManager } from './historyManager.js';
 import { syncWorkbenchAccess, submitWorkbenchGeneration } from './workbench.js';
 import { presentDrawExperience, beginDrawPreparation, cancelDrawPreparation, refreshDrawResultLabels } from './drawExperience.js';
@@ -944,7 +945,7 @@ function validateNumGames() {
 
 function updateDataStatusTimestamp() {
     if (elements.dataStatusUpdatedAt) {
-        elements.dataStatusUpdatedAt.textContent = `Verificado em ${new Date().toLocaleString('pt-BR')}`;
+        elements.dataStatusUpdatedAt.textContent = `Consulta à base: ${new Date().toLocaleString('pt-BR')}`;
     }
 }
 
@@ -963,19 +964,21 @@ async function loadLatestResults() {
         return;
     }
 
-    elements.latestResultsGrid.textContent = 'Carregando últimos resultados...';
+    if (!state.latestResults) elements.latestResultsGrid.textContent = 'Carregando últimos resultados...';
+    elements.latestResultsGrid.setAttribute('aria-busy', 'true');
 
     try {
         const data = await getLatestResults();
         state.latestResults = data.results;
         renderResultsOverview();
         refreshDrawDigest();
+        return true;
     } catch (error) {
         state.latestResults = null;
-        elements.latestResultsGrid.textContent = 'Últimos resultados indisponíveis no momento.';
-        elements.latestResultsGrid.classList.add('text-gray-500');
+        displayLatestResults(null, elements.latestResultsGrid, state.dataStatus);
         console.error('Erro ao carregar últimos resultados:', error);
-    }
+        return false;
+    } finally { elements.latestResultsGrid.setAttribute('aria-busy', 'false'); }
 }
 
 
@@ -1385,6 +1388,7 @@ function setFooterYear() {
 
 
 setFooterYear();
+initResultsBoard(async () => { const [available] = await Promise.all([loadLatestResults(), loadDataStatus()]); return available; });
 initConstrainedGeneration(presentGeneratedGames);
 initWelcomeScreen();
 renderDrawCalendar(elements.drawCalendarGrid);

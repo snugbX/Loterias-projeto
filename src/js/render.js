@@ -142,97 +142,102 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
 
 export function displayLatestResults(results, targetElement, status = null) {
     const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
+    const formats = { megasena: [6,60,6], lotofacil: [15,25,5], quina: [5,80,5], diadesorte: [7,31,7] };
+    const previousFocus = targetElement.contains(document.activeElement) ? {
+        kind: document.activeElement.dataset.resultsKind, action: document.activeElement.dataset.resultsAction,
+    } : null;
     targetElement.innerHTML = '';
-
-    if (!results || Object.keys(results).length === 0) {
-        targetElement.textContent = 'Últimos resultados indisponíveis.';
-        targetElement.classList.add('text-gray-500');
-        return;
-    }
-
     targetElement.classList.remove('text-gray-500');
-
     orderedLotteryTypes.forEach(lotteryType => {
-        const result = results[lotteryType];
-
-        if (!result) {
-            return;
-        }
-
+        const result = results?.[lotteryType];
+        const [count, maximum, columns] = formats[lotteryType];
+        const available = result && Number.isInteger(result.contest) && result.contest > 0
+            && typeof result.date === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(result.date)
+            && Array.isArray(result.numbers) && result.numbers.length === count && new Set(result.numbers).size === count
+            && result.numbers.every(n => Number.isInteger(n) && n >= 1 && n <= maximum);
         const card = document.createElement('article');
         card.classList.add('latest-result-card');
         applyLotteryColorVars(card, lotteryType, {
-            primary: result.color_primary,
-            secondary: result.color_secondary,
+            primary: result?.color_primary,
+            secondary: result?.color_secondary,
         });
-        card.style.borderColor = 'var(--lottery-border)';
-
+        card.dataset.state = available ? 'available' : 'unavailable';
         const header = document.createElement('div');
         header.classList.add('latest-result-card-header');
-
+        const identity = document.createElement('div'); identity.className = 'result-identity';
+        const ticket = document.createElement('span'); ticket.className = 'lab-icon';
+        ticket.style.setProperty('--icon', "url('icons/lucide/ticket.svg')"); ticket.setAttribute('aria-hidden','true');
         const name = document.createElement('h3');
-        name.textContent = result.name;
-        name.style.color = 'var(--lottery-readable)';
-
-        const meta = document.createElement('p');
-        meta.textContent = `Concurso ${result.contest} • ${result.date}`;
-
-        header.appendChild(name);
-        header.appendChild(meta);
-
+        name.textContent = formatLotteryName(lotteryType); identity.append(ticket, name);
+        header.append(identity);
+        if (available) {
+            const contest = document.createElement('div'); contest.className = 'result-contest';
+            const label = document.createElement('span'); label.textContent = 'Concurso';
+            const value = document.createElement('strong'); value.textContent = result.contest.toLocaleString('pt-BR');
+            contest.append(label, value); header.append(contest);
+        }
+        card.append(header);
+        if (!available) {
+            const empty = document.createElement('p'); empty.className = 'result-unavailable';
+            empty.textContent = 'Resultado indisponível nesta consulta.'; card.append(empty);
+            targetElement.append(card); return;
+        }
+        const meta = document.createElement('div'); meta.className = 'result-draw-date';
+        const drawnLabel = document.createElement('span'); drawnLabel.textContent = 'Sorteio';
+        const drawnDate = document.createElement('time'); drawnDate.textContent = result.date;
+        const [day, month, year] = result.date.split('/'); drawnDate.dateTime = `${year}-${month}-${day}`;
+        meta.append(drawnLabel, drawnDate); card.append(meta);
         const balls = document.createElement('div');
         balls.classList.add('latest-result-balls');
-
+        balls.setAttribute('aria-label', 'Dezenas sorteadas');
+        balls.style.setProperty('--number-cols', String(columns));
+        balls.style.maxWidth = `${columns*38+(columns-1)*6}px`;
         result.numbers.forEach(number => {
             const ball = document.createElement('span');
             ball.classList.add('latest-result-ball');
             ball.textContent = String(number).padStart(2, '0');
             balls.appendChild(ball);
         });
-
-        card.appendChild(header);
-        card.appendChild(balls);
-
-        if (result.extras) {
-            const extras = document.createElement('div');
-            extras.classList.add('latest-result-extras');
-
-            Object.entries(result.extras).forEach(([label, value]) => {
-                const extra = document.createElement('span');
-                applyLotteryColorVars(extra, lotteryType, {
-                    primary: result.color_primary,
-                    secondary: result.color_secondary,
-                });
-                extra.textContent = `${label}: ${value}`;
-                extras.appendChild(extra);
-            });
-
-            card.appendChild(extras);
+        card.append(balls);
+        if (lotteryType === 'diadesorte') {
+            const extras = document.createElement('div'); extras.className = 'result-lucky-month';
+            const label = document.createElement('span'); label.textContent = 'Mês da Sorte';
+            const value = document.createElement('strong'); value.textContent = result.extras?.['Mês da Sorte'] || 'Não informado na base';
+            extras.append(label, value); card.append(extras);
         }
-
         const statusItem = status?.[lotteryType];
-
-        if (statusItem) {
-            const statusFooter = document.createElement('div');
-            statusFooter.classList.add('latest-result-status');
-
-            const statusTitle = document.createElement('strong');
-            statusTitle.textContent = statusItem.file_exists
-                ? 'CSV local verificado'
-                : 'CSV local ausente';
-
-            const statusMeta = document.createElement('span');
-            statusMeta.textContent = statusItem.modified_at
-                ? `Dados atualizados: ${new Date(statusItem.modified_at).toLocaleString('pt-BR')}`
-                : 'Dados locais sem data de atualização';
-
-            statusFooter.appendChild(statusTitle);
-            statusFooter.appendChild(statusMeta);
-            card.appendChild(statusFooter);
+        if (statusItem && (!statusItem.file_exists || statusItem.contest && Number(statusItem.contest) !== result.contest)) {
+            card.dataset.state = 'outdated';
+            const notice = document.createElement('p'); notice.className = 'result-state-note';
+            notice.textContent = statusItem.file_exists ? 'A base mudou. Recarregue o painel para conferir a nova edição.' : 'A base está indisponível. Resultado recebido na última consulta.';
+            card.append(notice);
         }
-
-        targetElement.appendChild(card);
+        const footer = document.createElement('div'); footer.className = 'result-ticket-footer';
+        const countLabel = document.createElement('span'); countLabel.className = 'result-number-count'; countLabel.textContent = `${count} dezenas`;
+        const actions = document.createElement('div'); actions.className = 'result-card-actions';
+        for (const [action, icon, title, caption] of [
+            ['digest', 'newspaper', `Ler o boletim de ${name.textContent}`, 'Boletim'],
+            ['copy', 'copy', `Copiar resultado de ${name.textContent}`, null],
+        ]) {
+            const button = document.createElement('button'); button.type = 'button'; button.dataset.resultsAction = action; button.dataset.resultsKind = lotteryType;
+            button.title = title; button.setAttribute('aria-label', title);
+            const glyph = document.createElement('span'); glyph.className = 'lab-icon'; glyph.style.setProperty('--icon', `url('icons/lucide/${icon}.svg')`); glyph.setAttribute('aria-hidden','true'); button.append(glyph);
+            if (caption) { const text = document.createElement('span'); text.textContent = caption; button.append(text); }
+            actions.append(button);
+        }
+        footer.append(countLabel, actions); card.append(footer);
+        if (statusItem) {
+            const source = document.createElement('details'); source.className = 'result-data-record';
+            const label = document.createElement('summary'); label.textContent = 'Registro na base';
+            const details = document.createElement('p');
+            details.textContent = statusItem.modified_at
+                ? `Arquivo disponível: ${statusItem.file_exists ? 'sim' : 'não'}. Alteração registrada em ${String(statusItem.modified_at).replace('T',' ')}.`
+                : 'Data de alteração da base não informada.';
+            source.append(label, details); card.append(source);
+        }
+        targetElement.append(card);
     });
+    if (previousFocus?.kind && previousFocus.action) targetElement.querySelector(`[data-results-kind="${previousFocus.kind}"][data-results-action="${previousFocus.action}"]`)?.focus({preventScroll:true});
 }
 
 

@@ -65,10 +65,11 @@ ALLOWED_STATIC_FILES = {
     'js/researchReports.js',
     'js/constrainedGeneration.js',
     'js/drawDigest.js',
+    'js/resultsBoard.js',
     'js/drawExperience.js',
     'js/historyManager.js',
     'js/workbench.js',
-    *(f'icons/lucide/{name}.svg' for name in ('flask-conical', 'scan-search', 'radar', 'shield-check', 'circle-help', 'history', 'sparkles', 'chart-no-axes-combined')),
+    *(f'icons/lucide/{name}.svg' for name in ('flask-conical', 'scan-search', 'radar', 'shield-check', 'circle-help', 'history', 'sparkles', 'chart-no-axes-combined', 'newspaper', 'chevron-left', 'chevron-right', 'refresh-cw', 'ticket', 'copy')),
 }
 
 def env_flag(name, default=False):

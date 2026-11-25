@@ -201,22 +201,32 @@
         <section id="latest-results-section" class="latest-results-section data-overview-section mb-6">
             <div class="data-status-heading data-overview-heading">
                 <div>
-                    <span class="latest-results-eyebrow">Resultados e dados</span>
+                    <span class="latest-results-eyebrow">PAINEL DOS SORTEIOS</span>
                     <h2>Últimos Resultados</h2>
-                    <p id="data-status-updated-at">Verificando arquivos locais...</p>
+                    <p id="data-status-updated-at">Consultando a base de resultados...</p>
                 </div>
+                <div class="results-heading-actions">
+                <button id="results-reload" class="results-reload" type="button" title="Recarregar os dados disponíveis na base" aria-label="Recarregar painel de resultados"><span class="lab-icon" style="--icon: url('icons/lucide/refresh-cw.svg')" aria-hidden="true"></span></button>
                 <button id="update-data-btn" type="button" class="data-status-update-btn hidden" aria-label="Atualizar resultados das loterias">
                     Atualizar Resultados
                 </button>
+                </div>
             </div>
-            <div id="latest-results-grid" class="latest-results-grid" aria-live="polite">
+            <p id="results-action-feedback" class="results-action-feedback" role="status" aria-live="polite" aria-atomic="true"></p>
+            <div id="latest-results-grid" class="latest-results-grid" aria-busy="true">
                 Carregando últimos resultados...
             </div>
             <div id="data-status-grid" class="data-status-grid hidden" aria-live="polite"></div>
             <details id="draw-digest-panel" class="draw-digest-panel">
-                <summary>Boletim dos últimos concursos</summary>
-                <p id="draw-digest-status" role="status"></p>
-                <div id="draw-digest-content"></div>
+                <summary class="digest-disclosure"><span class="lab-icon" style="--icon: url('icons/lucide/newspaper.svg')" aria-hidden="true"></span><span>Boletim dos últimos concursos</span></summary>
+                <div class="digest-newsroom">
+                    <header class="digest-masthead"><div><span class="digest-eyebrow">SNUGBX · CADERNO DOS SORTEIOS</span><h2>Concursos em pauta</h2></div><button id="digest-refresh" class="digest-icon-button" type="button" aria-label="Atualizar boletins" title="Atualizar boletins"><span class="lab-icon" style="--icon: url('icons/lucide/refresh-cw.svg')" aria-hidden="true"></span></button></header>
+                    <div id="digest-tabs" class="digest-tabs" role="tablist" aria-label="Boletins por loteria"></div>
+                    <div id="draw-digest-content" class="digest-pages" aria-busy="false"></div>
+                    <footer class="digest-pagination"><button id="digest-prev" class="digest-icon-button" type="button" aria-label="Edição anterior" title="Edição anterior"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-left.svg')" aria-hidden="true"></span></button><span id="digest-position">01 / 04</span><button id="digest-next" class="digest-icon-button" type="button" aria-label="Próxima edição" title="Próxima edição"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-right.svg')" aria-hidden="true"></span></button></footer>
+                    <p id="draw-digest-status" class="digest-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                    <p class="digest-disclaimer">Um retrato dos concursos da base, não uma previsão. Confira os resultados nos canais oficiais da CAIXA.</p>
+                </div>
             </details>
         </section>
 
