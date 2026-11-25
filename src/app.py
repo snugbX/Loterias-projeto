@@ -13,6 +13,7 @@ import database
 import datetime
 import hmac
 import history_storage
+import history_manager
 import gerador_loterias # Importa o módulo de geração de loterias
 import os
 import secrets
@@ -65,6 +66,9 @@ ALLOWED_STATIC_FILES = {
     'js/constrainedGeneration.js',
     'js/drawDigest.js',
     'js/drawExperience.js',
+    'js/historyManager.js',
+    'js/workbench.js',
+    *(f'icons/lucide/{name}.svg' for name in ('flask-conical', 'scan-search', 'radar', 'shield-check', 'circle-help', 'history', 'sparkles', 'chart-no-axes-combined')),
 }
 
 def env_flag(name, default=False):
@@ -776,6 +780,58 @@ def generate_constrained_api(lottery_type):
         return jsonify({'error': str(error)}), 422
     except constrained_generation.GenerationBusy as error:
         return jsonify({'error': str(error)}), 503
+
+
+@app.route('/history_games/<lottery_type>')
+def history_games_api(lottery_type):
+    error = require_access()
+    if error is not None:
+        return error
+    kind = normalize_lottery_type(lottery_type)
+    if kind is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    try:
+        response = jsonify(history_manager.list_games(kind, history_owner_key(), request.args.to_dict()))
+        response.headers['Cache-Control'] = 'private, no-store'
+        return response
+    except ValueError as error:
+        return jsonify({'error': str(error)}), 400
+
+
+@app.route('/history_game/<lottery_type>', methods=['POST'])
+def history_game_api(lottery_type):
+    error = require_access()
+    if error is not None:
+        return error
+    error = require_csrf()
+    if error is not None:
+        return error
+    kind = normalize_lottery_type(lottery_type)
+    if kind is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    try:
+        if not history_manager.update_game(kind, history_owner_key(), request.get_json(silent=True)):
+            return jsonify({'error': 'Jogo não encontrado.'}), 404
+        return jsonify({'ok': True})
+    except ValueError as error:
+        return jsonify({'error': str(error)}), 400
+
+
+@app.route('/history_clear/<lottery_type>', methods=['POST'])
+def history_clear_api(lottery_type):
+    error = require_access()
+    if error is not None:
+        return error
+    error = require_csrf()
+    if error is not None:
+        return error
+    kind = normalize_lottery_type(lottery_type)
+    if kind is None:
+        return jsonify({'error': 'Loteria inválida.'}), 400
+    payload = request.get_json(silent=True)
+    if payload != {'confirm': kind}:
+        return jsonify({'error': 'Confirme a exclusão desta loteria.'}), 400
+    return jsonify({'deleted_batches': history_storage.clear_history(kind, history_owner_key())})
 
 
 @app.route('/get_history_files/<lottery_type>')
