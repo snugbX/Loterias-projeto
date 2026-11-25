@@ -2,8 +2,10 @@ name: Atualizar resultados publicos
 
 on:
   schedule:
-    # UTC: 22:17, 01:17 e 09:17 no horario da Bahia.
-    - cron: '17 1,4,12 * * *'
+    # UTC: janelas apos os sorteios noturnos (21h-01h na Bahia) e revisao as 09h17.
+    - cron: '17 0-4,12 * * *'
+    # Rechecagens apos a janela diurna de domingo (11h-14h na Bahia).
+    - cron: '17 14-17 * * 0'
   workflow_dispatch:
 
 permissions:
