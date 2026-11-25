@@ -95,6 +95,7 @@ async function main() {
         await page.getByRole('button', { name: 'Consultar e comparar este lote' }).click();
         await page.waitForFunction(() => document.getElementById('analysis-feedback').textContent === 'Consulta concluída.');
         assert.equal(await page.locator('.analysis-game-detail').count(), 3);
+        await page.locator('#constrained-panel').evaluate(p => { p.open = true; });
         for (const width of [1440, 390, 320]) {
             await page.setViewportSize({ width, height: 1000 });
             for (const dark of [false, true]) {
@@ -106,6 +107,7 @@ async function main() {
                 assert.deepEqual(clipped, [], `Clipped controls at ${width}`);
             }
         }
+        await page.locator('#research-report-panel').evaluate(p => { p.open = true; });
         await page.locator('#research-report-panel').screenshot({ path: path.join(__dirname, 'research-mobile-dark.png') });
         await page.locator('#draw-digest-panel').screenshot({ path: path.join(__dirname, 'digest-mobile-dark.png') });
         await page.locator('#increase-font').click();
@@ -113,6 +115,7 @@ async function main() {
         await page.locator('#decrease-font').click();
         await page.setViewportSize({ width: 1440, height: 1000 });
         // Incompatible numeric filters must not accidentally constrain the uniform mode.
+        await page.locator('#constrained-panel').evaluate(p => { p.open = true; });
         await page.locator('#constrained-min-sum').fill('9999');
         await page.locator('#constrained-method').selectOption('uniform');
         const uniformResponse = page.waitForResponse(r => r.url().endsWith('/generate_constrained/megasena') && r.request().method() === 'POST');

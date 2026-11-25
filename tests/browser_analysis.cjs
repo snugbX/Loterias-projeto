@@ -165,13 +165,16 @@ async function main() {
         await page.locator('#game-analysis-form').evaluate(form => { form.closest('details').open = true; });
         await page.locator('#analysis-result').screenshot({ path: path.join(__dirname, 'analysis-desktop-dark.png') });
         await page.locator('#analysis-result').screenshot({ path: path.join(__dirname, 'comparison-desktop-dark.png') });
+        await page.locator('#pattern-radar-panel').evaluate(element => { element.open = true; });
         await page.locator('#pattern-radar-panel').screenshot({ path: path.join(__dirname, 'radar-desktop-dark.png') });
         await page.setViewportSize({ width: 390, height: 844 });
+        await page.locator('#game-analysis-panel').evaluate(element => { element.open = true; });
         await page.locator('#analysis-result').scrollIntoViewIfNeeded();
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false, 'Mobile page overflows');
         await page.screenshot({ path: path.join(__dirname, 'analysis-mobile-dark.png') });
         await page.locator('#game-analysis-panel').screenshot({ path: path.join(__dirname, 'comparison-mobile-dark.png') });
         assert.equal(await page.locator('.comparison-overview [role="region"]').evaluate(element => element.scrollWidth > element.clientWidth), true);
+        await page.locator('#pattern-radar-panel').evaluate(element => { element.open = true; });
         await page.locator('#pattern-radar-panel').screenshot({ path: path.join(__dirname, 'radar-mobile-dark.png') });
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false, 'Radar overflows mobile page');
         assert.equal(await page.locator('.radar-table-scroll').evaluate(element => element.scrollWidth > element.clientWidth), true);
@@ -189,6 +192,7 @@ async function main() {
         await page.locator('#theme-toggle').click();
         await page.locator('.radar-months').screenshot({ path: path.join(__dirname, 'radar-months-desktop-light.png') });
         assert.equal(await page.locator('#analysis-result').isVisible(), false, 'Lottery change must clear previous result');
+        await page.locator('#game-analysis-panel').evaluate(element => { element.open = true; });
         await page.locator('#analysis-numbers').fill('01, 02, 03, 04, 05, 06, 07');
         await page.locator('#analysis-month').selectOption('1');
         await section.locator('button[type="submit"]').click();
