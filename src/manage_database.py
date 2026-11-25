@@ -26,6 +26,7 @@ TABLE_COLUMNS = {
     'usage_days': ('user_id', 'usage_date', 'generated_games'),
     'audit_logs': ('id', 'actor_user_id', 'action', 'target_user_id', 'details_json', 'created_at'),
     'generated_games': ('owner_key', 'filename', 'lottery_type', 'created_at', 'games_json'),
+    'history_tracking': ('owner_key', 'filename', 'settings_json'),
 }
 
 
@@ -108,7 +109,8 @@ def initialize_database():
         raise ValueError('DATABASE_APP_PASSWORD precisa ter pelo menos 24 caracteres.')
     connection = admin_connection()
     try:
-        connection.raw.execute(Path(__file__).with_name('migrations').joinpath('001_private_postgres.sql').read_text(encoding='utf-8'))
+        for migration in sorted(Path(__file__).with_name('migrations').glob('*.sql')):
+            connection.raw.execute(migration.read_text(encoding='utf-8'))
         existing = connection.raw.execute("SELECT 1 FROM pg_roles WHERE rolname = 'lottery_app'").fetchone()
         command = 'ALTER ROLE' if existing else 'CREATE ROLE'
         connection.raw.execute(sql.SQL(command + ' {} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD {}').format(
@@ -116,6 +118,18 @@ def initialize_database():
         connection.raw.execute('GRANT USAGE ON SCHEMA lottery_private TO lottery_app')
         connection.raw.execute('GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA lottery_private TO lottery_app')
         connection.raw.execute('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA lottery_private TO lottery_app')
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def upgrade_database():
+    """Idempotent schema upgrade; never rotates the app password or copies data."""
+    connection = admin_connection()
+    try:
+        for migration in sorted(Path(__file__).with_name('migrations').glob('*.sql')):
+            connection.raw.execute(migration.read_text(encoding='utf-8'))
+        connection.raw.execute('GRANT SELECT, INSERT, UPDATE, DELETE ON lottery_private.history_tracking TO lottery_app')
         connection.commit()
     finally:
         connection.close()
@@ -224,7 +238,7 @@ def include_csv_history(snapshot, directory):
 
 def read_legacy(auth_path, history_path=None, history_directory=None):
     data = read_sqlite_tables(auth_path, ('users', 'usage_days', 'audit_logs'))
-    data.update(read_sqlite_tables(history_path, ('generated_games',)) if history_path else {'generated_games': []})
+    data.update(read_sqlite_tables(history_path, ('generated_games', 'history_tracking')) if history_path else {'generated_games': [], 'history_tracking': []})
     snapshot = validate_snapshot({'version': 1, 'tables': data})
     if history_directory:
         include_csv_history(snapshot, history_directory)
@@ -235,6 +249,9 @@ def validate_snapshot(snapshot):
     if not isinstance(snapshot, dict) or snapshot.get('version') != 1 or not isinstance(snapshot.get('tables'), dict):
         raise ValueError('Formato de backup inválido.')
     tables = snapshot['tables']
+    # Backups from before tracking remain restorable, without inventing favorites.
+    if set(tables) == set(TABLE_COLUMNS) - {'history_tracking'}:
+        tables['history_tracking'] = []
     if set(tables) != set(TABLE_COLUMNS):
         raise ValueError('Backup incompleto: tabelas ausentes ou inesperadas.')
     user_ids = set()
@@ -262,6 +279,22 @@ def validate_snapshot(snapshot):
             raise ValueError('Histórico com proprietário inválido. Migração cancelada.')
         if not isinstance(json.loads(row['games_json']), list):
             raise ValueError('Histórico inválido no backup.')
+    parents = {(row['owner_key'], row['filename']): len(json.loads(row['games_json'])) for row in tables['generated_games']}
+    for row in tables['history_tracking']:
+        key = (row['owner_key'], row['filename'])
+        settings = json.loads(row['settings_json'])
+        if key not in parents or not isinstance(settings, dict):
+            raise ValueError('Preferências sem histórico correspondente.')
+        for index, state in settings.items():
+            if not index.isdigit() or not 0 <= int(index) < parents[key] or not isinstance(state, dict):
+                raise ValueError('Preferências de jogo inválidas.')
+            if set(state) - {'favorite', 'effective', 'contest', 'deleted'} or any(type(value) is not bool for name, value in state.items() if name != 'contest'):
+                raise ValueError('Estado de jogo inválido no backup.')
+            contest = state.get('contest')
+            if contest is not None and (type(contest) is not int or not 1 <= contest <= 99999999):
+                raise ValueError('Concurso inválido no backup.')
+            if state.get('effective') and contest is None:
+                raise ValueError('Jogo efetivado sem concurso no backup.')
     return snapshot
 
 
@@ -301,7 +334,8 @@ def backup_postgres(output):
     connection = admin_connection()
     try:
         connection.raw.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
-        tables = {name: connection.raw.execute(f'SELECT * FROM lottery_private.{name}').fetchall() for name in TABLE_COLUMNS}
+        tracking_exists = connection.raw.execute("SELECT to_regclass('lottery_private.history_tracking') AS name").fetchone()['name'] is not None
+        tables = {name: ([] if name == 'history_tracking' and not tracking_exists else connection.raw.execute(f'SELECT * FROM lottery_private.{name}').fetchall()) for name in TABLE_COLUMNS}
         snapshot = {'version': 1, 'created_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'tables': tables}
         write_encrypted(snapshot, output)
     finally:
@@ -314,7 +348,7 @@ def import_snapshot(snapshot):
     snapshot = validate_snapshot(snapshot)
     connection = admin_connection()
     try:
-        connection.raw.execute('LOCK TABLE lottery_private.users, lottery_private.usage_days, lottery_private.audit_logs, lottery_private.generated_games IN ACCESS EXCLUSIVE MODE')
+        connection.raw.execute('LOCK TABLE lottery_private.users, lottery_private.usage_days, lottery_private.audit_logs, lottery_private.generated_games, lottery_private.history_tracking IN ACCESS EXCLUSIVE MODE')
         if any(connection.raw.execute(f'SELECT EXISTS(SELECT 1 FROM lottery_private.{name}) AS present').fetchone()['present'] for name in TABLE_COLUMNS):
             raise ValueError('O destino precisa estar vazio. Nenhum registro existente será sobrescrito.')
         for name, columns in TABLE_COLUMNS.items():
@@ -342,6 +376,7 @@ def main(argv=None):
     configure.add_argument('--project-ref')
     configure.add_argument('--host')
     commands.add_parser('init')
+    commands.add_parser('upgrade')
     commands.add_parser('check')
     commands.add_parser('update-admin-password')
     migrate = commands.add_parser('migrate')
@@ -376,13 +411,17 @@ def main(argv=None):
             try:
                 for name in TABLE_COLUMNS:
                     connection.execute(f'SELECT 1 FROM {name} LIMIT 1')
-                print('Conexão segura e acesso às quatro tabelas confirmados.')
+                print('Conexão segura e acesso às tabelas privadas confirmados.')
             finally:
                 connection.close()
             return 0
         if args.command == 'init':
             initialize_database()
             print('Estrutura privada e usuário restrito preparados. Nenhuma conta do app foi criada.')
+            return 0
+        if args.command == 'upgrade':
+            upgrade_database()
+            print('Estrutura atualizada. Contas, jogos e senha do aplicativo preservados.')
             return 0
         if args.command == 'migrate':
             if args.apply:

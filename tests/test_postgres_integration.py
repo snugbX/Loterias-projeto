@@ -59,7 +59,11 @@ class PostgresIntegrationTests(unittest.TestCase):
         history_database.save_history_record('same.csv', 'megasena', [[2]], owner_key=f"user:{user['id']}")
         self.assertEqual(history_database.read_history_file('same.csv', f"user:{user['id']}"), [[2]])
         self.assertIsNone(history_database.read_history_file('same.csv', 'user:999'))
+        self.assertTrue(history_database.update_game_settings('same.csv', f"user:{user['id']}", 0, {'favorite':True, 'effective':True, 'contest':100}))
+        self.assertEqual(history_database.game_settings('same.csv', f"user:{user['id']}")['0']['contest'],100)
+        self.assertEqual(history_database.game_settings('same.csv', 'user:999'),{})
         self.assertEqual(history_database.clear_history('megasena', f"user:{user['id']}"), ['same.csv'])
+        self.assertEqual(history_database.game_settings('same.csv', f"user:{user['id']}"),{})
 
     def test_runtime_role_cannot_create_tables(self):
         connection = database.open_postgres()

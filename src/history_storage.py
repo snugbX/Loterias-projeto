@@ -82,7 +82,15 @@ def list_history_files(lottery_type, owner_key):
     return sorted(files, reverse=True)
 
 
-def read_history_file(filename, owner_key):
+def read_history_file(filename, owner_key, include_deleted=False):
+    games = _read_history_file(filename, owner_key)
+    if games is None or include_deleted:
+        return games
+    settings = history_database.game_settings(filename, owner_key)
+    return [game for index, game in enumerate(games) if not settings.get(str(index), {}).get('deleted')]
+
+
+def _read_history_file(filename, owner_key):
     if history_file_path(filename, owner_key) is None:
         gerador_loterias.logging.warning(
             f"Tentativa de acesso não autorizado ou arquivo inválido: {filename}"
