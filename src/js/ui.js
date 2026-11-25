@@ -1,4 +1,5 @@
 import { elements, state } from './dom.js';
+import { setWorkbenchBusy } from './workbench.js';
 
 const ERROR_AUTO_HIDE_MS = 7000;
 let errorHideTimer = null;
@@ -73,6 +74,7 @@ export function setActionButtonsDisabled(disabled) {
             button.disabled = disabled;
         });
     }
+    setWorkbenchBusy(disabled);
 }
 
 

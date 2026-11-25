@@ -1,19 +1,16 @@
 import {
     clearHistory,
     clearSavedAdminToken,
-    deleteHistoryFile,
     enterAsGuest,
     generateGames,
     getAuthSession,
     getBillingPix,
     getDataStatus,
-    getHistoryFileContent,
     getHotColdNumbers,
     getLatestResults,
     getStrategyStats,
     getStrategyCatalog,
     listAdminUsers,
-    listHistoryFiles,
     loginAccount,
     logoutAccount,
     registerAccount,
@@ -35,14 +32,14 @@ import { syncUserAssistance, renderAssistanceDetails } from './userAssistance.js
 import { syncResearchReports, refreshResearchReports } from './researchReports.js';
 import { syncConstrainedGeneration, initConstrainedGeneration, openConstrainedGeneration } from './constrainedGeneration.js';
 import { refreshDrawDigest } from './drawDigest.js';
+import { openHistoryManager, syncHistoryManager } from './historyManager.js';
+import { syncWorkbenchAccess, submitWorkbenchGeneration } from './workbench.js';
 import { presentDrawExperience, beginDrawPreparation, cancelDrawPreparation, refreshDrawResultLabels } from './drawExperience.js';
 import { initPreferences, updateDynamicElementColors } from './preferences.js';
 import {
-    createHistoryFileRow,
     displayLatestResults,
     displayGamesAsBalls,
     displayNumberBalls,
-    formatHistoryFilename,
     formatLotteryName,
 } from './render.js';
 import {
@@ -517,8 +514,10 @@ function renderAccountState(user) {
     syncGameAnalysis(user, selectedLotteryType());
     syncPatternRadar(user, selectedLotteryType());
     syncUserAssistance(user, selectedLotteryType());
+    syncHistoryManager(user, selectedLotteryType());
     syncResearchReports(user, selectedLotteryType());
     syncConstrainedGeneration(user, selectedLotteryType());
+    syncWorkbenchAccess(user);
 
     const hasAccess = Boolean(user);
 
@@ -840,11 +839,13 @@ function setSelectedLottery(lotteryType) {
     syncGameAnalysis(state.currentUser, lotteryType);
     syncPatternRadar(state.currentUser, lotteryType);
     syncUserAssistance(state.currentUser, lotteryType);
+    syncHistoryManager(state.currentUser, lotteryType);
     syncResearchReports(state.currentUser, lotteryType);
     syncConstrainedGeneration(state.currentUser, lotteryType);
     const darkTheme = document.body.classList.contains('dark-theme');
 
     document.body.style.setProperty('--active-lottery-primary', colors.primary);
+    document.body.style.setProperty('--active-lottery-action', colors.action || colors.ball);
     document.body.style.setProperty('--active-lottery-secondary', colors.secondary);
     document.body.style.setProperty('--active-lottery-readable', darkTheme ? colors.readableDark : colors.readable);
     document.body.style.setProperty('--active-lottery-border', darkTheme ? colors.readableDark : colors.border);
@@ -1030,6 +1031,7 @@ function presentGeneratedGames(data, lotteryType, preparation) {
 }
 
 async function handleGenerateGames() {
+    if (submitWorkbenchGeneration()) return;
     clearAllDisplays();
 
     const lotteryType = selectedLotteryType();
@@ -1147,113 +1149,8 @@ async function handleCopyGames() {
 }
 
 
-async function fetchFilesAndDisplayHistory(lotteryType, options = {}) {
-    const { reset = true } = options;
-
-    if (reset) {
-        clearAllDisplays();
-        openModal(elements.historyModalOverlay);
-        elements.historyModalCloseBtn.focus();
-    }
-
-    showLoading('Carregando histórico...');
-    elements.historicoArquivosContainer.classList.remove('hidden');
-    elements.historicoConteudoContainer.classList.add('hidden');
-    setActionButtonsDisabled(true);
-
-    try {
-        const data = await listHistoryFiles(lotteryType);
-        elements.historicoArquivosLista.innerHTML = '';
-        elements.historicoArquivosLista.classList.remove('text-gray-500');
-
-        if (data.files && data.files.length > 0) {
-            data.files.forEach(filename => {
-                const deleteAction = isAdminUser()
-                    ? () => showCustomConfirmModal(
-                        'Confirmar Exclusão',
-                        `Tem certeza que deseja apagar o arquivo "${filename}"? Esta ação é irreversível!`,
-                        () => confirmDeleteFileAction(filename, lotteryType)
-                    )
-                    : null;
-
-                const row = createHistoryFileRow(
-                    filename,
-                    () => loadHistoricalFile(filename, lotteryType),
-                    deleteAction
-                );
-
-                elements.historicoArquivosLista.appendChild(row);
-            });
-        } else {
-            elements.historicoArquivosLista.textContent = 'Nenhum arquivo de histórico encontrado para esta loteria.';
-            elements.historicoArquivosLista.classList.add('text-gray-500');
-        }
-
-        elements.historicoArquivosLista.style.backgroundColor = 'var(--bg-primary)';
-        elements.historicoArquivosLista.style.borderColor = 'var(--border-color)';
-        updateDynamicElementColors();
-    } catch (error) {
-        showError(`Erro: ${error.message}`);
-        console.error('Erro ao listar arquivos de histórico:', error);
-        closeModal(elements.historyModalOverlay);
-    } finally {
-        hideLoading();
-        setActionButtonsDisabled(false);
-    }
-}
-
-
-async function confirmDeleteFileAction(filename, lotteryType) {
-    if (!ensureAdminToken()) {
-        return;
-    }
-
-    showLoading(`Apagando ${filename}...`);
-    setActionButtonsDisabled(true);
-
-    try {
-        const data = await deleteHistoryFile(filename);
-        await fetchFilesAndDisplayHistory(lotteryType, { reset: false });
-        showSuccessMessageModal(data.message);
-    } catch (error) {
-        if (handleAdminError(error)) {
-            return;
-        }
-
-        showError(`Erro: ${error.message}`);
-        console.error(`Erro ao apagar o arquivo ${filename}:`, error);
-    } finally {
-        hideLoading();
-        setActionButtonsDisabled(false);
-    }
-}
-
-
-async function loadHistoricalFile(filename, lotteryType) {
-    elements.historicoArquivosContainer.classList.add('hidden');
-    elements.historicoConteudoContainer.classList.remove('hidden');
-
-    showLoading(`Carregando ${filename}...`);
-    setActionButtonsDisabled(true);
-
-    try {
-        const data = await getHistoryFileContent(filename);
-        elements.currentFilenameSpan.textContent = (
-            `Histórico de ${formatLotteryName(lotteryType)} - ${formatHistoryFilename(filename)}`
-        );
-
-        displayGamesAsBalls(data.content, elements.historicoConteudoJogosWrapper, lotteryType);
-        elements.historicoConteudoJogosWrapper.style.backgroundColor = 'var(--bg-primary)';
-        elements.historicoConteudoJogosWrapper.style.borderColor = 'var(--border-color)';
-    } catch (error) {
-        showError(`Erro: ${error.message}`);
-        console.error(`Erro ao carregar o arquivo ${filename}:`, error);
-        elements.historicoArquivosContainer.classList.remove('hidden');
-        elements.historicoConteudoContainer.classList.add('hidden');
-    } finally {
-        hideLoading();
-        setActionButtonsDisabled(false);
-    }
+async function fetchFilesAndDisplayHistory(lotteryType) {
+    openHistoryManager(lotteryType, state.currentUser);
 }
 
 

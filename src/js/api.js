@@ -136,6 +136,18 @@ export async function getStrategyCatalog(lotteryType) {
     return requestJson(`/strategy_catalog/${encodeURIComponent(lotteryType)}`, 'Não foi possível carregar as estratégias', { cache: 'no-store' });
 }
 
+export async function getManagedHistory(kind, filters, signal) {
+    return requestJson(`/history_games/${encodeURIComponent(kind)}?${new URLSearchParams(filters)}`, 'Não foi possível carregar seus jogos', { cache: 'no-store', signal });
+}
+
+export async function updateManagedGame(kind, payload) {
+    return requestJson(`/history_game/${encodeURIComponent(kind)}`, 'Não foi possível salvar o jogo', { method: 'POST', headers: csrfHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(payload) });
+}
+
+export async function clearManagedHistory(kind) {
+    return requestJson(`/history_clear/${encodeURIComponent(kind)}`, 'Não foi possível apagar o histórico', { method: 'POST', headers: csrfHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ confirm: kind }) });
+}
+
 export async function getHistoryFileContent(filename) {
     return requestJson(
         `/get_file_content/${encodeURIComponent(filename)}`,

@@ -325,6 +325,19 @@
             </div>
         </section>
 
+        <div id="generation-console" class="generation-console" role="group" aria-label="Gerar jogos">
+            <div class="console-mode"><span class="lab-icon" style="--icon: url('icons/lucide/sparkles.svg')" aria-hidden="true"></span><span id="console-mode-name">Jogo normal</span></div>
+        </div>
+        <section id="game-workbench" class="game-workbench" aria-labelledby="workbench-title">
+            <div class="workbench-heading"><h2 id="workbench-title">Laboratório</h2><span id="workbench-active-name"></span></div>
+            <nav class="lab-shelf" aria-label="Ferramentas dos jogos">
+                <button class="lab-tool hidden" type="button" data-lab-panel="constrained-panel" data-premium aria-controls="constrained-panel" aria-expanded="false" title="Personalizar dezenas, regras e diversificação"><span class="lab-icon" style="--icon: url('icons/lucide/flask-conical.svg')" aria-hidden="true"></span><span>Meu estilo</span></button>
+                <button class="lab-tool hidden" type="button" data-lab-panel="game-analysis-panel" data-premium aria-controls="game-analysis-panel" aria-expanded="false" title="Consultar e comparar seus jogos"><span class="lab-icon" style="--icon: url('icons/lucide/scan-search.svg')" aria-hidden="true"></span><span>Consultar</span></button>
+                <button class="lab-tool hidden" type="button" data-lab-panel="pattern-radar-panel" data-premium aria-controls="pattern-radar-panel" aria-expanded="false" title="Abrir o radar de padrões"><span class="lab-icon" style="--icon: url('icons/lucide/radar.svg')" aria-hidden="true"></span><span>Radar</span></button>
+                <button class="lab-tool hidden" type="button" data-lab-panel="research-report-panel" data-premium aria-controls="research-report-panel" aria-expanded="false" title="Conferir a confiabilidade das análises"><span class="lab-icon" style="--icon: url('icons/lucide/shield-check.svg')" aria-hidden="true"></span><span>Validação</span></button>
+                <button class="lab-tool" type="button" data-lab-panel="user-assistance-panel" aria-controls="user-assistance-panel" aria-expanded="false" title="Abrir a ajuda da loteria selecionada"><span class="lab-icon" style="--icon: url('icons/lucide/circle-help.svg')" aria-hidden="true"></span><span>Ajuda</span></button>
+            </nav>
+            <div id="lab-stage" class="lab-stage">
         <details id="constrained-panel" class="game-analysis hidden">
             <summary>Monte seu estilo <span class="analysis-premium">Premium</span></summary>
             <div class="game-analysis-body">
@@ -408,15 +421,16 @@
             </div>
         </details>
 
-        <!-- Campo para a quantidade de jogos -->
-        <div class="mb-6">
+            </div>
+        </section>
+        <!-- Os controles existentes sao reposicionados pela bancada, preservando IDs e eventos. -->
+        <div id="generation-quantity-field" class="mb-6">
             <label for="num-games-input" class="block text-sm font-bold mb-2">Quantidade de Jogos:</label>
             <input type="number" id="num-games-input" value="5" min="1" max="100" class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline text-center" aria-label="Quantidade de jogos a serem gerados">
         </div>
 
         <!-- Botões de ação -->
-        <!-- REVERTIDO: A classe voltou para flex flex-wrap justify-center gap-4 para botões lado a lado -->
-        <div class="flex flex-wrap justify-center gap-4 mb-6">
+        <div id="legacy-generation-actions" class="lab-maintenance">
             <!-- Botão para gerar novos jogos -->
             <button id="gerar-jogos" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-6 rounded-full shadow-md hover:from-blue-600 hover:to-indigo-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75" aria-label="Gerar novos jogos de loteria">
                 Gerar Jogos
@@ -570,13 +584,35 @@
 
     <div id="history-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
         <div class="modal-content max-w-2xl w-full"> <!-- Aumenta um pouco a largura para o histórico -->
-            <div class="flex justify-between items-center mb-4">
+            <div class="history-modal-header">
                 <h3 id="history-modal-title" class="text-xl font-bold">Histórico de Jogos</h3>
                 <button id="history-modal-close-btn" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-full p-2" aria-label="Fechar histórico">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
+            <section id="history-manager" class="history-manager" aria-label="Meus jogos">
+                <p class="history-notice">A conferência é feita somente para jogos marcados como efetivados, no concurso informado. O app não confirma o pagamento da aposta nem o valor de um prêmio.</p>
+                <div id="history-summary" class="history-summary"></div>
+                <details id="history-filter-panel" class="history-filter-panel"><summary>Filtrar e localizar jogos</summary>
+                <form id="history-filters" class="history-filters">
+                    <label>Dezenas<input name="numbers" type="search" placeholder="Ex.: 02 15 23" maxlength="200"></label>
+                    <label>Desde<input name="from" type="date"></label>
+                    <label>Até<input name="to" type="date"></label>
+                    <label>Concurso<input name="contest" type="number" min="1" max="99999999"></label>
+                    <label>Efetivação<select name="effective"><option value="all">Todos os jogos</option><option value="yes">Efetivados</option><option value="no">Não efetivados</option></select></label>
+                    <label>Conferência<select name="status"><option value="all">Todas as situações</option><option value="prize">Com faixa de prêmio</option><option value="no_prize">Sem faixa de prêmio</option><option value="waiting">Aguardando resultado</option><option value="unavailable">Concurso indisponível</option><option value="incomplete">Conferência parcial</option></select></label>
+                    <label>Ordem<select name="sort"><option value="recent">Mais recentes</option><option value="oldest">Mais antigos</option></select></label>
+                    <label class="history-check"><input name="favorite" type="checkbox" value="1"> Só favoritos</label>
+                    <div class="history-toolbar"><button type="submit">Filtrar</button><button id="history-reset" type="button">Limpar filtros</button></div>
+                </form>
+                </details>
+                <div class="history-toolbar"><button id="history-refresh" type="button">Atualizar conferência</button><button id="history-clear-own" type="button">Apagar todos desta loteria</button></div>
+                <p id="history-feedback" role="status" aria-live="polite"></p>
+                <p id="history-source" class="history-source"></p>
+                <div id="history-games" class="history-games"></div>
+                <div class="history-pagination"><button id="history-prev" type="button" aria-label="Página anterior">Anterior</button><span id="history-page"></span><button id="history-next" type="button" aria-label="Próxima página">Próxima</button></div>
+            </section>
             <!-- Seção para exibir a lista de arquivos de histórico (dentro do modal) -->
             <div id="historico-arquivos-container-modal" class="mt-4 pt-4 border-t border-gray-200" style="border-color: var(--border-color);">
                 <h2 class="text-2xl font-bold text-gray-700 mb-4" style="color: var(--text-primary);">Arquivos de Histórico</h2>
