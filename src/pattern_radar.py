@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from functools import lru_cache
 from math import comb, sqrt
+from itertools import combinations
 import os
 
 import game_analysis
@@ -98,6 +99,28 @@ def parity_probabilities(count, maximum):
     }
 
 
+def build_trevo_radar(raw):
+    profiles = {'-'.join(map(str, pair)): pair for pair in combinations(range(1, 7), 2)}
+    draws = [(contest, date, '-'.join(map(str, extra))) for contest, date, _, extra in reversed(raw)]
+    frequencies = Counter(row[2] for row in draws)
+    transitions = defaultdict(Counter)
+    for previous, current in zip(draws, draws[1:]):
+        if current[0] == previous[0] + 1:
+            transitions[previous[2]][current[2]] += 1
+    source = draws[-1][2]
+    sample = sum(transitions[source].values())
+    return {'latest': {'pair': source, 'trevos': list(profiles[source]), 'contest': draws[-1][0]},
+            'sample': sample, 'small_sample': sample < MIN_SAMPLE,
+            'total_draws': len(draws),
+            'profiles': [{'trevos': list(pair), 'matches': transitions[source][key],
+                          'conditional_probability': transitions[source][key] / sample if sample else None,
+                          'historical_probability': frequencies[key] / len(draws),
+                          'theoretical_probability': 1 / 15,
+                          'interval': wilson_interval(transitions[source][key], sample)} for key, pair in profiles.items()],
+            'validation': validate_chronologically(draws, {key: 1 / 15 for key in profiles}),
+            'note': 'Pares de trevos, separados das dezenas. Cada par tem chance de 1 em 15 (6,67%). Transições do par do último concurso são descritivas, não previsão. Acertar um trevo é um evento diferente de acertar o par exato.'}
+
+
 def wilson_interval(successes, total):
     if total == 0:
         return None
@@ -156,7 +179,7 @@ def validate_chronologically(draws, probabilities):
     }
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=8)
 def _build_radar(lottery_type, path, modified_ns, size, skiprows):
     raw, skipped = game_analysis._read_draws(lottery_type, path, modified_ns, size, skiprows)
     return build_radar_from_draws(lottery_type, raw, skipped, modified_ns)
@@ -201,6 +224,7 @@ def build_radar_from_draws(lottery_type, raw, skipped, modified_ns):
         "profiles": [{"even": key, "label": profile_label(key, count)} for key in probabilities],
         "groups": groups, "validation": validate_chronologically(draws, probabilities),
         "months": build_month_radar(raw) if lottery_type == 'diadesorte' else None,
+        'trevos': build_trevo_radar(raw) if lottery_type == 'maismilionaria' else None,
         "data_updated_at": datetime.fromtimestamp(modified_ns / 1e9, timezone.utc).isoformat(),
         "disclaimer": ("Análise exploratória de pares e ímpares, não previsão de prêmios. "
                        "Em sorteios independentes, o concurso anterior não altera a probabilidade matemática. "

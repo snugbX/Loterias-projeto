@@ -1121,6 +1121,7 @@ function copyWithFallback(text) {
 
 
 function formatGameForCopy(game) {
+    if (selectedLotteryType() === 'maismilionaria') return `${game.slice(0, 6).map(n => String(n).padStart(2, '0')).join(' ')} | Trevos: ${game.slice(6).join(' ')}`;
     const numbers = [];
     const extras = [];
 

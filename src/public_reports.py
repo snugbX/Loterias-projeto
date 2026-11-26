@@ -10,7 +10,7 @@ import gerador_loterias as lottery
 
 REPORT_PATH = Path(__file__).with_name('public_lottery_reports.json')
 # Increment when the meaning of persisted statistics changes, even if CSVs do not.
-RECIPE = 2
+RECIPE = 3
 
 
 @lru_cache(maxsize=8)

@@ -55,3 +55,4 @@ src/models/*.pkl
 # Sistema operacional
 .DS_Store
 Thumbs.db
+.lottery-cache/

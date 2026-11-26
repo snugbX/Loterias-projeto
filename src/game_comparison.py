@@ -77,11 +77,13 @@ def analyze_games(lottery_type, payload):
         common = sorted(set(left['numbers']).intersection(right['numbers']))
         same_numbers = left['numbers'] == right['numbers']
         same_month = left['month'] == right['month'] if lottery_type == 'diadesorte' else None
+        same_trevos = left['trevos'] == right['trevos'] if lottery_type == 'maismilionaria' else None
         pairs.append({
             'left': left['game_id'], 'right': right['game_id'], 'common_numbers': common,
             'overlap_percentage': len(common) / len(left['numbers']) * 100,
             'same_numbers': same_numbers, 'same_month': same_month,
-            'duplicate': same_numbers and (same_month is not False),
+            'same_trevos': same_trevos,
+            'duplicate': same_numbers and (same_month is not False) and (same_trevos is not False),
         })
     duplicates = [ids for ids in duplicate_groups.values() if len(ids) > 1]
     unique_numbers = len(number_combinations)
@@ -101,8 +103,10 @@ def analyze_games(lottery_type, payload):
             'historical_percentage': len(all_prize_contests) / len(draws) * 100,
             'most_historical_prizes': most_historical,
             'historical_leaders': [data['game_id'] for data in results if data['history']['prize_draws'] == most_historical],
-            'numeric_jackpot_probability': unique_numbers / total_combinations,
-            'numeric_jackpot_one_in': total_combinations / unique_numbers,
+            'numeric_jackpot_probability': unique_numbers / results[0]['probabilities'].get('numeric_jackpot_one_in', total_combinations),
+            'numeric_jackpot_one_in': results[0]['probabilities'].get('numeric_jackpot_one_in', total_combinations) / unique_numbers,
+            'complete_jackpot_probability': len(duplicate_groups) / total_combinations if lottery_type == 'maismilionaria' else None,
+            'complete_jackpot_one_in': total_combinations / len(duplicate_groups) if lottery_type == 'maismilionaria' else None,
             'unique_months': unique_months,
             'month_coverage_probability': unique_months / 12 if unique_months is not None else None,
         },

@@ -56,7 +56,8 @@ function renderGame(item) {
     favorite.setAttribute('aria-label', item.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'); favorite.title = favorite.getAttribute('aria-label');
     head.append(title, favorite); article.append(head);
     const balls = node('div', undefined, 'history-balls');
-    item.game.forEach(value => {
+    item.game.forEach((value, position) => {
+        if (kind === 'maismilionaria' && position >= 6) { balls.append(node('span', `Trevo ${value}`, 'trevo-badge')); return; }
         const number = typeof value === 'number';
         const ball = node('span', number ? String(value).padStart(2, '0') : `Mês da Sorte: ${value}`, number ? 'number-ball' : 'game-extra-badge');
         if (number) ball.style.backgroundColor = lotteryColors[kind].ball;
@@ -64,6 +65,7 @@ function renderGame(item) {
     }); article.append(balls);
     const check = node('p', item.check.label, 'history-check-result'); article.append(check);
     if (item.check.hits !== undefined) {
+        if (item.check.trevo_hits !== undefined) article.append(node('p', `${item.check.trevo_hits} trevos corretos · Sorteados: ${item.check.drawn_trevos.join(' · ')}`));
         article.append(node('p', `Concurso ${item.contest} · ${item.check.drawn_at} · ${item.check.hits} acertos numéricos${item.check.month_hit === true ? ' + Mês da Sorte' : ''}`));
         if (item.check.partial) article.append(node('p', 'O Mês da Sorte ainda não está disponível na base.'));
     } else if (item.contest) article.append(node('p', `Concurso informado: ${item.contest}`));

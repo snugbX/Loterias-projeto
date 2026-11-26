@@ -167,8 +167,9 @@ def include_csv_history(snapshot, directory):
     root = Path(directory).resolve()
     if not root.is_dir():
         raise ValueError('Diretório de histórico CSV não encontrado.')
-    counts = {'megasena': (6, 60), 'quina': (5, 80), 'lotofacil': (15, 25), 'diadesorte': (7, 31)}
-    pattern = re.compile(r'^(megasena|quina|lotofacil|diadesorte)_resultados_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{6})?)\.csv$')
+    counts = {'megasena': (6, 60), 'quina': (5, 80), 'lotofacil': (15, 25), 'diadesorte': (7, 31), 'maismilionaria': (6, 50)}
+    kinds = '|'.join(re.escape(kind) for kind in counts)
+    pattern = re.compile(rf'^({kinds})_resultados_(\d{{4}}-\d{{2}}-\d{{2}}_\d{{2}}-\d{{2}}-\d{{2}}(?:_\d{{6}})?)\.csv$')
     user_ids = {row['id'] for row in snapshot['tables']['users']}
     records = snapshot['tables']['generated_games']
     existing = {(row['owner_key'], row['filename']): row for row in records}
@@ -199,7 +200,7 @@ def include_csv_history(snapshot, directory):
         with path.open(encoding='utf-8-sig', newline='') as stream:
             reader = csv.reader(stream)
             header = next(reader, [])
-            width = ball_count + int(kind == 'diadesorte')
+            width = ball_count + (2 if kind == 'maismilionaria' else int(kind == 'diadesorte'))
             if len(header) != width:
                 raise ValueError('CSV com quantidade inesperada de colunas.')
             for values in reader:
@@ -214,6 +215,9 @@ def include_csv_history(snapshot, directory):
                 if len(set(numbers)) != ball_count or not all(1 <= number <= maximum for number in numbers):
                     raise ValueError('CSV contém dezenas repetidas ou fora da faixa.')
                 game = numbers + ([values[-1].strip()] if kind == 'diadesorte' else [])
+                if kind == 'maismilionaria':
+                    from mais_milionaria import validate_trevos
+                    game.extend(validate_trevos([int(value.strip()) for value in values[-2:]]))
                 games.append(game)
         if not games:
             raise ValueError('CSV de histórico vazio. Revise a origem antes de importar.')

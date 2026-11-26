@@ -10,6 +10,7 @@ const result = document.getElementById('analysis-result');
 const feedback = document.getElementById('analysis-feedback');
 const submit = form.querySelector('button[type="submit"]');
 const lotteries = {
+    maismilionaria: { name: '+Milionária', count: 6, max: 50 },
     megasena: { name: 'Mega-Sena', count: 6, max: 60 },
     lotofacil: { name: 'Lotofácil', count: 15, max: 25 },
     quina: { name: 'Quina', count: 5, max: 80 },
@@ -22,6 +23,7 @@ let controller = null;
 
 const integer = value => Number(value).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
 const percentage = value => Number(value).toLocaleString('pt-BR', { maximumSignificantDigits: 4 }) + '%';
+const trevoLabel = game => game.trevos ? ` · Trevos ${game.trevos.join(' + ')}` : '';
 
 function node(tag, text, className) {
     const element = document.createElement(tag);
@@ -66,7 +68,7 @@ function renderHighlights(data, target) {
         ['Faixas no histórico', `${integer(data.history.prize_draws)} concursos`, 'Simulação, não prêmios recebidos'],
         ['Maior acerto numérico', `${data.history.best_matches} acertos`, `Em ${integer(data.coverage.total_draws)} concursos válidos`],
         ['Seu perfil', `${data.profile.even} pares · ${data.profile.odd} ímpares`, 'Distribuição do jogo informado'],
-        ['Prêmio principal numérico', `1 em ${integer(data.probabilities.jackpot_one_in)}`, 'Chance matemática da aposta simples'],
+        [data.trevos ? 'Prêmio principal: 6 + 2 trevos' : 'Prêmio principal numérico', `1 em ${integer(data.probabilities.jackpot_one_in)}`, 'Chance matemática da aposta simples'],
     ];
     for (const [label, value, note] of items) {
         const item = node('div');
@@ -103,6 +105,7 @@ function renderAlternative(data, target) {
     }
     section.append(balls);
     if (alternative.month) section.append(node('p', `Mês da Sorte mantido: ${months[alternative.month - 1]}.`));
+    if (alternative.trevos) section.append(node('p', `Trevos mantidos: ${alternative.trevos.join(' · ')}. A sugestão por afinidade analisa apenas as dezenas.`));
     if (alternative.changes.length) {
         section.append(node('p', `Trocas: ${alternative.changes.map(change => `${String(change.from).padStart(2, '0')} → ${String(change.to).padStart(2, '0')}`).join('; ')}. ${alternative.preserved_numbers.length} de ${data.numbers.length} dezenas mantidas.`, 'analysis-verdict'));
         heading('Por que essas dezenas?', section);
@@ -144,7 +147,8 @@ function renderAlternative(data, target) {
         status.setAttribute('role', 'status');
         copy.addEventListener('click', async () => {
             const text = alternative.numbers.map(n => String(n).padStart(2, '0')).join(' ')
-                + (alternative.month ? ` · Mês da Sorte: ${months[alternative.month - 1]}` : '');
+                + (alternative.month ? ` · Mês da Sorte: ${months[alternative.month - 1]}` : '')
+                + (alternative.trevos ? ` | Trevos: ${alternative.trevos.join(' ')}` : '');
             try {
                 await navigator.clipboard.writeText(text);
                 status.textContent = 'Alternativa copiada.';
@@ -158,6 +162,7 @@ function renderAlternative(data, target) {
             const row = entries.lastElementChild;
             row.querySelector('input').value = alternative.numbers.map(n => String(n).padStart(2, '0')).join(' ');
             if (alternative.month) row.querySelector('select').value = String(alternative.month);
+            if (alternative.trevos) row.querySelector('.analysis-trevos-input').value = alternative.trevos.join(' ');
             form.requestSubmit();
         });
         actions.append(copy, compare);
@@ -165,7 +170,7 @@ function renderAlternative(data, target) {
     }
     const explanation = node('details');
     explanation.append(node('summary', 'Como esta referência foi escolhida'), node('p', alternative.note));
-    section.append(explanation, node('p', `Mesma chance individual: 1 em ${integer(alternative.jackpot_one_in)} no prêmio principal numérico. Esta sugestão não aumenta a probabilidade da aposta simples.`, 'analysis-disclaimer'));
+    section.append(explanation, node('p', `Mesma chance individual: 1 em ${integer(alternative.jackpot_one_in)} no prêmio principal${alternative.trevos ? ' (6 dezenas e 2 trevos)' : ' numérico'}. Esta sugestão não aumenta a probabilidade da aposta simples.`, 'analysis-disclaimer'));
     target.append(section);
 }
 
@@ -173,6 +178,7 @@ function renderAnalysis(data, result) {
     result.replaceChildren();
     result.append(node('h3', `${data.lottery_name || lotteries[currentLottery].name}: ${data.numbers.map(n => String(n).padStart(2, '0')).join(' · ')}`));
     if (data.month) result.append(node('p', `Mês da Sorte: ${months[data.month - 1]}`));
+    if (data.trevos) result.append(node('p', `Trevos: ${data.trevos.join(' · ')}`));
     const { history, coverage, profile, probabilities } = data;
     renderHighlights(data, result);
     result.append(node('p', history.prize_draws
@@ -184,7 +190,7 @@ function renderAnalysis(data, result) {
     }
     renderAlternative(data, result);
     heading('Faixas encontradas no histórico', result);
-    const historicalRows = history.tiers.map(tier => [`${tier.matches} acertos`, integer(tier.count)]);
+    const historicalRows = history.tiers.map(tier => [tier.label || `${tier.matches} acertos`, integer(tier.count)]);
     if (data.month) historicalRows.push(['Mês da Sorte (pode coincidir com acertos)', integer(history.month_matches)]);
     table('Premiações simuladas pelas regras atuais', ['Faixa', 'Concursos'], historicalRows, result);
     heading('O perfil do seu jogo', result);
@@ -211,8 +217,8 @@ function renderAnalysis(data, result) {
         details.append(node('summary', `Ver concursos compatíveis${history.has_more ? ' (30 mais recentes)' : ''}`));
         const list = node('ol', undefined, 'analysis-occurrences');
         history.recent_occurrences.forEach(draw => {
-            const label = `${integer(draw.contest)} · ${draw.date}: ${draw.matches} acertos${draw.month_match ? ' + Mês da Sorte' : ''}`;
-            list.append(node('li', `${label}. Sorteio: ${draw.numbers.map(n => String(n).padStart(2, '0')).join(' ')}.`));
+            const label = `${integer(draw.contest)} · ${draw.date}: ${draw.prize_label || `${draw.matches} acertos`}${draw.month_match ? ' + Mês da Sorte' : ''}`;
+            list.append(node('li', `${label}. Sorteio: ${draw.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${trevoLabel(draw)}.`));
         });
         details.append(list);
         result.append(details);
@@ -240,7 +246,7 @@ function renderComparison(data) {
     analyses.forEach(game => {
         const detail = node('details', undefined, 'analysis-game-detail');
         detail.open = analyses.length === 1;
-        detail.append(node('summary', `Jogo ${game.game_id} · ${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''} · ${integer(game.history.prize_draws)} concursos com faixa`));
+        detail.append(node('summary', `Jogo ${game.game_id} · ${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''}${trevoLabel(game)} · ${integer(game.history.prize_draws)} concursos com faixa`));
         const body = node('div');
         renderAnalysis(game, body);
         detail.append(body);
@@ -253,9 +259,9 @@ function renderComparison(data) {
         }
         const comparison = node('div', undefined, 'comparison-overview');
         table('Resumo por jogo: resultados históricos, não previsão',
-            ['Jogo', 'Dezenas / mês', 'Concursos com faixa', 'Maior acerto', 'Pares / ímpares', 'Perfil após o último concurso'],
+            ['Jogo', 'Dezenas / complemento', 'Concursos com faixa', 'Maior acerto', 'Pares / ímpares', 'Perfil após o último concurso'],
             analyses.map(game => [
-                `Jogo ${game.game_id}`, `${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''}`,
+                `Jogo ${game.game_id}`, `${game.numbers.map(n => String(n).padStart(2, '0')).join(' ')}${game.month ? ` · ${months[game.month - 1]}` : ''}${trevoLabel(game)}`,
                 `${integer(game.history.prize_draws)} (${percentage(game.history.percentage)})`, game.history.best_matches,
                 `${game.profile.even} / ${game.profile.odd}`,
                 game.radar_context.conditional_probability === null ? 'Sem amostra' : `${percentage(game.radar_context.conditional_probability * 100)} (${integer(game.radar_context.matches)}/${integer(game.radar_context.sample)})`,
@@ -263,7 +269,9 @@ function renderComparison(data) {
         result.append(comparison);
     }
     heading('Cobertura matemática do conjunto');
-    result.append(node('p', `${summary.unique_number_combinations} ${summary.unique_number_combinations === 1 ? 'combinação numérica diferente' : 'combinações numéricas diferentes'}: chance do prêmio principal numérico de aproximadamente 1 em ${integer(summary.numeric_jackpot_one_in)} (${percentage(summary.numeric_jackpot_probability * 100)}), considerando todos esses jogos no mesmo concurso.`));
+    if (summary.complete_jackpot_probability != null) result.append(node('p', `${summary.unique_games} apostas completas diferentes (dezenas + trevos): chance de 6 dezenas e 2 trevos de aproximadamente 1 em ${integer(summary.complete_jackpot_one_in)}. Trocar os trevos muda a aposta completa, mas não a cobertura das seis dezenas.`));
+    const numericEvent = currentLottery === 'maismilionaria' ? 'de acertar as seis dezenas, sem exigir os trevos,' : 'do prêmio principal numérico';
+    result.append(node('p', `${summary.unique_number_combinations} ${summary.unique_number_combinations === 1 ? 'combinação numérica diferente' : 'combinações numéricas diferentes'}: chance ${numericEvent} de aproximadamente 1 em ${integer(summary.numeric_jackpot_one_in)} (${percentage(summary.numeric_jackpot_probability * 100)}), considerando todos esses jogos no mesmo concurso.`));
     result.append(node('p', 'Cada aposta simples, individualmente, mantém a mesma chance matemática das demais. A coluna do radar descreve o perfil, não a probabilidade do jogo específico.'));
     if (summary.unique_months !== null) result.append(node('p', `Mês da Sorte: ${summary.unique_months} meses diferentes cobertos (${percentage(summary.month_coverage_probability * 100)} de acertar ao menos um mês). Mesmas dezenas com outro mês não ampliam a chance dos 7 acertos numéricos.`));
     result.append(node('p', data.comparison_note, 'analysis-disclaimer'));
@@ -286,7 +294,7 @@ function renderComparison(data) {
                 `${pair.left} × ${pair.right}`,
                 pair.common_numbers.length ? pair.common_numbers.map(n => String(n).padStart(2, '0')).join(' ') : 'Nenhuma',
                 `${pair.common_numbers.length} (${percentage(pair.overlap_percentage)})`,
-                pair.duplicate ? 'Jogo repetido' : pair.same_numbers ? 'Mesmas dezenas, meses diferentes' : 'Combinações diferentes',
+                pair.duplicate ? 'Jogo repetido' : pair.same_numbers ? pair.same_trevos === false ? 'Mesmas dezenas, trevos diferentes' : 'Mesmas dezenas, meses diferentes' : 'Combinações diferentes',
             ]), overlap);
         result.append(overlap);
     }
@@ -318,6 +326,11 @@ function updateEntryLabels() {
         month.id = `analysis-month${suffix}`;
         row.querySelector('.analysis-month-label').htmlFor = month.id;
         row.querySelector('.analysis-month-field').hidden = currentLottery !== 'diadesorte';
+        const trevos = row.querySelector('.analysis-trevos-input');
+        trevos.id = `analysis-trevos${suffix}`;
+        row.querySelector('.analysis-trevos-label').htmlFor = trevos.id;
+        row.querySelector('.analysis-trevos-field').hidden = currentLottery !== 'maismilionaria';
+        trevos.required = currentLottery === 'maismilionaria';
         const remove = row.querySelector('button');
         remove.disabled = rows.length === 1;
         remove.title = `Remover jogo ${index + 1}`;
@@ -360,7 +373,12 @@ function addEntry(focus = true) {
         updateEntryLabels();
         next?.querySelector('input').focus();
     });
-    fields.append(numberField, monthField, remove);
+    const trevoField = node('div', undefined, 'analysis-trevos-field');
+    trevoField.append(node('label', 'Dois trevos (1 a 6)', 'analysis-trevos-label'));
+    const trevos = node('input', undefined, 'analysis-trevos-input');
+    trevos.type = 'text'; trevos.inputMode = 'numeric'; trevos.maxLength = 10; trevos.placeholder = 'Ex.: 2 5';
+    trevoField.append(trevos);
+    fields.append(numberField, monthField, trevoField, remove);
     row.append(fields);
     entries.append(row);
     updateEntryLabels();
@@ -392,6 +410,7 @@ export function compareGeneratedGames(games, lotteryType) {
         const row = entries.lastElementChild;
         row.querySelector('input').value = game.slice(0, lotteries[currentLottery].count).join(' ');
         if (lotteryType === 'diadesorte') row.querySelector('select').value = String(months.indexOf(game[game.length - 1]) + 1);
+        if (lotteryType === 'maismilionaria') row.querySelector('.analysis-trevos-input').value = game.slice(6).join(' ');
     });
     panel.open = true;
     form.requestSubmit();
@@ -423,7 +442,17 @@ form.addEventListener('submit', async event => {
             return;
         }
         input.removeAttribute('aria-invalid');
-        games.push({ numbers, month: currentLottery === 'diadesorte' ? Number(row.querySelector('select').value) : null });
+        const game = { numbers, month: currentLottery === 'diadesorte' ? Number(row.querySelector('select').value) : null };
+        if (currentLottery === 'maismilionaria') {
+            const field = row.querySelector('.analysis-trevos-input'), text = field.value.trim();
+            const values = text.split(/[\s,;]+/).map(Number);
+            if (!/^\d+(?:[\s,;]+\d+)*$/.test(text) || values.length !== 2 || new Set(values).size !== 2 || values.some(n => !Number.isInteger(n) || n < 1 || n > 6)) {
+                feedback.textContent = `Jogo ${index + 1}: escolha dois trevos diferentes, de 1 a 6.`;
+                field.setAttribute('aria-invalid', 'true'); field.focus(); return;
+            }
+            game.trevos = values;
+        }
+        games.push(game);
     }
     const pending = new AbortController();
     controller = pending;

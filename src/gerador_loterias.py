@@ -99,6 +99,14 @@ def lottery_data_path(filename):
     return os.path.join(LOTTERY_DATA_DIR, filename)
 
 LOTTERY_CONFIGS = {
+    'maismilionaria': {
+        'FILE_PATH': lottery_data_path('mais_milionaria_resultados.csv'),
+        'NUM_BALLS_TO_DRAW': 6, 'MIN_NUMBER': 1, 'MAX_NUMBER': 50,
+        'CSV_COLUMNS_PREFIX': 'bola ', 'SKIP_ROWS': 6, 'NUM_GAMES_DEFAULT': 5,
+        'COLOR_PRIMARY': '#174A8B', 'COLOR_SECONDARY': '#90BEE8',
+        'EXTRA_COLUMNS': ['Trevo 1', 'Trevo 2'],
+        'TREVO_COUNT': 2,
+    },
     'megasena': {
         'FILE_PATH': lottery_data_path("mega_sena_asloterias_ate_concurso_3019_sorteio - mega_sena_www.asloterias.com.br.csv"),
         'NUM_BALLS_TO_DRAW': 6,
@@ -194,6 +202,7 @@ def initialize_persistent_lottery_data():
 initialize_persistent_lottery_data()
 
 LOTTERY_DISPLAY_NAMES = {
+    'maismilionaria': '+Milionária',
     "megasena": "Mega Sena",
     "lotofacil": "Lotofácil",
     "quina": "Quina",
@@ -222,6 +231,7 @@ MIXED_STRATEGY_POOL = [
     "high_numbers",
 ]
 HISTORICAL_PRIZE_FILTERS = {
+    'maismilionaria': {'min_matches': 4, 'label': '4, 5 ou 6 dezenas (independentemente dos trevos)'},
     "megasena": {
         "min_matches": 4,
         "label": "quadra, quina ou sena",
@@ -430,6 +440,17 @@ def get_latest_result(lottery_type):
         if column in latest_row.index and pd.notna(latest_row[column]):
             extras[column] = str(latest_row[column])
 
+    if config.get('TREVO_COUNT'):
+        from mais_milionaria import validate_trevos
+        try:
+            raw = [float(latest_row.get(f'Trevo {i}', '')) for i in (1, 2)]
+            if any(not n.is_integer() for n in raw):
+                return None
+            trevos = validate_trevos([int(n) for n in raw])
+            extras = {f'Trevo {i + 1}': str(n) for i, n in enumerate(trevos)}
+        except (ValueError, TypeError, OverflowError):
+            return None
+
     result = {
         "lottery_type": lottery_type,
         "name": LOTTERY_DISPLAY_NAMES.get(lottery_type, lottery_type),
@@ -573,6 +594,8 @@ def choose_weighted_extra_value(df, column_name, fallback_values):
 
 
 def generate_extra_values(df, config):
+    if config.get('TREVO_COUNT'):
+        return sorted(int(n) for n in np.random.choice(range(1, 7), size=2, replace=False))
     extra_values = []
     extra_choices = config.get("EXTRA_CHOICES", {})
 
@@ -1507,6 +1530,9 @@ def get_hot_cold_numbers(lottery_type, top_n=10):
                     'percentage': months[i + 1] / valid_months * 100 if valid_months else None}
                    for i, label in enumerate(config.get('EXTRA_CHOICES', {}).get('Mês da Sorte', []))],
         'month_coverage': {'valid': valid_months, 'missing': len(draws) - valid_months} if lottery_type == 'diadesorte' else None,
+        'trevos': ([{'number': n, 'count': sum(n in row[3] for row in draws),
+                     'percentage': sum(n in row[3] for row in draws) / len(draws) * 100} for n in range(1, 7)]
+                   if lottery_type == 'maismilionaria' else []),
         'note': 'Ranking descritivo da base validada. Empates usam a ordem numérica e podem aparecer nas duas listas. Frequência não prevê o próximo sorteio.',
     }
 

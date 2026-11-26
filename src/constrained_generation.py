@@ -32,6 +32,7 @@ class Rules:
     sum_max: int
     max_overlap: int
     month: int | None
+    trevos: tuple | None
 
 
 def capabilities(lottery_type):
@@ -40,13 +41,14 @@ def capabilities(lottery_type):
     return {'count': count, 'maximum': maximum, 'max_games': MAX_GAMES,
             'min_overlap': max(0, 2 * count - maximum),
             'parities': list(range(max(0, count - (maximum + 1) // 2), min(count, maximum // 2) + 1)),
-            'months': config.get('EXTRA_CHOICES', {}).get('Mês da Sorte', [])}
+            'months': config.get('EXTRA_CHOICES', {}).get('Mês da Sorte', []),
+            'trevos': {'count': 2, 'maximum': 6} if lottery_type == 'maismilionaria' else None}
 
 
 def validate_request(lottery_type, payload):
     if lottery_type not in lottery.LOTTERY_CONFIGS or not isinstance(payload, dict):
         raise ValueError('Informe uma loteria e um objeto de regras válidos.')
-    allowed = {'method', 'num_games', 'fixed', 'excluded', 'even_count', 'sum_min', 'sum_max', 'max_overlap', 'month'}
+    allowed = {'method', 'num_games', 'fixed', 'excluded', 'even_count', 'sum_min', 'sum_max', 'max_overlap', 'month', 'trevos'}
     if set(payload) - allowed:
         raise ValueError('Há campos não reconhecidos nas regras.')
     config = lottery.LOTTERY_CONFIGS[lottery_type]
@@ -74,6 +76,12 @@ def validate_request(lottery_type, payload):
     if type(overlap) is not int or not 0 <= overlap < count:
         raise ValueError(f'O limite de dezenas em comum deve estar entre 0 e {count - 1}.')
     month = payload.get('month')
+    trevos = payload.get('trevos')
+    if trevos is not None:
+        if lottery_type != 'maismilionaria':
+            raise ValueError('Esta loteria não utiliza trevos.')
+        from mais_milionaria import validate_trevos
+        trevos = validate_trevos(trevos)
     if month is not None and (lottery_type != 'diadesorte' or type(month) is not int or not 1 <= month <= 12):
         raise ValueError('Mês da Sorte inválido para esta loteria.')
     free = [n for n in range(1, maximum + 1) if n not in fixed and n not in excluded]
@@ -103,7 +111,7 @@ def validate_request(lottery_type, payload):
         raise ValueError('O limite de sobreposição é impossível com esse universo e as dezenas fixas.')
     if method == 'uniform' and (fixed or excluded or even is not None or any(payload.get(key) is not None for key in ('sum_min', 'sum_max', 'max_overlap'))):
         raise ValueError('O modo uniforme não aceita filtros; use Minhas regras para personalizar.')
-    return Rules(method, quantity, fixed, excluded, even, lower, upper, overlap, month)
+    return Rules(method, quantity, fixed, excluded, even, lower, upper, overlap, month, trevos)
 
 
 def portfolio_summary(numbers, maximum):
@@ -165,17 +173,33 @@ def generate_batch(lottery_type, rules):
         games = []
         for numbers in selected:
             game = list(numbers)
+            if lottery_type == 'maismilionaria':
+                game.extend(rules.trevos or sorted(random.sample(range(1, 7), 2)))
             if lottery_type == 'diadesorte':
                 month = rules.month or random.randrange(1, 13)
                 game.append(config['EXTRA_CHOICES']['Mês da Sorte'][month - 1])
             games.append(game)
         portfolio = portfolio_summary(selected, maximum)
+        if lottery_type == 'maismilionaria':
+            complete = len({tuple(game) for game in games})
+            portfolio.update({
+                'numeric_jackpot_probability': portfolio['jackpot_probability'],
+                'unique_complete_games': complete,
+                'unique_trevo_pairs': len({tuple(game[6:]) for game in games}),
+                'jackpot_probability': complete / (comb(50, 6) * comb(6, 2)),
+                'jackpot_one_in': comb(50, 6) * comb(6, 2) / complete,
+                'note': 'A cobertura numérica considera somente as seis dezenas. O prêmio principal exige também os dois trevos: cada aposta simples completa tem chance de 1 em 238.360.500. Contamos apostas completas diferentes no mesmo concurso; variar o estilo ou fixar trevos não melhora a chance individual.',
+            })
         if lottery_type == 'diadesorte':
             portfolio['unique_months'] = len({game[-1] for game in games})
             portfolio['month_probability'] = portfolio['unique_months'] / 12
+        method_note = ('Amostragem uniforme sem reposição de dezenas e sem jogos repetidos.' if rules.method == 'uniform'
+                       else 'Seleção por restrições com objetivo aleatório (HiGHS). Não é amostragem uniforme de todas as soluções viáveis nem previsão de sorteio.')
+        if lottery_type == 'maismilionaria':
+            method_note += (' O par de trevos foi fixado por você; a seleção das dezenas é independente dos trevos.' if rules.trevos
+                            else ' Dois trevos distintos são sorteados separadamente, com seleção uniforme entre os 15 pares possíveis.')
         return {'games': games, 'portfolio': portfolio,
                 'generation_mode': rules.method,
-                'method_note': 'Amostragem uniforme sem reposição de dezenas e sem jogos repetidos.' if rules.method == 'uniform'
-                               else 'Seleção por restrições com objetivo aleatório (HiGHS). Não é amostragem uniforme de todas as soluções viáveis nem previsão de sorteio.'}
+                'method_note': method_note}
     finally:
         _gate.release()

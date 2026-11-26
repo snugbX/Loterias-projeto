@@ -15,9 +15,13 @@ def get_guide(lottery_type):
     parity = f'{count // 2} pares e {count // 2} ímpares' if count % 2 == 0 else (
         f'{count // 2} pares e {count // 2 + 1} ímpares, ou {count // 2 + 1} pares e {count // 2} ímpares')
     month_note = ' Informe também um Mês da Sorte, de janeiro a dezembro. O mês é uma faixa independente, com chance de 1 em 12.' if lottery_type == 'diadesorte' else ''
+    if lottery_type == 'maismilionaria':
+        month_note = ' Informe também dois trevos diferentes, de 1 a 6. As dez faixas cruzam dezenas e trevos: 4 a 6 dezenas premiam com qualquer quantidade de trevos; 2 ou 3 dezenas exigem ao menos um trevo correto. O prêmio principal exige 6 dezenas e 2 trevos, com chance de 1 em 238.360.500.'
     exclusions = (' O filtro não cobre faixas numéricas menores.' if minimum > min(game_analysis.PRIZE_MATCHES[lottery_type]) else '')
     if lottery_type == 'diadesorte':
         exclusions += ' O Mês da Sorte não entra nesse filtro e é mantido nas alternativas da consulta.'
+    if lottery_type == 'maismilionaria':
+        exclusions += ' Os trevos não entram no filtro; prêmios de 2 ou 3 dezenas com trevos ainda podem ocorrer. A alternativa altera somente dezenas e mantém os trevos informados.'
     unavailable = [lottery.GENERATION_MODES[mode] for mode in ('even_only', 'odd_only', 'high_numbers', 'lucky_dates')
                    if not lottery.is_generation_mode_available_for_lottery(mode, lottery_type)]
     normal = (' Na Mega-Sena, o modo normal também usa os filtros atuais de soma, paridade e distribuição.'
@@ -45,7 +49,7 @@ def get_guide(lottery_type):
                 {'id': 'radar', 'title': 'Como leio o radar?', 'paragraphs': [
                     'O teste do radar inclui três janelas posteriores com treino expansivo, sem usar o futuro para treinar cada janela. O painel Confiabilidade das análises separa auditoria de coincidências e intervalos por dezena; relatórios de uma base antiga não são apresentados como atuais.',
                     'A porcentagem “após o perfil” conta transições de concursos consecutivos. Compare-a com a referência matemática e o intervalo; amostras abaixo de 30 são sinalizadas como pequenas.',
-                    ('No Dia de Sorte há também transições entre meses, cada um com referência matemática de 1 em 12. Meses ausentes não são ligados artificialmente.' if lottery_type == 'diadesorte' else 'Esta loteria não possui Mês da Sorte; o radar de meses não se aplica.'),
+                    ('No Dia de Sorte há também transições entre meses, cada um com referência matemática de 1 em 12. Meses ausentes não são ligados artificialmente.' if lottery_type == 'diadesorte' else 'Na +Milionária, o radar separa dezenas e pares de trevos. Cada par tem referência de 1 em 15. A frequência individual dos trevos tem referência de 1 em 3, não confunda com a chance do par.' if lottery_type == 'maismilionaria' else 'Esta loteria não possui Mês da Sorte; o radar de meses não se aplica.'),
                     'Teste histórico não comprova capacidade de antecipar sorteios. Uma frequência do perfil não é a chance de um jogo específico ganhar.']},
                 {'id': 'calendar', 'title': 'O calendário mostra “A confirmar”. E agora?', 'paragraphs': [
                     'Confira a data da última consulta. A agenda usa datas reais do cronograma da CAIXA, inclusive domingos e mudanças excepcionais, não uma semana fixa.',

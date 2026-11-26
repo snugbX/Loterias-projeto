@@ -83,6 +83,12 @@ export function renderAssistanceDetails(data) {
         });
         target.append(list, node('p', `${data.month_coverage.valid} concursos com mês válido; ${data.month_coverage.missing} sem mês válido. Cada mês mantém chance matemática de 1 em 12.`));
     }
+    if (data.trevos?.length) {
+        target.append(node('h3', 'Trevos: frequência histórica'));
+        const list = node('dl'); list.className = 'help-month-frequencies';
+        data.trevos.forEach(trevo => {const item = node('div'); item.append(node('dt', `Trevo ${trevo.number}`), node('dd', `${trevo.count} concursos · ${trevo.percentage.toLocaleString('pt-BR', {maximumFractionDigits: 2})}%`)); list.append(item);});
+        target.append(list, node('p', 'Cada trevo individual tem referência de 1 em 3; um par exato tem chance de 1 em 15. Frequência histórica não indica quais trevos sairão.'));
+    }
 }
 
 select.addEventListener('change', renderTopic);

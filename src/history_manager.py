@@ -19,13 +19,14 @@ STATES = {'all', 'not_effective', 'waiting', 'prize', 'no_prize', 'unavailable',
 def game_payload(kind, game):
     config = lottery.LOTTERY_CONFIGS[kind]
     count = config['NUM_BALLS_TO_DRAW']
-    if not isinstance(game, list) or len(game) != count + (kind == 'diadesorte'):
+    if not isinstance(game, list) or len(game) != count + len(config.get('EXTRA_COLUMNS', [])):
         raise ValueError('Formato de jogo inválido.')
     months = config.get('EXTRA_CHOICES', {}).get('Mês da Sorte', [])
     month = None
     if months:
         month = next((i + 1 for i, name in enumerate(months) if name.casefold() == str(game[-1]).casefold()), None)
-    numbers, month = game_analysis.validate_game(kind, {'numbers': game[:count], 'month': month})
+    numbers, month = game_analysis.validate_game(kind, {'numbers': game[:count], 'month': month,
+                                                      **({'trevos': game[count:]} if kind == 'maismilionaria' else {})})
     return numbers, month
 
 
@@ -48,6 +49,14 @@ def check_game(kind, game, state, draws, latest):
     _, drawn_at, balls, drawn_month = draw
     matched = sorted(set(numbers) & set(balls))
     hits = len(matched)
+    if kind == 'maismilionaria':
+        from mais_milionaria import prize_label
+        trevo_hits = len(set(month) & set(drawn_month))
+        label = prize_label(hits, trevo_hits)
+        return {'status': 'prize' if label else 'no_prize', 'label': label or 'Sem faixa de prêmio',
+                'contest': contest, 'drawn_at': drawn_at, 'hits': hits, 'matched': matched,
+                'drawn_numbers': list(balls), 'drawn_trevos': list(drawn_month),
+                'trevo_hits': trevo_hits, 'partial': False, 'rules_url': game_analysis.RULES_URLS[kind]}
     month_hit = month == drawn_month if month is not None and drawn_month is not None else None
     prize = hits in game_analysis.PRIZE_MATCHES[kind] or month_hit is True
     incomplete = kind == 'diadesorte' and drawn_month is None
@@ -137,7 +146,7 @@ def list_games(kind, owner, filters):
             prizes += result['status'] == 'prize'
             if bounds['from'] and day < bounds['from'] or bounds['to'] and day > bounds['to']:
                 continue
-            numeric = {n for n in game if type(n) is int}
+            numeric = {n for n in game[:lottery.LOTTERY_CONFIGS[kind]['NUM_BALLS_TO_DRAW']] if type(n) is int}
             if wanted and not wanted <= numeric or favorite == '1' and not state.get('favorite'):
                 continue
             if effective != 'all' and bool(state.get('effective')) != (effective == 'yes'):

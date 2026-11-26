@@ -23,7 +23,7 @@ class SynergyIndex:
     pairs: tuple
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=8)
 def build_synergy(lottery_type, draws):
     """Cache only public validated draws; changed snapshots invalidate the index."""
     config = lottery.LOTTERY_CONFIGS[lottery_type]
@@ -114,7 +114,8 @@ def suggest_alternative(lottery_type, numbers, month, radar, synergy=None):
         evidence = []
     return {
         'status': 'alternative' if changes else 'insufficient_synergy' if difference else 'already_aligned',
-        'numbers': sorted(selected), 'month': month, 'changes': changes,
+        'numbers': sorted(selected), 'month': month if lottery_type == 'diadesorte' else None,
+        'trevos': list(month) if lottery_type == 'maismilionaria' else None, 'changes': changes,
         'preserved_numbers': sorted(set(numbers) & selected),
         'synergy': {'method': 'adjusted_smoothed_pair_lift', 'total_draws': synergy.total if synergy else 0,
                     'min_number_support': MIN_NUMBER_SUPPORT, 'min_pair_support': MIN_PAIR_SUPPORT,

@@ -17,6 +17,7 @@ export function formatHistoryFilename(filename) {
 
 export function formatLotteryName(lotteryType) {
     const names = {
+        maismilionaria: '+Milionária',
         megasena: 'Mega Sena',
         lotofacil: 'Lotofácil',
         quina: 'Quina',
@@ -98,7 +99,11 @@ export function displayGamesAsBalls(games, targetContainer, lotteryType) {
         jogoLineDiv.style.background = 'linear-gradient(135deg, var(--lottery-soft-bg), var(--bg-secondary) 72%)';
         jogoLineDiv.style.animationDelay = `${index * 0.05}s`;
 
-        jogo.forEach(value => {
+        jogo.forEach((value, position) => {
+            if (lotteryType === 'maismilionaria' && position >= 6) {
+                const badge = document.createElement('span'); badge.className = 'trevo-badge';
+                badge.textContent = `Trevo ${value}`; jogoLineDiv.append(badge); return;
+            }
             if (isNumericValue(value)) {
                 appendNumberBall(jogoLineDiv, value, colors.ball || colors.primary);
             } else {
@@ -141,8 +146,8 @@ export function displayNumberBalls(numbers, targetElement, typeClass) {
 
 
 export function displayLatestResults(results, targetElement, status = null) {
-    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
-    const formats = { megasena: [6,60,6], lotofacil: [15,25,5], quina: [5,80,5], diadesorte: [7,31,7] };
+    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte', 'maismilionaria'];
+    const formats = { megasena: [6,60,6], lotofacil: [15,25,5], quina: [5,80,5], diadesorte: [7,31,7], maismilionaria: [6,50,6] };
     const previousFocus = targetElement.contains(document.activeElement) ? {
         kind: document.activeElement.dataset.resultsKind, action: document.activeElement.dataset.resultsAction,
     } : null;
@@ -151,7 +156,13 @@ export function displayLatestResults(results, targetElement, status = null) {
     orderedLotteryTypes.forEach(lotteryType => {
         const result = results?.[lotteryType];
         const [count, maximum, columns] = formats[lotteryType];
-        const available = result && Number.isInteger(result.contest) && result.contest > 0
+        const validTrevos = lotteryType !== 'maismilionaria' || (() => {
+            const raw = [result?.extras?.['Trevo 1'], result?.extras?.['Trevo 2']];
+            const valid = raw.every(n => (typeof n === 'number' || typeof n === 'string' && /^[1-6]$/.test(n))
+                && Number.isInteger(Number(n)) && Number(n) >= 1 && Number(n) <= 6);
+            return valid && new Set(raw.map(Number)).size === 2;
+        })();
+        const available = result && validTrevos && Number.isInteger(result.contest) && result.contest > 0
             && typeof result.date === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(result.date)
             && Array.isArray(result.numbers) && result.numbers.length === count && new Set(result.numbers).size === count
             && result.numbers.every(n => Number.isInteger(n) && n >= 1 && n <= maximum);
@@ -199,6 +210,13 @@ export function displayLatestResults(results, targetElement, status = null) {
             balls.appendChild(ball);
         });
         card.append(balls);
+        if (lotteryType === 'maismilionaria') {
+            const trevos = document.createElement('div'); trevos.className = 'result-lucky-month';
+            const label = document.createElement('span'); label.textContent = 'Trevos sorteados';
+            const value = document.createElement('strong');
+            value.textContent = [result.extras?.['Trevo 1'], result.extras?.['Trevo 2']].join(' · ');
+            trevos.append(label, value); card.append(trevos);
+        }
         if (lotteryType === 'diadesorte') {
             const extras = document.createElement('div'); extras.className = 'result-lucky-month';
             const label = document.createElement('span'); label.textContent = 'Mês da Sorte';
@@ -242,7 +260,7 @@ export function displayLatestResults(results, targetElement, status = null) {
 
 
 export function displayDataStatus(status, targetElement, updatedAtElement) {
-    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte'];
+    const orderedLotteryTypes = ['megasena', 'lotofacil', 'quina', 'diadesorte', 'maismilionaria'];
     targetElement.innerHTML = '';
 
     if (!status || Object.keys(status).length === 0) {

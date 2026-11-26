@@ -9,6 +9,7 @@ const editions = [
     { kind: 'lotofacil', name: 'Lotofácil', count: 15, maximum: 25, url: 'Lotofacil' },
     { kind: 'quina', name: 'Quina', count: 5, maximum: 80, url: 'Quina' },
     { kind: 'diadesorte', name: 'Dia de Sorte', count: 7, maximum: 31, url: 'Dia-de-Sorte' },
+    { kind: 'maismilionaria', name: '+Milionária', count: 6, maximum: 50, url: 'Mais-Milionaria' },
 ];
 let pending = null, index = 0, pages = [], pageAnimation = null;
 function node(tag, text, className) { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; }
@@ -19,6 +20,7 @@ function validDigest(digest, edition) {
     if (!digest || digest.lottery_type !== edition.kind || !Number.isInteger(digest.contest) || digest.contest < 1 || typeof digest.date !== 'string' || !/^\d{2}\/\d{2}\/\d{4}$/.test(digest.date)) return false;
     const balls = digest.numbers;
     if (!Array.isArray(balls) || balls.length !== edition.count || new Set(balls).size !== balls.length || balls.some(n => !Number.isInteger(n) || n < 1 || n > edition.maximum)) return false;
+    if (edition.kind === 'maismilionaria' && (!Array.isArray(digest.trevos) || digest.trevos.length !== 2 || new Set(digest.trevos).size !== 2 || digest.trevos.some(n => !Number.isInteger(n) || n < 1 || n > 6))) return false;
     if (digest.even !== balls.filter(n => n % 2 === 0).length || digest.odd !== balls.length - digest.even || digest.sum !== balls.reduce((a,b) => a+b,0)) return false;
     if (digest.repeated_numbers !== null && (!Array.isArray(digest.repeated_numbers) || new Set(digest.repeated_numbers).size !== digest.repeated_numbers.length || digest.repeated_numbers.some(n => !balls.includes(n)))) return false;
     const sorted = [...balls].sort((a,b) => a-b);
@@ -57,6 +59,10 @@ function makePage(edition, result) {
     const draw = node('div', undefined, 'digest-drawn-numbers'); draw.setAttribute('aria-label', 'Dezenas sorteadas');
     digest.numbers.forEach(value => draw.append(node('span', dozen(value), 'digest-ball')));
     article.append(draw);
+    if (edition.kind === 'maismilionaria') {
+        const trevos = node('div', undefined, 'digest-month');
+        trevos.append(node('span', 'Trevos sorteados'), node('strong', digest.trevos?.join(' · ') || 'Não informados na base')); article.append(trevos);
+    }
     if (edition.kind === 'diadesorte') {
         const month = node('div', undefined, 'digest-month');
         month.append(node('span', 'Mês da Sorte'), node('strong', digest.month || 'Não informado na base')); article.append(month);

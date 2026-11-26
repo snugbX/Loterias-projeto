@@ -46,7 +46,8 @@ async function load() {
         input('month').firstElementChild.value = '';
         caps.months.forEach((name, index) => { const option = node('option', name); option.value = String(index + 1); input('month').append(option); });
         document.getElementById('constrained-month-field').hidden = !caps.months.length;
-        document.getElementById('constrained-lottery').textContent = `${caps.count} dezenas de 1 a ${caps.maximum} · até ${caps.max_games} jogos por lote`;
+        document.getElementById('constrained-trevos-field').hidden = !caps.trevos;
+        document.getElementById('constrained-lottery').textContent = `${caps.count} dezenas de 1 a ${caps.maximum}${caps.trevos ? ' + 2 trevos de 1 a 6' : ''} · até ${caps.max_games} jogos por lote`;
         document.getElementById('constrained-overlap-note').textContent = `Menor sobreposição possível no universo completo: ${caps.min_overlap} dezenas. Dezenas fixas e exclusões podem elevar esse mínimo.`;
         status.textContent = ''; fields.disabled = false; updateMethod();
         if (focusRequested) { method.focus(); focusRequested = false; }
@@ -92,6 +93,7 @@ form.addEventListener('submit', async event => {
     try {
         payload = { method: method.value, num_games: Number(input('quantity').value) };
         if (caps.months.length && input('month').value) payload.month = Number(input('month').value);
+        if (caps.trevos && input('trevos').value.trim()) payload.trevos = numberList(input('trevos').value);
         if (method.value === 'constraints') {
             payload.fixed = numberList(input('fixed').value); payload.excluded = numberList(input('excluded').value);
             payload.max_overlap = Number(input('overlap').value);
@@ -114,6 +116,7 @@ form.addEventListener('submit', async event => {
         summary.append(node('p', `${p.unique_combinations} combinações distintas · ${p.distinct_numbers} dezenas diferentes no conjunto · maior sobreposição: ${p.max_overlap ?? 'não se aplica'}.`),
             node('p', data.method_note), node('p', p.note));
         if (p.unique_months !== undefined) summary.append(node('p', `${p.unique_months} meses distintos no lote; cobertura do Mês da Sorte no mesmo concurso: ${(p.month_probability * 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%. Isso não indica lucro nem amplia a chance dos 7 acertos numéricos.`));
+        if (p.unique_complete_games !== undefined) summary.append(node('p', `${p.unique_complete_games} ${p.unique_complete_games === 1 ? 'aposta completa diferente' : 'apostas completas diferentes'} · ${p.unique_trevo_pairs} ${p.unique_trevo_pairs === 1 ? 'par de trevos distinto' : 'pares de trevos distintos'}. Chance de acertar 6 dezenas e 2 trevos com o lote no mesmo concurso: aproximadamente 1 em ${p.jackpot_one_in.toLocaleString('pt-BR', {maximumFractionDigits: 0})}. Isso não indica lucro nem previsão de prêmio.`));
         const compare = node('button', 'Consultar e comparar este lote'); compare.type = 'button';
         compare.disabled = data.games.length > 10;
         if (compare.disabled) compare.title = 'A consulta aceita até 10 jogos por vez.';

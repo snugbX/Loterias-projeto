@@ -20,7 +20,7 @@ from pypdf import PdfReader
 SOURCE = 'https://loterias.caixa.gov.br/Paginas/regras-sorteios.aspx'
 TIMEZONE = ZoneInfo('America/Sao_Paulo')
 NAMES = {'megasena': 'Mega-Sena', 'lotofacil': 'Lotofácil',
-         'quina': 'Quina', 'diadesorte': 'Dia de Sorte'}
+         'quina': 'Quina', 'diadesorte': 'Dia de Sorte', 'maismilionaria': '+Milionária'}
 MONTHS = ('janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro').split()
 LABELS = ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo')
 _lock = threading.Lock()
@@ -153,7 +153,7 @@ def parse_schedule(content, year, month):
     seen_dates = []
     headings = ('LOTECA', 'LOTOFACIL', 'FEDERAL', 'LOTOMANIA', 'QUINA', 'DUPLA SENA',
                 'TIMEMANIA', 'MEGA-SENA', 'DIA DE SORTE', 'SUPER SETE', '+ MILIONARIA', 'LOCAL DO SORTEIO')
-    keys = {'LOTOFACIL': 'lotofacil', 'QUINA': 'quina', 'MEGA-SENA': 'megasena', 'DIA DE SORTE': 'diadesorte'}
+    keys = {'LOTOFACIL': 'lotofacil', 'QUINA': 'quina', 'MEGA-SENA': 'megasena', 'DIA DE SORTE': 'diadesorte', '+ MILIONARIA': 'maismilionaria'}
     for page in reader.pages:
         lines = page.extract_text(extraction_mode='layout').splitlines()
         header = next((normalize(line) for line in lines if all(h in normalize(line) for h in headings)), None)
@@ -161,6 +161,8 @@ def parse_schedule(content, year, month):
             continue
         centers = [header.index(h) + len(h) / 2 for h in headings]
         bounds = [(centers[i] + centers[i + 1]) / 2 for i in range(len(centers) - 1)]
+        # The merged venue/address cell can start before its centered heading.
+        bounds[-1] = min(bounds[-1], centers[-2] + (centers[-2] - centers[-3]) / 2)
         for line in lines:
             match = re.match(r'^\s*(\d{2}/\d{2}/\d{4})(?:\(\d+\))?\s+', line)
             if not match:
@@ -267,7 +269,7 @@ def daily_tips(today, day):
     elif day['draws']:
         schedule = 'Na agenda de hoje: ' + ', '.join(draw['name'] for draw in day['draws']) + '. Confira os prazos de aposta nos canais oficiais.'
     else:
-        schedule = 'Nenhum sorteio das quatro modalidades do app está previsto para hoje no cronograma consultado.'
+        schedule = 'Nenhum sorteio das modalidades do app está previsto para hoje no cronograma consultado.'
     return [{'title': title, 'text': text}, {'title': 'De olho na agenda', 'text': schedule}]
 
 

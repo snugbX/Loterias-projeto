@@ -48,7 +48,7 @@ def main(argv=None):
     temporary.write_text(json.dumps(bundle, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n', encoding='utf-8')
     public_reports.read_bundle(temporary)
     temporary.replace(public_reports.REPORT_PATH)
-    print('Relatórios públicos atualizados para as quatro loterias.')
+    print(f'Relatórios públicos atualizados para {len(lottery.LOTTERY_CONFIGS)} loterias.')
     return 0
 
 

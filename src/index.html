@@ -156,6 +156,7 @@
                         <span>Quina</span>
                         <span>Lotofácil</span>
                         <span>Dia de Sorte</span>
+                        <span>+Milionária</span>
                     </div>
                 </div>
             </div>
@@ -252,9 +253,17 @@
                 <option value="lotofacil">Lotofácil</option>
                 <option value="quina">Quina</option>
                 <option value="diadesorte">Dia de Sorte</option>
+                <option value="maismilionaria">+Milionária</option>
             </select>
 
             <div id="lottery-option-grid" class="lottery-option-grid" role="radiogroup" aria-labelledby="lottery-picker-title">
+                <button type="button" class="lottery-option" data-lottery="maismilionaria" role="radio" aria-checked="false" style="--lottery-primary: #174A8B; --lottery-secondary: #90BEE8;">
+                    <span class="lottery-option-topline"><span class="lottery-option-kicker">6 dezenas + 2 trevos</span><span class="lottery-option-check" aria-hidden="true"></span></span>
+                    <span class="lottery-option-name">+Milionária</span>
+                    <span class="lottery-option-meta">Dezenas 1–50 · Trevos 1–6</span>
+                    <span class="lottery-option-balls" aria-hidden="true"><span>03</span><span>12</span><span>21</span><span>34</span><span>42</span><span>50</span></span>
+                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
+                </button>
                 <button type="button" class="lottery-option is-selected" data-lottery="megasena" role="radio" aria-checked="true" style="--lottery-primary: #209869; --lottery-secondary: #8FCBB3;">
                     <span class="lottery-option-topline">
                         <span class="lottery-option-kicker">6 dezenas</span>
@@ -376,6 +385,7 @@
                             <p id="constrained-overlap-note"></p>
                         </div>
                         <div id="constrained-month-field" hidden><label for="constrained-month">Mês da Sorte</label><select id="constrained-month"></select></div>
+                        <div id="constrained-trevos-field" hidden><label for="constrained-trevos">Dois trevos (opcional)</label><input id="constrained-trevos" type="text" inputmode="numeric" maxlength="10" placeholder="Ex.: 2 5"><p>Deixe vazio para sortear dois trevos diferentes, de 1 a 6.</p></div>
                         <button type="submit">Gerar meu lote</button>
                     </fieldset>
                 </form>

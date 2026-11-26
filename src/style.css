@@ -83,6 +83,9 @@ body.dark-theme {
     --lottery-soft-bg: rgba(91, 33, 182, 0.12);
     --lottery-ball-bg: #260085;
 }
+[data-lottery="maismilionaria"] { --lottery-readable: #174a8b; --lottery-border: #2563a5; --lottery-soft-bg: rgba(23,74,139,.10); --lottery-ball-bg: #174a8b; }
+body.dark-theme [data-lottery="maismilionaria"] { --lottery-readable: #93c5fd; --lottery-border: #60a5fa; --lottery-soft-bg: rgba(96,165,250,.14); }
+.trevo-badge { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--lottery-border); border-radius: 6px; padding: 6px 10px; color: var(--lottery-readable); background: var(--bg-secondary); font-weight: 800; line-height: 1.5; margin: 3px; }
 [data-lottery="diadesorte"] {
     --lottery-readable: #92400e;
     --lottery-border: #b45309;
@@ -2682,6 +2685,7 @@ select:focus, input[type="number"]:focus {
 .analysis-entry legend { padding: 0; font-weight: 750; }
 .analysis-entry-fields { display: flex; gap: 12px; align-items: flex-end; }
 .analysis-entry-fields > div:first-child { flex: 1; min-width: 0; }
+.analysis-trevos-field { width: 165px; flex: 0 1 165px; min-width: 0; }
 .analysis-entry .analysis-remove-game { width: 44px; height: 48px; flex: 0 0 44px; padding: 0; margin: 0; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 1.5em; }
 .analysis-entry .analysis-remove-game:disabled { cursor: default; }
 .analysis-form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -2836,7 +2840,7 @@ select:focus, input[type="number"]:focus {
 .digest-masthead h2 { margin: 4px 0 0; color: var(--text-primary); font-size: 1.25em; line-height: 1.3; }
 .draw-digest-panel .digest-icon-button { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; }
 .digest-icon-button:disabled { opacity: .4; cursor: default; }
-.digest-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px 0; }
+.digest-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 0; }
 .digest-tabs button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 8px 6px; border: 1px solid var(--border-color); border-radius: 6px; font-size: .8125em; font-weight: 750; line-height: 1.3; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; overflow-wrap: anywhere; }
 .digest-tabs button[aria-selected="true"] { border-color: var(--text-primary); box-shadow: inset 0 -3px var(--text-primary); }
 .digest-tab-swatch { width: 8px; height: 16px; flex-shrink: 0; border-radius: 2px; background: var(--lottery-readable); }

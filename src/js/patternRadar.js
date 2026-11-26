@@ -166,6 +166,26 @@ function render(data) {
     appendWalkForward(test, validation);
     content.append(validation, node('p', data.disclaimer, 'analysis-disclaimer'));
     renderMonths(data.months);
+    if (data.trevos) {
+        const section = node('section', undefined, 'radar-trevos');
+        section.append(node('h3', 'Trevos no radar'), node('p', `Após os trevos ${data.trevos.latest.trevos.join(' e ')}: ${number(data.trevos.sample, 0)} transições consecutivas.`));
+        if (data.trevos.small_sample) section.append(node('p', 'Amostra pequena: menos de 30 transições. Não use essa frequência como previsão.', 'analysis-warning'));
+        const region = node('div', undefined, 'radar-table-scroll'); region.tabIndex = 0; region.setAttribute('role', 'region'); region.setAttribute('aria-label', 'Frequência e transições dos pares de trevos');
+        const table = node('table'), head = node('thead'), labels = node('tr'), body = node('tbody');
+        table.append(node('caption', 'Pares de trevos: observação histórica e referência matemática'));
+        ['Trevos', 'Após o último par', 'Histórico geral', 'Chance matemática', 'Intervalo aprox. 95%'].forEach(text => {const th = node('th', text); th.scope = 'col'; labels.append(th);});
+        head.append(labels);
+        data.trevos.profiles.forEach(profile => {
+            const row = node('tr');
+            [profile.trevos.join(' + '), `${percent(profile.conditional_probability)} (${profile.matches}/${data.trevos.sample})`, percent(profile.historical_probability), percent(profile.theoretical_probability), profile.interval ? `${percent(profile.interval[0])} a ${percent(profile.interval[1])}` : 'Sem amostra'].forEach(text => row.append(node('td', text)));
+            body.append(row);
+        });
+        table.append(head, body); region.append(table); section.append(region, node('p', data.trevos.note, 'analysis-disclaimer'));
+        const validation = node('details'); validation.append(node('summary', 'Teste dos trevos em concursos posteriores'));
+        const test = data.trevos.validation;
+        validation.append(node('p', test.test_transitions ? `${test.test_transitions} transições de teste. Erro Brier: ${number(test.model_brier, 4)}; referência uniforme: ${number(test.baseline_brier, 4)}.` : 'Sem transições suficientes para teste.'));
+        appendWalkForward(test, validation); validation.append(node('p', test.note)); section.append(validation); content.append(section);
+    }
     content.hidden = false;
 }
 
@@ -223,7 +243,7 @@ export function syncPatternRadar(user, lotteryType) {
     allowed = Boolean(user?.is_premium);
     monthControls.hidden = lotteryType !== 'diadesorte';
     document.getElementById('radar-heading').textContent = lotteryType === 'diadesorte'
-        ? 'Pares, ímpares e Mês da Sorte' : 'Pares e ímpares em perspectiva';
+        ? 'Pares, ímpares e Mês da Sorte' : lotteryType === 'maismilionaria' ? 'Dezenas e trevos em perspectiva' : 'Pares e ímpares em perspectiva';
     panel.classList.toggle('hidden', !allowed);
     clearInterval(timer);
     timer = allowed ? setInterval(() => load(true), REFRESH_MS) : null;

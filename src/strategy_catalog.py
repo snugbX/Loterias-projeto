@@ -36,6 +36,7 @@ def catalog_for(lottery_type):
             if threshold > min(game_analysis.PRIZE_MATCHES[lottery_type]): description += ' Pode permitir faixas menores.'
             if mode == 'balanced_never_prize': description = f'{parity}; ' + description
             if lottery_type == 'diadesorte': description += ' Não filtra o Mês da Sorte.'
+            if lottery_type == 'maismilionaria': description += ' Não filtra trevos; pode permitir prêmios de 2 ou 3 dezenas com trevos.'
         modes.append({'id': mode, 'label': label, 'description': description,
                       'available': lottery.is_generation_mode_available_for_lottery(mode, lottery_type),
                       'premium': mode in lottery.PREMIUM_GENERATION_MODES,

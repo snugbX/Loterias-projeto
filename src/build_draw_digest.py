@@ -25,6 +25,6 @@ def build_digest(lottery_type, draws, skipped):
             'contest': contest, 'date': date, 'numbers': list(numbers), 'even': even,
             'odd': len(numbers) - even, 'sum': sum(numbers), 'repeated_numbers': repeated,
             'consecutive_pairs': sum(b == a + 1 for a, b in zip(numbers, numbers[1:])),
-            'ranges': ranges, 'month': month_name,
+            'ranges': ranges, 'month': month_name, 'trevos': list(month) if lottery_type == 'maismilionaria' else None,
             'coverage': {'total_draws': len(draws), 'missing_contests': missing, 'skipped_rows': skipped},
             'text': text, 'note': 'Resumo factual da base validada, não previsão, avaliação de prêmio ou confirmação de aposta. Consulte os canais oficiais da CAIXA.'}

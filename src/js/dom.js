@@ -97,6 +97,11 @@ export const elements = {
 };
 
 export const lotteryColors = {
+    maismilionaria: {
+        primary: '#174A8B', secondary: '#90BEE8', readable: '#174A8B', readableDark: '#93C5FD',
+        border: '#2563A5', ball: '#174A8B', softBg: 'rgba(23,74,139,.10)',
+        softBgDark: 'rgba(96,165,250,.14)', action: '#174A8B',
+    },
     megasena: {
         primary: '#209869',
         secondary: '#8FCBB3',
@@ -144,6 +149,7 @@ export const lotteryColors = {
 };
 
 export const lotteryDetails = {
+    maismilionaria: {name: '+Milionária', summary: '6 dezenas de 1 a 50 + 2 trevos de 1 a 6', accent: '#174A8B'},
     megasena: {
         name: 'Mega Sena',
         summary: '6 dezenas de 1 a 60',

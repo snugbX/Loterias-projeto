@@ -7,15 +7,18 @@ import os
 
 import pandas as pd
 import gerador_loterias as lottery
+import mais_milionaria
 
 
 PRIZE_MATCHES = {
+    'maismilionaria': (2, 3, 4, 5, 6),
     "megasena": (4, 5, 6),
     "quina": (2, 3, 4, 5),
     "lotofacil": (11, 12, 13, 14, 15),
     "diadesorte": (4, 5, 6, 7),
 }
 RULES_URLS = {
+    'maismilionaria': 'https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx',
     "megasena": "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx",
     "quina": "https://loterias.caixa.gov.br/Paginas/Quina.aspx",
     "lotofacil": "https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx",
@@ -49,10 +52,14 @@ def validate_game(lottery_type, payload):
             raise ValueError("Escolha o Mês da Sorte de janeiro a dezembro.")
     elif month is not None:
         raise ValueError("Esta loteria não utiliza Mês da Sorte.")
+    if lottery_type == 'maismilionaria':
+        return sorted(numbers), mais_milionaria.validate_trevos(payload.get('trevos'))
+    if payload.get('trevos') is not None:
+        raise ValueError('Esta loteria não utiliza trevos.')
     return sorted(numbers), month
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=10)
 def _read_draws(lottery_type, path, modified_ns, size, skiprows):
     # The file fingerprint invalidates cached data after the updater replaces a CSV.
     frame = lottery.load_data(path, skiprows)
@@ -79,6 +86,11 @@ def _read_draws(lottery_type, path, modified_ns, size, skiprows):
                 raise ValueError()
             month_text = str(row.get("Mês da Sorte", "")).strip().casefold()
             month = next((i + 1 for i, name in enumerate(months) if name.casefold() == month_text), None)
+            if lottery_type == 'maismilionaria':
+                raw_trevos = [float(row.get(f'Trevo {i}', '')) for i in (1, 2)]
+                if any(not n.is_integer() for n in raw_trevos):
+                    raise ValueError('Trevos inválidos.')
+                month = mais_milionaria.validate_trevos([int(n) for n in raw_trevos])
             record = (int(contest), date.strftime("%d/%m/%Y"), numbers, month)
             if int(contest) in draws:
                 if draws[int(contest)] != record:
@@ -98,6 +110,16 @@ def probability_summary(lottery_type):
     count = config["NUM_BALLS_TO_DRAW"]
     universe = config["MAX_NUMBER"]
     total = comb(universe, count)
+    if lottery_type == 'maismilionaria':
+        tiers = []
+        for hits, trevo_hits in mais_milionaria.TIERS:
+            number_probability = comb(6, hits) * comb(44, 6 - hits) / total
+            extra_probability = sum(comb(2, t) * comb(4, 2 - t) for t in trevo_hits) / comb(6, 2)
+            probability = number_probability * extra_probability
+            tiers.append({'label': mais_milionaria.tier_label(hits, trevo_hits), 'matches': hits,
+                          'trevo_matches': list(trevo_hits), 'probability': probability, 'one_in': 1 / probability})
+        return {'tiers': tiers, 'any_prize': sum(t['probability'] for t in tiers),
+                'jackpot_one_in': total * comb(6, 2), 'numeric_jackpot_one_in': total}
     tiers = []
     for hits in reversed(PRIZE_MATCHES[lottery_type]):
         remaining = count - hits
@@ -145,13 +167,18 @@ def analyze_validated_game(lottery_type, numbers, month, draws, skipped):
         hits = len(selected.intersection(drawn))
         best = max(best, hits)
         had_strong_prize |= hits >= strong_threshold
-        month_hit = month is not None and month == drawn_month
-        missing_months += int(month is not None and drawn_month is None)
+        month_hit = lottery_type == 'diadesorte' and month is not None and month == drawn_month
+        missing_months += int(lottery_type == 'diadesorte' and drawn_month is None)
         month_count += int(month_hit)
-        if hits in PRIZE_MATCHES[lottery_type]:
-            tier_counts[hits] += 1
-        if hits in PRIZE_MATCHES[lottery_type] or month_hit:
+        trevo_hits = len(set(month) & set(drawn_month)) if lottery_type == 'maismilionaria' else None
+        joint_label = mais_milionaria.prize_label(hits, trevo_hits) if lottery_type == 'maismilionaria' else None
+        number_prize = bool(joint_label) if lottery_type == 'maismilionaria' else hits in PRIZE_MATCHES[lottery_type]
+        if number_prize:
+            tier_counts[joint_label if lottery_type == 'maismilionaria' else hits] += 1
+        if number_prize or month_hit:
             occurrences.append({"contest": contest, "date": date, "numbers": list(drawn), "matches": hits, "month_match": month_hit,
+                                'trevo_matches': trevo_hits, 'trevos': list(drawn_month) if lottery_type == 'maismilionaria' else None,
+                                'prize_label': joint_label,
                                 "matched_numbers": sorted(selected.intersection(drawn))})
     strategies = []
     for mode, label in lottery.GENERATION_MODES.items():
@@ -171,16 +198,21 @@ def analyze_validated_game(lottery_type, numbers, month, draws, skipped):
         filter_note += " Ele não exclui as faixas numéricas menores."
     if lottery_type == "diadesorte":
         filter_note += " O filtro também não considera o Mês da Sorte."
+    if lottery_type == 'maismilionaria':
+        filter_note += ' Os trevos não entram no filtro; ele pode permitir prêmios de 2 ou 3 dezenas com trevos.'
     result = {
         "lottery_type": lottery_type, "lottery_name": lottery.LOTTERY_DISPLAY_NAMES[lottery_type],
-        "numbers": numbers, "month": month,
+        "numbers": numbers, "month": month if lottery_type == 'diadesorte' else None,
+        'trevos': list(month) if lottery_type == 'maismilionaria' else None,
         "coverage": {"total_draws": len(draws), "first_contest": draws[-1][0], "last_contest": draws[0][0],
                      "first_date": draws[-1][1], "last_date": draws[0][1], "skipped_rows": skipped,
                      "missing_months": missing_months,
                      "missing_contests": max(0, draws[0][0] - draws[-1][0] + 1 - len(draws))},
         "history": {"prize_draws": len(occurrences), "percentage": len(occurrences) / len(draws) * 100,
                     "best_matches": best, "month_matches": month_count,
-                    "tiers": [{"matches": hits, "count": tier_counts[hits]} for hits in reversed(PRIZE_MATCHES[lottery_type])],
+                    "tiers": ([{'matches': h, 'trevo_matches': list(t), 'label': mais_milionaria.tier_label(h, t),
+                                'count': tier_counts[mais_milionaria.tier_label(h, t)]} for h, t in mais_milionaria.TIERS]
+                              if lottery_type == 'maismilionaria' else [{"matches": hits, "count": tier_counts[hits]} for hits in reversed(PRIZE_MATCHES[lottery_type])]),
                     "recent_occurrences": occurrences[:30], "has_more": len(occurrences) > 30},
         "profile": {"even": even, "odd": len(numbers) - even, "sum": sum(numbers),
                     "consecutive_pairs": sum(b == a + 1 for a, b in zip(numbers, numbers[1:]))},

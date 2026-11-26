@@ -39,6 +39,11 @@ ORDER_CODES = {
     "crescente": "c",
 }
 DOWNLOAD_CONFIGS = {
+    'maismilionaria': {
+        'name': '+Milionária',
+        'page_url': 'https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx',
+        'override_env': 'Fonte pública oficial incremental, sem download de planilha',
+    },
     "megasena": {
         "name": "Mega Sena",
         "page_url": "https://asloterias.com.br/download-todos-resultados-mega-sena",
@@ -581,6 +586,20 @@ def update_lottery(lottery_type, args):
         )
 
     print("Verificando dados no site...")
+
+    if lottery_type == 'maismilionaria':
+        from mais_milionaria import collect_rows
+        rows = collect_rows(LOTTERY_CONFIGS[lottery_type]['FILE_PATH'], args.timeout, args.force)
+        if rows is None:
+            print('Base completa e já atualizada. Nenhum concurso adicional foi baixado.')
+            return None
+        validate_rows(lottery_type, rows)
+        if args.dry_run:
+            print('Importação validada. Simulação: CSV preservado.')
+            return None
+        target, _ = replace_csv(lottery_type, rows, make_backup=not args.no_backup)
+        print(f'CSV atualizado: {target}')
+        return target
 
     download = download_lottery_file(
         lottery_type,

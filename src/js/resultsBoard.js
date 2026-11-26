@@ -32,7 +32,8 @@ export function initResultsBoard(reload) {
         if (button.dataset.resultsAction !== 'copy') return;
         button.disabled = true;
         try {
-            const extras = kind === 'diadesorte' ? `\nMês da Sorte: ${result.extras?.['Mês da Sorte'] || 'não informado na base'}` : '';
+            const extras = kind === 'diadesorte' ? `\nMês da Sorte: ${result.extras?.['Mês da Sorte'] || 'não informado na base'}`
+                : kind === 'maismilionaria' ? `\nTrevos: ${result.extras?.['Trevo 1']} · ${result.extras?.['Trevo 2']}` : '';
             const text = `${result.name}\nConcurso ${result.contest} · ${result.date}\n${result.numbers.map(n => String(n).padStart(2,'0')).join(' · ')}${extras}\nResultado da base do app; confira os canais oficiais da CAIXA.`;
             await navigator.clipboard.writeText(text);
             announce(`Resultado de ${result.name} copiado.`);

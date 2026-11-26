@@ -7,6 +7,7 @@ const MIN_BATCH_PRESENTATION_MS = 6500;
 const MIX_MS = 900;
 const MAX_PREVIEW_GAMES = 3;
 const FORMATS = {
+    maismilionaria: { count: 6, maximum: 50, label: '6 dezenas + 2 trevos numerados', trevos: true },
     megasena: { count: 6, maximum: 60, label: '6 dezenas · 01 a 60' },
     lotofacil: { count: 15, maximum: 25, label: '15 dezenas · 01 a 25' },
     quina: { count: 5, maximum: 80, label: '5 dezenas · 01 a 80' },
@@ -210,12 +211,12 @@ function renderPreview(count) {
     [...preview.children].forEach((slot, index) => {
         const value = scene.first[index];
         slot.classList.toggle('is-revealed', index < count);
-        slot.textContent = index < count ? (typeof value === 'number' ? String(value).padStart(2, '0') : value) : (index < scene.format.count ? '·' : 'Mês');
+        slot.textContent = index < count ? (scene.format.trevos && index >= 6 ? `Trevo ${value}` : typeof value === 'number' ? String(value).padStart(2, '0') : value) : (index < scene.format.count ? '·' : scene.format.trevos ? 'Trevo' : 'Mês');
     });
     const prefix = snapshot?.games.length > 1 ? `Jogo ${String(previewIndex + 1).padStart(2, '0')}` : 'Seu jogo';
     if (count > 0) status.textContent = count <= scene.format.count
         ? `${prefix}: ${count} de ${scene.format.count} dezenas reveladas.`
-        : `${prefix} · Mês da Sorte: ${scene.first.at(-1)}.`;
+        : scene.format.trevos ? `${prefix} · Trevos revelados: ${scene.first.slice(6, count).join(' e ')}.` : `${prefix} · Mês da Sorte: ${scene.first.at(-1)}.`;
 }
 
 export function refreshDrawResultLabels() {
@@ -313,8 +314,8 @@ function configureScene(lotteryType, first = []) {
     root.style.setProperty('--draw-soft', document.body.classList.contains('dark-theme') ? colors.softBgDark : colors.softBg);
     el('draw-lottery-name').textContent = formatLotteryName(lotteryType);
     el('draw-format').textContent = format.label;
-    const charms = { megasena: 'TREVO DE QUATRO FOLHAS', lotofacil: 'JOANINHA', quina: 'FERRADURA', diadesorte: 'GATO DA SORTE' };
-    root.dataset.charm = lotteryType === 'megasena' ? 'clover' : lotteryType === 'lotofacil' ? 'ladybird' : lotteryType === 'quina' ? 'horseshoe' : 'lucky-cat';
+    const charms = { megasena: 'TREVO DE QUATRO FOLHAS', lotofacil: 'JOANINHA', quina: 'FERRADURA', diadesorte: 'GATO DA SORTE', maismilionaria: 'DOIS TREVOS DA SORTE' };
+    root.dataset.charm = ['megasena', 'maismilionaria'].includes(lotteryType) ? 'clover' : lotteryType === 'lotofacil' ? 'ladybird' : lotteryType === 'quina' ? 'horseshoe' : 'lucky-cat';
     root.querySelector('.draw-scene-label').textContent = preparing ? `SNUGBX · ${charms[lotteryType]}` : 'SNUGBX · ESTÚDIO DE PALPITES';
 }
 
