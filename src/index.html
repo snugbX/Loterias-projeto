@@ -222,6 +222,17 @@
             <div id="latest-results-grid" class="latest-results-grid" aria-busy="true">
                 Carregando últimos resultados...
             </div>
+            <nav id="results-pagination" class="results-pagination" aria-label="Páginas dos últimos resultados" hidden>
+                <div class="results-page-controls">
+                    <button id="results-prev" type="button" aria-label="Página anterior de resultados" title="Página anterior" aria-controls="latest-results-grid"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-left.svg')" aria-hidden="true"></span></button>
+                    <div id="results-page-strip" class="results-page-strip" role="group" aria-label="Ir para uma página de resultados"></div>
+                    <button id="results-next" type="button" aria-label="Próxima página de resultados" title="Próxima página" aria-controls="latest-results-grid"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-right.svg')" aria-hidden="true"></span></button>
+                </div>
+                <div class="results-page-footer">
+                    <p id="results-position" role="status" aria-live="polite" aria-atomic="true"></p>
+                    <select id="results-page-select" aria-label="Página dos resultados" aria-controls="latest-results-grid"></select>
+                </div>
+            </nav>
             <div id="data-status-grid" class="data-status-grid hidden" aria-live="polite"></div>
             <details id="draw-digest-panel" class="draw-digest-panel">
                 <summary class="digest-disclosure"><span class="lab-icon" style="--icon: url('icons/lucide/newspaper.svg')" aria-hidden="true"></span><span>Boletim dos últimos concursos</span></summary>

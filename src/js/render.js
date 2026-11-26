@@ -256,6 +256,7 @@ export function displayLatestResults(results, targetElement, status = null) {
         targetElement.append(card);
     });
     if (previousFocus?.kind && previousFocus.action) targetElement.querySelector(`[data-results-kind="${previousFocus.kind}"][data-results-action="${previousFocus.action}"]`)?.focus({preventScroll:true});
+    targetElement.dispatchEvent(new Event('results:rendered'));
 }
 
 

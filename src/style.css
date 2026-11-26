@@ -1458,9 +1458,30 @@ body.dark-theme .admin-users-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     color: var(--text-secondary);
+    min-height: 25rem;
 }
+.latest-result-card[hidden], .results-pagination[hidden] { display: none !important; }
+.results-pagination { border-top: 1px dashed var(--border-color); margin-top: 16px; padding-top: 16px; font-size: var(--base-font-size); }
+.results-page-controls { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.results-page-controls button, .results-page-footer select { min-height: 44px; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); background: var(--bg-secondary); font-size: .875em; }
+.results-page-controls button { display: inline-flex; justify-content: center; align-items: center; width: 44px; flex: 0 0 44px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.04); }
+.results-page-controls .lab-icon { width: 20px; height: 20px; }
+.results-page-strip { display: flex; gap: 8px; }
+.results-page-strip button { display: flex; flex-direction: column; gap: 6px; width: 48px; min-height: 52px; padding: 8px; border-color: transparent; background: transparent; box-shadow: none; font-variant-numeric: tabular-nums; }
+.results-page-strip button strong { line-height: 1; font-size: 1em; }
+.results-page-strip button[aria-current="page"] { color: var(--lottery-readable); border-color: var(--lottery-border); background: var(--lottery-soft-bg); box-shadow: inset 0 -2px var(--lottery-border); }
+.results-page-swatches { display: flex; gap: 3px; width: 26px; height: 3px; }
+.results-page-swatches i { display: block; flex: 1; background: var(--lottery-readable); border-radius: 1px; }
+.results-page-controls button:not(:disabled):hover { border-color: var(--text-secondary); }
+.results-page-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 14px; }
+.results-page-footer select { padding: 8px 10px; min-width: 0; max-width: 100%; cursor: pointer; background: transparent; border-color: transparent; }
+.results-page-controls button:disabled { opacity: .4; cursor: default; }
+.results-page-controls button:focus-visible, .results-page-footer select:focus-visible { outline: 3px solid var(--text-primary); outline-offset: 3px; }
+.results-pagination p { color: var(--text-secondary); margin: 0; font-size: .8em; line-height: 1.6; text-align: left; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) { .results-page-controls button { transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease; } }
+@media (max-width: 600px) { .results-page-footer { justify-content: center; } .results-pagination p { text-align: center; flex-basis: 100%; } }
 .latest-result-card {
-    background: var(--bg-secondary);
+    background: linear-gradient(150deg, var(--lottery-soft-bg), transparent 55%), var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-top: 4px solid var(--lottery-border);
     border-radius: 6px;
@@ -1516,6 +1537,7 @@ body.dark-theme .admin-users-panel {
     line-height: 1;
     min-width: 0;
     font-variant-numeric: tabular-nums;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .16), 0 3px 0 rgba(0, 0, 0, .12);
 }
 .result-identity { display: flex; align-items: center; gap: 8px; color: var(--lottery-readable); min-width: 0; }
 .result-identity h3 { overflow-wrap: anywhere; }

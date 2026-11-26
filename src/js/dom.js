@@ -197,6 +197,7 @@ export function adjustableFontElements() {
         elements.accountPlanBadge,
         elements.accountUsage,
         elements.latestResultsGrid,
+        document.getElementById('results-pagination'),
         elements.dataStatusGrid,
         elements.dataStatusUpdatedAt,
         elements.generationModeSection,
