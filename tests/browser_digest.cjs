@@ -4,6 +4,7 @@ const path = require('node:path'), os = require('node:os'), http = require('node
 let playwright;
 try { playwright = require('playwright'); } catch { playwright = require(path.join(os.homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')); }
 const definitions = {
+    maismilionaria: {numbers:[2,15,18,23,47,50],max:50},
     megasena: {numbers:[2,15,18,23,47,56],max:60}, lotofacil:{numbers:Array.from({length:15},(_,i)=>i+1),max:25},
     quina:{numbers:[5,16,34,61,80],max:80}, diadesorte:{numbers:[1,5,7,12,18,24,31],max:31},
 };
@@ -15,7 +16,7 @@ function fixture() {
         const even=numbers.filter(n=>n%2===0).length;
         digests[kind]={status:'current',digest:{lottery_type:kind,contest:200,date:'24/11/2026',numbers,even,odd:numbers.length-even,
             sum:numbers.reduce((a,b)=>a+b,0),repeated_numbers:numbers.slice(0,2),consecutive_pairs:numbers.slice(1).filter((n,i)=>n===numbers[i]+1).length,
-            ranges,month:kind==='diadesorte'?'Setembro':null,coverage:{total_draws:100,missing_contests:3,skipped_rows:1}}};
+            ranges,month:kind==='diadesorte'?'Setembro':null,trevos:kind==='maismilionaria'?[1,6]:null,coverage:{total_draws:100,missing_contests:3,skipped_rows:1}}};
     }return {digests};
 }
 async function main() {
@@ -35,9 +36,9 @@ async function main() {
         await page.evaluate(async()=>{sessionStorage.setItem('snugbx-welcome-seen','1');await fetch('/auth/guest',{method:'POST'});});
         await page.reload();await page.waitForFunction(()=>!document.getElementById('app-shell').classList.contains('hidden'));
         await page.locator('#draw-digest-panel > summary').click();
-        await page.waitForFunction(()=>document.querySelectorAll('.digest-page').length===4);
+        await page.waitForFunction(()=>document.querySelectorAll('.digest-page').length===5);
         assert.equal(await page.locator('.digest-page:visible').count(),1);
-        assert.equal(await page.locator('.digest-page[hidden][inert]').count(),3);
+        assert.equal(await page.locator('.digest-page[hidden][inert]').count(),4);
         assert.equal(await page.locator('#digest-prev').isDisabled(),true);
         await page.waitForTimeout(500); // Let the existing app-entry scale animation finish.
         const originalHeight=await page.locator('#draw-digest-content').evaluate(n=>n.getBoundingClientRect().height);
@@ -49,8 +50,9 @@ async function main() {
         assert.ok(Math.abs(newHeight-originalHeight)<2,`Pagination height stays stable: ${originalHeight} -> ${newHeight}; ${await page.locator('#draw-digest-content').getAttribute('style')}`);
         await page.locator('#digest-tab-lotofacil').focus();await page.keyboard.press('ArrowRight');
         assert.equal(await page.locator('#digest-tab-quina').getAttribute('aria-selected'),'true');
-        await page.keyboard.press('End');assert.equal(await page.locator('#digest-tab-diadesorte').getAttribute('aria-selected'),'true');
+        await page.keyboard.press('End');assert.equal(await page.locator('#digest-tab-maismilionaria').getAttribute('aria-selected'),'true');
         assert.equal(await page.locator('#digest-next').isDisabled(),true);
+        await page.locator('#digest-tab-diadesorte').click();
         assert.match(await page.locator('#digest-page-diadesorte .digest-month').innerText(),/Setembro/);
         const before=reads;await page.waitForTimeout(300);assert.equal(reads,before,'Pagination never refetches or auto-advances');
         for(const width of [1440,390,320]) {
@@ -62,7 +64,7 @@ async function main() {
                     await page.waitForTimeout(260);
                     const article=page.locator(`#digest-page-${kind}`);
                     assert.deepEqual(await article.locator('.digest-ball').allTextContents(),definitions[kind].numbers.map(n=>String(n).padStart(2,'0')));
-                    assert.equal(await article.locator('.digest-month').count(),kind==='diadesorte'?1:0);
+                    assert.equal(await article.locator('.digest-month').count(),['diadesorte','maismilionaria'].includes(kind)?1:0);
                     const sums=await article.locator('meter').evaluateAll(nodes=>nodes.reduce((sum,n)=>sum+n.value,0));assert.equal(sums,definitions[kind].numbers.length);
                     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
                     const clipped=await article.evaluate(root=>[...root.querySelectorAll('h3,h4,p,dt,dd,span,strong')].filter(n=>n.getClientRects().length&&n.scrollWidth>n.clientWidth+1).map(n=>n.textContent));

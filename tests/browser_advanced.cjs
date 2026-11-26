@@ -75,7 +75,7 @@ async function main() {
         assert.equal(await page.locator('#research-report-content table').first().locator('tbody tr').count(), 6);
         assert.match(await page.locator('#research-report-content').innerText(), /Não é taxa de prêmios/);
         await page.locator('#draw-digest-panel').evaluate(p => { p.open = true; });
-        await page.waitForFunction(() => document.querySelectorAll('#draw-digest-content article').length === 4);
+        await page.waitForFunction(() => document.querySelectorAll('#draw-digest-content article').length === 5);
         await page.locator('#constrained-panel').evaluate(p => { p.open = true; });
         await page.waitForFunction(() => !document.getElementById('constrained-fields').disabled);
         await page.locator('#constrained-quantity').fill('3');

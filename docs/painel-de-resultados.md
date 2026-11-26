@@ -30,7 +30,7 @@ CAIXA. Permissão recusada gera mensagem acessível, sem alterar o jogo.
 
 ## Verificação
 
-`tests/browser_results.cjs` inicia uma prévia isolada em 5117. Verifica as quatro
+`tests/browser_results.cjs` inicia uma prévia isolada em 5117. Verifica as cinco
 modalidades, telas de 1440, 390 e 320 px, ambos os temas, texto ampliado, cópia
 simulada (não modifica o clipboard real), abertura do boletim, divergência,
 dezenas inválidas, falha de rede e nova tentativa. Capturas ficam em arquivos

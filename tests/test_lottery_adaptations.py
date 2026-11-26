@@ -26,6 +26,7 @@ class AdaptationTests(unittest.TestCase):
         for index, numbers in enumerate(sequences):
             row = {'Concurso': index + 1, 'Data': (date(2026, 1, 1) + timedelta(days=index)).strftime('%d/%m/%Y')}
             row.update({f'bola {i + 1}': value for i, value in enumerate(numbers)})
+            if kind == 'maismilionaria': row.update({'Trevo 1': 1, 'Trevo 2': 2})
             if months:
                 row['Mês da Sorte'] = months[index]
             rows.append(row)

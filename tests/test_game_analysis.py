@@ -28,6 +28,7 @@ class AnalysisTests(unittest.TestCase):
             numbers = list(range(1, match + 1)) + list(range(count + 1, count + 1 + count - match))
             row = {"Concurso": index + 1, "Data": f"{index + 1:02d}/01/2026"}
             row.update({f"bola {i + 1}": n for i, n in enumerate(numbers)})
+            if lottery_type == 'maismilionaria': row.update({'Trevo 1': 1, 'Trevo 2': 2})
             if months:
                 row["Mês da Sorte"] = months[index]
             rows.append(row)
@@ -37,7 +38,7 @@ class AnalysisTests(unittest.TestCase):
         replacement = patch.dict(lottery.LOTTERY_CONFIGS, {lottery_type: config})
         replacement.start()
         self.addCleanup(replacement.stop)
-        return {"numbers": list(range(1, count + 1)), **({"month": 1} if lottery_type == "diadesorte" else {})}
+        return {"numbers": list(range(1, count + 1)), **({"month": 1} if lottery_type == "diadesorte" else {'trevos': [1, 2]} if lottery_type == 'maismilionaria' else {})}
 
     def test_all_prize_tiers(self):
         for kind, tiers in analysis.PRIZE_MATCHES.items():
@@ -45,7 +46,8 @@ class AnalysisTests(unittest.TestCase):
                 payload = self.use_draws(kind, tiers)
                 result = analysis.analyze_game(kind, payload)
                 self.assertEqual(result["history"]["prize_draws"], len(tiers))
-                self.assertTrue(all(tier["count"] == 1 for tier in result["history"]["tiers"]))
+                if kind == 'maismilionaria': self.assertEqual(sum(t['count'] for t in result['history']['tiers']), len(tiers))
+                else: self.assertTrue(all(tier["count"] == 1 for tier in result["history"]["tiers"]))
                 self.assertEqual(result["history"]["best_matches"], max(tiers))
                 self.assertIn("numbers", result["history"]["recent_occurrences"][0])
 

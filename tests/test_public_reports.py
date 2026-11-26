@@ -32,7 +32,9 @@ class PublicReportTests(unittest.TestCase):
             path = Path(directory) / 'public_lottery_reports.json'
             def history(kind):
                 count = lottery.LOTTERY_CONFIGS[kind]['NUM_BALLS_TO_DRAW']
-                return draws_for([list(range(1, count + 1))] * 5), 0, type('Stat', (), {'st_mtime_ns': 1})()
+                draws = draws_for([list(range(1, count + 1))] * 5)
+                if kind == 'maismilionaria': draws = tuple((*row[:3], (1, 2)) for row in draws)
+                return draws, 0, type('Stat', (), {'st_mtime_ns': 1})()
             with patch.object(public_reports, 'REPORT_PATH', path), \
                  patch.object(public_reports, 'fingerprint', return_value='a' * 64), \
                  patch.object(builder.game_analysis, 'load_validated_history', side_effect=history):
@@ -40,7 +42,7 @@ class PublicReportTests(unittest.TestCase):
                 bundle = public_reports.read_bundle()
                 self.assertEqual(set(bundle['reports']), set(lottery.LOTTERY_CONFIGS))
                 self.assertEqual(public_reports.get_report('megasena')['status'], 'current')
-                self.assertEqual(len(public_reports.get_digests()), 4)
+                self.assertEqual(len(public_reports.get_digests()), len(lottery.LOTTERY_CONFIGS))
                 (Path(directory) / 'src').mkdir()
                 destination = Path(directory) / 'src' / path.name
                 destination.write_bytes(path.read_bytes())

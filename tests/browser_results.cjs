@@ -3,9 +3,9 @@ const { spawn } = require('node:child_process');
 const path = require('node:path'), os = require('node:os'), http = require('node:http');
 let playwright;
 try { playwright = require('playwright'); } catch { playwright = require(path.join(os.homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')); }
-const numbers = {megasena:[2,15,18,23,47,56],lotofacil:Array.from({length:15},(_,i)=>i+1),quina:[5,16,34,61,80],diadesorte:[1,5,7,12,18,24,31]};
-const names = {megasena:'Mega Sena',lotofacil:'Lotofácil',quina:'Quina',diadesorte:'Dia de Sorte'};
-function fixture() { return Object.fromEntries(Object.entries(numbers).map(([kind,values])=>[kind,{name:names[kind],contest:200,date:'24/11/2026',numbers:values,extras:kind==='diadesorte'?{'Mês da Sorte':'Setembro'}:null}])); }
+const numbers = {megasena:[2,15,18,23,47,56],lotofacil:Array.from({length:15},(_,i)=>i+1),quina:[5,16,34,61,80],diadesorte:[1,5,7,12,18,24,31],maismilionaria:[2,15,18,23,47,50]};
+const names = {megasena:'Mega Sena',lotofacil:'Lotofácil',quina:'Quina',diadesorte:'Dia de Sorte',maismilionaria:'+Milionária'};
+function fixture() { return Object.fromEntries(Object.entries(numbers).map(([kind,values])=>[kind,{name:names[kind],contest:200,date:'24/11/2026',numbers:values,extras:kind==='diadesorte'?{'Mês da Sorte':'Setembro'}:kind==='maismilionaria'?{'Trevo 1':'1','Trevo 2':'6'}:null}])); }
 async function main() {
     const server=spawn(process.env.PYTHON||'python',[path.join(__dirname,'preview_server.py'),'5117'],{windowsHide:true,stdio:'pipe'});
     let output='',browser;server.stdout.on('data',d=>output+=d);server.stderr.on('data',d=>output+=d);
@@ -24,15 +24,15 @@ async function main() {
         await page.goto('http://127.0.0.1:5117/');
         await page.evaluate(async()=>{sessionStorage.setItem('snugbx-welcome-seen','1');await fetch('/auth/guest',{method:'POST'});});
         await page.reload();await page.waitForFunction(()=>!document.getElementById('app-shell').classList.contains('hidden'));
-        await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===33);
+        await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===39);
         await page.waitForTimeout(500);
-        assert.equal(await page.locator('.latest-result-card').count(),4);
+        assert.equal(await page.locator('.latest-result-card').count(),5);
         assert.equal(await page.locator('#update-data-btn').isVisible(),false,'Guest cannot update source data');
         for(const [kind,values] of Object.entries(numbers)) {
             const card=page.locator(`.latest-result-card[data-lottery="${kind}"]`);
             assert.deepEqual(await card.locator('.latest-result-ball').allTextContents(),values.map(n=>String(n).padStart(2,'0')));
             assert.equal(await card.locator('time').getAttribute('datetime'),'2026-11-24');
-            assert.equal(await card.locator('.result-lucky-month').count(),kind==='diadesorte'?1:0);
+            assert.equal(await card.locator('.result-lucky-month').count(),['diadesorte','maismilionaria'].includes(kind)?1:0);
         }
         for(const width of [1440,390,320]) {
             await page.setViewportSize({width,height:1100});
@@ -56,15 +56,18 @@ async function main() {
         await page.waitForFunction(()=>document.getElementById('digest-tab-diadesorte').getAttribute('aria-selected')==='true');
         assert.equal(await page.locator('#draw-digest-panel').getAttribute('open'),'');
         const before=reads;mismatch=true;await page.locator('#results-reload').click();
-        await page.waitForFunction(()=>document.querySelectorAll('.result-state-note').length===4);assert.ok(reads>before);
+        await page.waitForFunction(()=>document.querySelectorAll('.result-state-note').length===5);assert.ok(reads>before);
         mismatch=false;results.megasena.numbers=[1,1,1,1,1,1];await page.locator('#results-reload').click();
         await page.waitForFunction(()=>document.querySelector('.latest-result-card[data-lottery="megasena"]')?.dataset.state==='unavailable');
         assert.equal(await page.locator('.latest-result-card[data-lottery="megasena"] .latest-result-ball').count(),0);
+        results.maismilionaria.extras={'Trevo 1':true,'Trevo 2':'2'};await page.locator('#results-reload').click();
+        await page.waitForFunction(()=>document.querySelector('.latest-result-card[data-lottery="maismilionaria"]')?.dataset.state==='unavailable');
+        assert.equal(await page.locator('.latest-result-card[data-lottery="maismilionaria"] .latest-result-ball').count(),0,'Boolean extras never become numbered trevos');
         failed=true;await page.locator('#results-reload').click();
-        await page.waitForFunction(()=>document.querySelectorAll('.result-unavailable').length===4);
+        await page.waitForFunction(()=>document.querySelectorAll('.result-unavailable').length===5);
         assert.equal(await page.locator('.latest-result-ball').count(),0,'Failed read never retains apparently current numbers');
         failed=false;results=fixture();await page.locator('#results-reload').click();
-        await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===33);
+        await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===39);
         assert.deepEqual(errors,[]);
         console.log('Results board: all lotteries, themes, mobile, enlarged text, safe copy, digest link, mismatch, invalid data and retry passed.');
     } finally {await browser?.close();server.kill();await new Promise(resolve=>server.exitCode!==null?resolve():server.once('exit',resolve));}

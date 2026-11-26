@@ -24,7 +24,7 @@ def document():
         cells = [''] * len(headings)
         cells[0] = f'{i:02d}/11/2026'
         if i != 20:
-            for index in (2, 5, 8, 9):
+            for index in (2, 5, 8, 9, 11):
                 cells[index] = str(1000 + i)
         if i == 29:
             cells[5] += '(8)'
@@ -54,7 +54,7 @@ class CalendarTests(unittest.TestCase):
             days = calendar.parse_schedule(b'%PDF-fixture', 2026, 11)
         self.assertEqual(len(days), 30)
         self.assertEqual(days['2026-11-20'], [])
-        self.assertEqual(len(days['2026-11-29']), 4)
+        self.assertEqual(len(days['2026-11-29']), 5)
         self.assertEqual(next(d for d in days['2026-11-29'] if d['lottery'] == 'quina')['contest'], 1029)
 
     def test_invalid_and_changed_pdf_are_not_a_schedule(self):
@@ -65,6 +65,17 @@ class CalendarTests(unittest.TestCase):
         with patch.object(calendar, 'PdfReader', return_value=MagicMock(pages=[page])):
             with self.assertRaises(ValueError):
                 calendar.parse_schedule(b'%PDF-fixture', 2026, 11)
+
+    def test_wide_venue_heading_does_not_pull_address_into_milionaria_column(self):
+        lines = document().splitlines()
+        header = lines[0]
+        start = header.index('LOCAL DO SORTEIO')
+        lines[0] = header[:start] + ' ' * 40 + header[start:]
+        lines[4] = lines[4].ljust(start - 4) + 'Av. Paulista, 750'
+        page = MagicMock(); page.extract_text.return_value = '\n'.join(lines)
+        with patch.object(calendar, 'PdfReader', return_value=MagicMock(pages=[page])):
+            days = calendar.parse_schedule(b'%PDF-fixture', 2026, 11)
+        self.assertEqual(next(d for d in days['2026-11-04'] if d['lottery'] == 'maismilionaria')['contest'], 1004)
 
     def test_only_official_https_links_and_redirects(self):
         parser = calendar.ScheduleLinks()

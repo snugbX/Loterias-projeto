@@ -18,7 +18,7 @@ este codigo ao GitHub. Mantenha a versao atual ate concluir a migracao.
 
 - Render executa Flask e le CSVs publicos vindos do repositorio.
 - Supabase PostgreSQL guarda contas, planos, uso diario, auditoria e historico.
-- GitHub Actions testa o app e atualiza somente os quatro CSVs publicos.
+- GitHub Actions testa o app e atualiza somente os cinco CSVs publicos.
 - O schema `lottery_private` nao deve ser adicionado aos schemas expostos pela
   Data API. O navegador nunca recebe credenciais do banco.
 - `lottery_app` e o usuario restrito do servidor. `postgres` so e usado na
@@ -234,7 +234,7 @@ fluxo; o Actions atualiza os CSVs no repositorio, que chegam no proximo deploy.
 
 O CI tem PostgreSQL descartavel para testar o acesso real ao banco, sem usar
 credenciais de producao. Pull requests so testam; nao recebem o Deploy Hook.
-O workflow agendado publica apenas os quatro CSVs oficiais permitidos e chama
+O workflow agendado publica apenas os cinco CSVs oficiais permitidos e chama
 o Deploy Hook somente se houve commit novo. Nenhum banco, historico privado,
 senha, certificado ou backup entra nos commits/artifacts.
 

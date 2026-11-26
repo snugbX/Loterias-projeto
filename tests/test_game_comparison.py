@@ -28,6 +28,7 @@ class ComparisonTests(unittest.TestCase):
         for index, numbers in enumerate(draws):
             row = {'Concurso': index + 1, 'Data': (date(2026, 1, 1) + timedelta(days=index)).strftime('%d/%m/%Y')}
             row.update({f'bola {i + 1}': number for i, number in enumerate(numbers)})
+            if kind == 'maismilionaria': row.update({'Trevo 1': 1, 'Trevo 2': 2})
             if months:
                 row['Mês da Sorte'] = months[index]
             records.append(row)
@@ -42,11 +43,12 @@ class ComparisonTests(unittest.TestCase):
             numbers = list(range(1, config['NUM_BALLS_TO_DRAW'] + 1))
             self.seed(kind, [numbers], ['Janeiro'] if kind == 'diadesorte' else None)
             game = {'numbers': numbers, **({'month': 1} if kind == 'diadesorte' else {})}
+            if kind == 'maismilionaria': game['trevos'] = [1, 2]
             result = comparison.analyze_games(kind, {'games': [game]})
             original = game_analysis.analyze_game(kind, game)
             self.assertEqual(result['analyses'][0]['history'], original['history'])
             self.assertEqual(result['summary']['historical_prize_draws'], 1)
-            self.assertEqual(result['summary']['numeric_jackpot_one_in'], original['probabilities']['jackpot_one_in'])
+            self.assertEqual(result['summary']['numeric_jackpot_one_in'], original['probabilities'].get('numeric_jackpot_one_in', original['probabilities']['jackpot_one_in']))
 
     def test_duplicate_permutations_do_not_inflate_coverage(self):
         game = {'numbers': [1, 2, 3, 4, 5, 6]}

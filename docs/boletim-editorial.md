@@ -1,6 +1,6 @@
 # Caderno dos Sorteios
 
-O boletim apresenta quatro páginas editoriais, uma por modalidade, com o último
+O boletim apresenta cinco páginas editoriais, uma por modalidade, com o último
 concurso disponível em cada uma. A paginação não representa um arquivo de
 concursos antigos: seus números são apenas as posições das modalidades.
 
@@ -49,7 +49,7 @@ a licença e a lista explícita de arquivos servidos, sem nova biblioteca ou CDN
 ## Testes
 
 `tests/browser_digest.cjs` usa servidor e contas temporários, além de boletins
-conhecidos para validar dados, quatro modalidades, mês, navegação e foco,
+conhecidos para validar dados, cinco modalidades, mês, trevos, navegação e foco,
 transição, altura estável, temas, 320/390/1440 px, ampliação de fonte, movimento
 reduzido, dados pendentes/inconsistentes, falha e recuperação, seleção preservada
 e acesso como visitante. Os testes existentes continuam cobrindo o relatório

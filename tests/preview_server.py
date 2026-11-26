@@ -30,6 +30,8 @@ def main():
                     game = list(draws[0][2])
                     if kind == 'diadesorte':
                         game.append(config['EXTRA_CHOICES']['Mês da Sorte'][(draws[0][3] or 1) - 1])
+                    if kind == 'maismilionaria':
+                        game.extend(draws[0][3])
                     history_database.save_history_record(f'{kind}_resultados_2026-11-24_11-00-00.csv', kind, [game]*22, owner_key=f"user:{user['id']}")
         try:
             app.app.run(host="127.0.0.1", port=int(sys.argv[1]), debug=False, use_reloader=False)

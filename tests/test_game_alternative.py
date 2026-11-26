@@ -56,7 +56,7 @@ class AlternativeTests(unittest.TestCase):
                 numbers = sorted(list(range(2, 2 * initial + 1, 2)) + list(range(1, 2 * (count - initial), 2)))
                 for target in probabilities:
                     with self.subTest(lottery=kind, initial=initial, target=target):
-                        result = alternative.suggest_alternative(kind, numbers, 8 if kind == 'diadesorte' else None,
+                        result = alternative.suggest_alternative(kind, numbers, 8 if kind == 'diadesorte' else (1, 2) if kind == 'maismilionaria' else None,
                                                                   radar_for(kind, target, 10000), synergy_for(kind))
                         self.assertEqual(sum(n % 2 == 0 for n in result['numbers']), target)
                         self.assertEqual(len(result['numbers']), count)
