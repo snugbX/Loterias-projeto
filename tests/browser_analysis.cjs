@@ -48,7 +48,7 @@ async function main() {
         }
         await login('premium');
         for (const [kind, count, threshold] of [['megasena', 6, 4], ['quina', 5, 4], ['lotofacil', 15, 13], ['diadesorte', 7, 5]]) {
-            await page.locator(`button[data-lottery="${kind}"]`).click();
+            await page.locator(`.lottery-option[data-lottery="${kind}"]`).click();
             await page.locator('#user-assistance-panel').evaluate(element => { element.open = true; });
             await page.waitForFunction(count => document.getElementById('help-content').textContent.includes(`${count} dezenas diferentes`), count);
             await page.locator('#help-topic').selectOption('filter');
@@ -73,7 +73,7 @@ async function main() {
         }
         await page.setViewportSize({ width: 1440, height: 1000 });
         if (await page.evaluate(() => document.body.classList.contains('dark-theme'))) await page.locator('#theme-toggle').click();
-        await page.locator('button[data-lottery="megasena"]').click();
+        await page.locator('.lottery-option[data-lottery="megasena"]').click();
         const section = page.locator('#game-analysis-form');
         await page.locator('#game-analysis-form').evaluate(form => { form.closest('details').open = true; });
         await page.locator('#analysis-numbers').fill('1 3 5 7 9 11');
@@ -178,7 +178,7 @@ async function main() {
         await page.locator('#pattern-radar-panel').screenshot({ path: path.join(__dirname, 'radar-mobile-dark.png') });
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false, 'Radar overflows mobile page');
         assert.equal(await page.locator('.radar-table-scroll').evaluate(element => element.scrollWidth > element.clientWidth), true);
-        await page.locator('button[data-lottery="diadesorte"]').click();
+        await page.locator('.lottery-option[data-lottery="diadesorte"]').click();
         await page.locator('#pattern-radar-panel').evaluate(element => { element.open = true; });
         await page.locator('.radar-months').waitFor({ state: 'visible' });
         assert.equal(await page.locator('#radar-month-source option').count(), 13);

@@ -31,7 +31,7 @@ async function main() {
             assert.equal((await page.request.get(`http://127.0.0.1:5115/icons/lucide/${name}.svg`)).status(),200);
         }
         for(const [kind,width] of [['megasena',1440],['lotofacil',390],['quina',320],['diadesorte',390]]) {
-            await page.locator(`button[data-lottery="${kind}"]`).click();
+            await page.locator(`.lottery-option[data-lottery="${kind}"]`).click();
             await page.setViewportSize({width,height:1000});
             for(const dark of [false,true]) {
                 if(await page.evaluate(()=>document.body.classList.contains('dark-theme'))!==dark)await page.locator('#theme-toggle').click();

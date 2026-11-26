@@ -49,7 +49,7 @@ async function main() {
         for (const [kind, width, dark] of [['megasena', 1440, false], ['lotofacil', 390, true], ['quina', 320, false], ['diadesorte', 390, true]]) {
             await page.setViewportSize({ width, height: 1000 });
             if (await page.evaluate(() => document.body.classList.contains('dark-theme')) !== dark) await page.locator('#theme-toggle').click();
-            await page.locator(`button[data-lottery="${kind}"]`).click();
+            await page.locator(`.lottery-option[data-lottery="${kind}"]`).click();
             await trigger.click();
             await page.waitForFunction(() => document.getElementById('draw-experience').dataset.phase === 'preparing');
             const loadingPicture = await picture(); await page.waitForTimeout(180);

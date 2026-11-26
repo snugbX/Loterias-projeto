@@ -52,7 +52,7 @@ async function main() {
             await page.locator('#history-modal-close-btn').click();
             await page.setViewportSize({width,height:1000});
             if(await page.evaluate(()=>document.body.classList.contains('dark-theme'))!==dark)await page.locator('#theme-toggle').click();
-            await page.locator(`button[data-lottery="${kind}"]`).click();await page.locator('#visualizar-historico').click();
+            await page.locator(`.lottery-option[data-lottery="${kind}"]`).click();await page.locator('#visualizar-historico').click();
             await page.waitForFunction(()=>document.querySelectorAll('.history-game').length===20);
             await page.locator('#history-modal-overlay .modal-content').screenshot({path:path.join(__dirname,`history-${kind}-${width}.png`)});
             assert.equal(await page.locator('#history-modal-overlay .modal-content').evaluate(n=>n.scrollWidth>n.clientWidth+1),false,'No horizontal overflow');

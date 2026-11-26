@@ -123,7 +123,7 @@ async function main() {
         const uniform = await uniformResponse; assert.equal(uniform.status(), 200);
         assert.deepEqual(Object.keys(uniform.request().postDataJSON()).sort(), ['method', 'num_games']);
         await page.locator('#generated-games-modal-close-btn').click();
-        await page.locator('button[data-lottery="diadesorte"]').click();
+        await page.locator('.lottery-option[data-lottery="diadesorte"]').click();
         await page.waitForFunction(() => !document.getElementById('constrained-fields').disabled && document.getElementById('constrained-month').options.length === 13);
         await page.locator('#constrained-quantity').fill('2');
         await page.locator('#constrained-month').selectOption('6');
