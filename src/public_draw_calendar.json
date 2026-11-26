@@ -65,6 +65,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1339
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 404
           }
         ],
         "2026-11-05": [
@@ -104,6 +109,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1341
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 405
           }
         ],
         "2026-11-07": [],
@@ -183,6 +193,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1345
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 406
           }
         ],
         "2026-11-12": [
@@ -222,6 +237,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1347
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 407
           }
         ],
         "2026-11-14": [],
@@ -301,6 +321,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1351
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 408
           }
         ],
         "2026-11-19": [
@@ -354,6 +379,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1354
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 409
           }
         ],
         "2026-11-24": [
@@ -383,6 +413,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1356
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 410
           }
         ],
         "2026-11-26": [
@@ -412,6 +447,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1358
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 411
           }
         ],
         "2026-11-28": [],
@@ -456,7 +496,7 @@
         ]
       },
       "source": "https://www.caixa.gov.br/Downloads/caixa-loterias/Cronograma_11_novembro_2026.pdf",
-      "checked_at": "2026-11-24T19:26:38.621933-03:00"
+      "checked_at": "2026-11-26T00:27:04.301369-03:00"
     },
     {
       "year": 2026,
@@ -499,6 +539,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1362
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 412
           }
         ],
         "2026-12-03": [
@@ -538,6 +583,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1364
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 413
           }
         ],
         "2026-12-05": [],
@@ -617,6 +667,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1368
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 414
           }
         ],
         "2026-12-10": [
@@ -656,6 +711,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1370
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 415
           }
         ],
         "2026-12-12": [],
@@ -735,6 +795,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1374
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 416
           }
         ],
         "2026-12-17": [
@@ -769,6 +834,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1376
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 417
           }
         ],
         "2026-12-19": [],
@@ -838,6 +908,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1380
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 418
           }
         ],
         "2026-12-24": [
@@ -891,6 +966,11 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1383
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 419
           }
         ],
         "2026-12-29": [
@@ -925,12 +1005,17 @@
             "lottery": "diadesorte",
             "name": "Dia de Sorte",
             "contest": 1385
+          },
+          {
+            "lottery": "maismilionaria",
+            "name": "+Milionária",
+            "contest": 420
           }
         ],
         "2026-12-31": []
       },
       "source": "https://www.caixa.gov.br/Downloads/caixa-loterias/Cronograma_12_dezembro_2026.pdf",
-      "checked_at": "2026-11-24T19:26:40.645670-03:00"
+      "checked_at": "2026-11-26T00:27:05.640796-03:00"
     }
   ]
 }
