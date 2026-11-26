@@ -260,73 +260,20 @@
                 </div>
             </div>
             <select id="lottery-select" class="lottery-native-select" aria-label="Selecione o tipo de loteria" tabindex="-1">
-                <option value="megasena">Mega Sena</option>
-                <option value="lotofacil">Lotofácil</option>
-                <option value="quina">Quina</option>
-                <option value="diadesorte">Dia de Sorte</option>
-                <option value="maismilionaria">+Milionária</option>
             </select>
-
-            <div id="lottery-option-grid" class="lottery-option-grid" role="radiogroup" aria-labelledby="lottery-picker-title">
-                <button type="button" class="lottery-option" data-lottery="maismilionaria" role="radio" aria-checked="false" style="--lottery-primary: #174A8B; --lottery-secondary: #90BEE8;">
-                    <span class="lottery-option-topline"><span class="lottery-option-kicker">6 dezenas + 2 trevos</span><span class="lottery-option-check" aria-hidden="true"></span></span>
-                    <span class="lottery-option-name">+Milionária</span>
-                    <span class="lottery-option-meta">Dezenas 1–50 · Trevos 1–6</span>
-                    <span class="lottery-option-balls" aria-hidden="true"><span>03</span><span>12</span><span>21</span><span>34</span><span>42</span><span>50</span></span>
-                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
-                </button>
-                <button type="button" class="lottery-option is-selected" data-lottery="megasena" role="radio" aria-checked="true" style="--lottery-primary: #209869; --lottery-secondary: #8FCBB3;">
-                    <span class="lottery-option-topline">
-                        <span class="lottery-option-kicker">6 dezenas</span>
-                        <span class="lottery-option-check" aria-hidden="true"></span>
-                    </span>
-                    <span class="lottery-option-name">Mega Sena</span>
-                    <span class="lottery-option-meta">1 a 60</span>
-                    <span class="lottery-option-balls" aria-hidden="true">
-                        <span>06</span><span>12</span><span>24</span><span>33</span><span>45</span><span>58</span>
-                    </span>
-                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
-                </button>
-
-                <button type="button" class="lottery-option" data-lottery="lotofacil" role="radio" aria-checked="false" style="--lottery-primary: #930089; --lottery-secondary: #C87FC3;">
-                    <span class="lottery-option-topline">
-                        <span class="lottery-option-kicker">15 dezenas</span>
-                        <span class="lottery-option-check" aria-hidden="true"></span>
-                    </span>
-                    <span class="lottery-option-name">Lotofácil</span>
-                    <span class="lottery-option-meta">1 a 25</span>
-                    <span class="lottery-option-balls" aria-hidden="true">
-                        <span>01</span><span>03</span><span>07</span><span>11</span><span>19</span><span>25</span>
-                    </span>
-                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
-                </button>
-
-                <button type="button" class="lottery-option" data-lottery="quina" role="radio" aria-checked="false" style="--lottery-primary: #260085; --lottery-secondary: #927FC1;">
-                    <span class="lottery-option-topline">
-                        <span class="lottery-option-kicker">5 dezenas</span>
-                        <span class="lottery-option-check" aria-hidden="true"></span>
-                    </span>
-                    <span class="lottery-option-name">Quina</span>
-                    <span class="lottery-option-meta">1 a 80</span>
-                    <span class="lottery-option-balls" aria-hidden="true">
-                        <span>05</span><span>17</span><span>32</span><span>48</span><span>66</span><span>80</span>
-                    </span>
-                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
-                </button>
-
-                <button type="button" class="lottery-option" data-lottery="diadesorte" role="radio" aria-checked="false" style="--lottery-primary: #C76A00; --lottery-secondary: #F4C56A;">
-                    <span class="lottery-option-topline">
-                        <span class="lottery-option-kicker">7 dezenas + mês</span>
-                        <span class="lottery-option-check" aria-hidden="true"></span>
-                    </span>
-                    <span class="lottery-option-name">Dia de Sorte</span>
-                    <span class="lottery-option-meta">1 a 31</span>
-                    <span class="lottery-option-balls" aria-hidden="true">
-                        <span>04</span><span>09</span><span>14</span><span>18</span><span>23</span><span>31</span>
-                    </span>
-                    <span class="lottery-option-days">Datas na agenda de sorteios</span>
-                </button>
+            <div class="lottery-picker-toolbar">
+                <div class="lottery-search-field">
+                    <span class="lab-icon" style="--icon: url('icons/lucide/scan-search.svg')" aria-hidden="true"></span>
+                    <input id="lottery-search" type="search" placeholder="Buscar loteria" aria-label="Buscar loteria" aria-controls="lottery-option-grid" maxlength="80" autocomplete="off">
+                    <button id="lottery-clear-search" class="hidden" type="button" aria-label="Limpar busca de loterias" title="Limpar busca"><span class="lab-icon" style="--icon: url('icons/lucide/refresh-cw.svg')" aria-hidden="true"></span></button>
+                </div>
+                <div class="lottery-scroll-controls">
+                    <button id="lottery-scroll-prev" type="button" aria-label="Ver loterias anteriores" title="Loterias anteriores" aria-controls="lottery-option-grid"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-left.svg')" aria-hidden="true"></span></button>
+                    <button id="lottery-scroll-next" type="button" aria-label="Ver próximas loterias" title="Próximas loterias" aria-controls="lottery-option-grid"><span class="lab-icon" style="--icon: url('icons/lucide/chevron-right.svg')" aria-hidden="true"></span></button>
+                </div>
             </div>
+            <div id="lottery-option-grid" class="lottery-option-grid" role="radiogroup" aria-labelledby="lottery-picker-title"></div>
+            <p id="lottery-picker-status" class="lottery-picker-status" role="status" aria-live="polite" aria-atomic="true"></p>
         </section>
 
         <section id="generation-mode-section" class="generation-mode-section mb-6" aria-labelledby="generation-mode-title">

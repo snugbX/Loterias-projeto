@@ -149,7 +149,6 @@ export const lotteryColors = {
 };
 
 export const lotteryDetails = {
-    maismilionaria: {name: '+Milionária', summary: '6 dezenas de 1 a 50 + 2 trevos de 1 a 6', accent: '#174A8B'},
     megasena: {
         name: 'Mega Sena',
         summary: '6 dezenas de 1 a 60',
@@ -170,6 +169,7 @@ export const lotteryDetails = {
         summary: '7 dezenas de 1 a 31 + mês',
         accent: '#9A5200',
     },
+    maismilionaria: {name: '+Milionária', summary: '6 dezenas de 1 a 50 + 2 trevos de 1 a 6', accent: '#174A8B'},
 };
 
 export const state = {
@@ -209,6 +209,8 @@ export function adjustableFontElements() {
         elements.selectedGenerationModeLabel,
         elements.premiumUpsellPanel,
         elements.lotteryOptionGrid,
+        document.getElementById('lottery-picker-status'),
+        document.querySelector('.lottery-picker-toolbar'),
         elements.selectedLotteryName,
         elements.selectedLotteryMeta,
         elements.lotterySelect,

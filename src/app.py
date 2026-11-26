@@ -66,6 +66,7 @@ ALLOWED_STATIC_FILES = {
     'js/constrainedGeneration.js',
     'js/drawDigest.js',
     'js/resultsBoard.js',
+    'js/lotteryPicker.js',
     'js/drawExperience.js',
     'js/historyManager.js',
     'js/workbench.js',

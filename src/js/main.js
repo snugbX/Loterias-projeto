@@ -33,6 +33,7 @@ import { syncResearchReports, refreshResearchReports } from './researchReports.j
 import { syncConstrainedGeneration, initConstrainedGeneration, openConstrainedGeneration } from './constrainedGeneration.js';
 import { refreshDrawDigest } from './drawDigest.js';
 import { initResultsBoard } from './resultsBoard.js';
+import {initLotteryPicker, syncLotteryPicker, revealLotteryOption} from './lotteryPicker.js';
 import { openHistoryManager, syncHistoryManager } from './historyManager.js';
 import { syncWorkbenchAccess, submitWorkbenchGeneration } from './workbench.js';
 import { presentDrawExperience, beginDrawPreparation, cancelDrawPreparation, refreshDrawResultLabels } from './drawExperience.js';
@@ -884,6 +885,7 @@ function setSelectedLottery(lotteryType) {
         button.setAttribute('aria-checked', String(selected));
         button.tabIndex = selected ? 0 : -1;
     });
+    syncLotteryPicker();
 
     setSelectedGenerationMode(state.selectedGenerationMode);
 
@@ -900,11 +902,12 @@ function selectLotteryOption(button) {
     }
 
     setSelectedLottery(button.dataset.lottery);
+    revealLotteryOption(button.dataset.lottery);
 }
 
 
 function handleLotteryOptionKeydown(event) {
-    const buttons = getLotteryOptionButtons();
+    const buttons = getLotteryOptionButtons().filter(button => !button.hidden);
     const currentIndex = buttons.indexOf(event.currentTarget);
 
     if (currentIndex === -1) {
@@ -1346,6 +1349,7 @@ function bindEvents() {
 
     elements.lotterySelect.addEventListener('change', () => {
         setSelectedLottery(selectedLotteryType());
+        revealLotteryOption(selectedLotteryType());
     });
 
     elements.gerarJogosButton.addEventListener('click', handleGenerateGames);
@@ -1402,6 +1406,7 @@ function setFooterYear() {
 
 
 setFooterYear();
+initLotteryPicker();
 initResultsBoard(async () => { const [available] = await Promise.all([loadLatestResults(), loadDataStatus()]); return available; });
 initConstrainedGeneration(presentGeneratedGames);
 initWelcomeScreen();

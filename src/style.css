@@ -2034,16 +2034,17 @@ body.dark-theme .lab-tool#assistencia-btn { --tool-color: #f9a8d4; }
     margin: 3px 0 0;
 }
 .lottery-selected-summary {
-    background: linear-gradient(135deg, var(--active-lottery-soft-bg, rgba(16, 185, 129, 0.14)), var(--bg-secondary) 72%);
-    border: 1px solid var(--active-lottery-border, #059669);
-    border-radius: 8px;
-    box-shadow: inset 4px 0 0 var(--active-lottery-border, #059669);
+    background: transparent;
+    border: 0;
+    border-left: 3px solid var(--active-lottery-border, #059669);
+    border-radius: 0;
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 190px;
-    padding: 9px 12px 9px 16px;
+    min-width: 0;
+    max-width: 360px;
+    padding: 4px 0 4px 12px;
     text-align: left;
 }
 .lottery-selected-summary span {
@@ -2065,40 +2066,63 @@ body.dark-theme .lab-tool#assistencia-btn { --tool-color: #f9a8d4; }
     width: 1px;
 }
 .lottery-option-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--active-lottery-border) var(--bg-primary);
+    padding: 6px 6px 12px;
+    min-width: 0;
+    min-height: 166px;
 }
+.lottery-option[hidden] { display: none !important; }
+.lottery-picker-toolbar { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin: 16px 0 8px; }
+.lottery-search-field { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); min-width: 0; width: min(300px, 100%); color: var(--text-secondary); }
+.lottery-search-field > .lab-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.lottery-search-field input { width: 100%; min-width: 0; min-height: 44px; font-size: .875em; padding: 8px 0; background: transparent; color: var(--text-primary); border: 0; border-radius: 0; }
+.lottery-search-field:focus-within { border-color: var(--active-lottery-readable); box-shadow: 0 2px var(--active-lottery-readable); }
+.lottery-search-field input:focus { outline: none; }
+.lottery-search-field input::placeholder { color: var(--text-secondary); opacity: 1; }
+.lottery-scroll-controls { display: flex; gap: 6px; flex-shrink: 0; }
+.lottery-scroll-controls button, .lottery-search-field button { width: 44px; height: 44px; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; }
+.lottery-search-field button { border-color: transparent; background: transparent; }
+.lottery-scroll-controls .lab-icon, .lottery-search-field button .lab-icon { width: 18px; height: 18px; }
+.lottery-scroll-controls button:disabled { opacity: .4; cursor: default; }
+.lottery-scroll-controls button:focus-visible, .lottery-search-field button:focus-visible { outline: 3px solid var(--text-primary); outline-offset: 2px; }
+.lottery-picker-status { text-align: left; color: var(--text-secondary); font-size: .8em; margin: 8px 0 0; line-height: 1.5; }
 .lottery-option {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--surface-raised));
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
     cursor: pointer;
+    font: inherit;
     display: flex;
     flex-direction: column;
-    min-height: 158px;
-    overflow: hidden;
-    padding: 12px;
+    min-height: 148px;
+    flex: 0 0 220px;
+    scroll-snap-align: start;
+    padding: 16px;
     position: relative;
     text-align: left;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    width: 100%;
+    width: 220px;
 }
 .lottery-option::before {
     background: var(--lottery-border, var(--lottery-primary));
     content: "";
-    height: 4px;
+    width: 4px;
     left: 0;
     opacity: 0.8;
     position: absolute;
-    right: 0;
     top: 0;
+    bottom: 0;
 }
 .lottery-option:hover {
     border-color: var(--lottery-border, var(--lottery-primary));
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
 }
 .lottery-option:disabled {
     cursor: not-allowed;
@@ -2111,26 +2135,28 @@ body.dark-theme .lab-tool#assistencia-btn { --tool-color: #f9a8d4; }
 }
 .lottery-option:focus-visible {
     border-color: var(--lottery-border, var(--lottery-primary));
-    outline: 3px solid var(--focus-ring);
+    outline: 3px solid var(--text-primary);
     outline-offset: 2px;
 }
 .lottery-option.is-selected {
-    background: linear-gradient(180deg, var(--lottery-soft-bg), var(--bg-secondary) 68%);
+    background: linear-gradient(135deg, var(--lottery-soft-bg), transparent 80%), var(--bg-secondary);
     border-color: var(--lottery-border, var(--lottery-primary));
-    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+    box-shadow: inset 0 -2px var(--lottery-border);
 }
 .lottery-option-topline {
     align-items: center;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    gap: 8px;
+    margin-bottom: 14px;
 }
-.lottery-option-kicker,
-.lottery-option-days {
+.lottery-option-topline > .lab-icon { width: 22px; height: 22px; color: var(--lottery-readable); flex-shrink: 0; }
+.lottery-option-kicker {
     color: var(--text-secondary);
-    font-size: 0.72rem;
-    font-weight: 900;
-    line-height: 1.15;
+    font-size: .6em;
+    font-weight: 800;
+    line-height: 1.4;
+    flex: 1;
 }
 .lottery-option-check {
     align-items: center;
@@ -2152,45 +2178,20 @@ body.dark-theme .lab-tool#assistencia-btn { --tool-color: #f9a8d4; }
 .lottery-option-name {
     color: var(--lottery-readable, var(--lottery-primary));
     display: block;
-    font-size: 1.02rem;
+    font-size: 1em;
     font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 4px;
+    line-height: 1.3;
+    margin-bottom: 6px;
     overflow-wrap: anywhere;
 }
 .lottery-option-meta {
     color: var(--text-primary);
     display: block;
-    font-size: 0.82rem;
-    font-weight: 800;
-    line-height: 1.2;
+    font-size: .75em;
+    font-weight: 600;
+    line-height: 1.6;
 }
-.lottery-option-balls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin: auto 0 10px;
-    padding-top: 13px;
-}
-.lottery-option-balls span {
-    align-items: center;
-    background: var(--lottery-ball-bg, var(--lottery-primary));
-    border-radius: 999px;
-    color: #ffffff;
-    display: inline-flex;
-    font-size: 0.68rem;
-    font-weight: 900;
-    height: 24px;
-    justify-content: center;
-    line-height: 1;
-    min-width: 24px;
-    padding: 0 6px;
-}
-.lottery-option-days {
-    border-top: 1px solid var(--border-color);
-    display: block;
-    padding-top: 9px;
-}
+@media (prefers-reduced-motion: no-preference) { .lottery-option { transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease; } }
 
 body.dark-theme .generation-mode-eyebrow {
     color: #fbbf24;
@@ -2246,7 +2247,7 @@ body.dark-theme .premium-upsell-panel span {
     color: #fbbf24;
 }
 body.dark-theme .lottery-selected-summary {
-    background: linear-gradient(135deg, var(--active-lottery-soft-bg, rgba(16, 185, 129, 0.16)), rgba(15, 23, 42, 0.38) 72%);
+    background: transparent;
 }
 body.dark-theme .lottery-option.is-selected {
     background: linear-gradient(180deg, var(--lottery-soft-bg), rgba(15, 23, 42, 0.36) 70%);
@@ -2263,9 +2264,7 @@ body.dark-theme .draw-calendar-empty {
     .lottery-selected-summary {
         min-width: 0;
         width: 100%;
-    }
-    .lottery-option {
-        min-height: 144px;
+        max-width: none;
     }
 }
 
