@@ -26,7 +26,29 @@ async function main() {
         await page.reload();await page.waitForFunction(()=>!document.getElementById('app-shell').classList.contains('hidden'));
         await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===39);
         await page.waitForTimeout(500);
+        async function showLottery(kind) {
+            const index=Object.keys(numbers).indexOf(kind);
+            const size=await page.evaluate(()=>matchMedia('(max-width: 600px)').matches?1:2);
+            await page.locator('#results-page-select').selectOption(String(Math.floor(index/size)));
+        }
         assert.equal(await page.locator('.latest-result-card').count(),5);
+        assert.equal(await page.locator('.latest-result-card:visible').count(),2);
+        assert.equal(await page.locator('#results-page-select option').count(),3);
+        assert.equal(await page.locator('#results-page-strip [aria-current="page"]').getAttribute('data-results-page'),'0');
+        assert.equal(await page.locator('#results-page-strip button').count(),3);
+        assert.equal(await page.locator('#results-page-strip button').first().locator('.results-page-swatches i').count(),2);
+        await page.locator('[data-results-page="2"]').click();
+        assert.equal(await page.locator('.latest-result-card:visible').first().getAttribute('data-lottery'),'maismilionaria');
+        assert.equal(await page.locator('[data-results-page="2"]').evaluate(n=>n===document.activeElement),true);
+        await page.locator('#results-page-select').selectOption('0');
+        assert.equal(await page.locator('#results-prev').isDisabled(),true);
+        await page.locator('#results-next').click();
+        assert.equal(await page.locator('.latest-result-card:visible').first().getAttribute('data-lottery'),'quina');
+        assert.equal(await page.locator('#results-page-select').evaluate(n=>n===document.activeElement),true);
+        await page.locator('#results-next').focus();await page.keyboard.press('End');
+        assert.equal(await page.locator('.latest-result-card:visible').count(),1);
+        assert.equal(await page.locator('#results-next').isDisabled(),true);
+        await page.locator('#results-page-select').selectOption('0');
         assert.equal(await page.locator('#update-data-btn').isVisible(),false,'Guest cannot update source data');
         for(const [kind,values] of Object.entries(numbers)) {
             const card=page.locator(`.latest-result-card[data-lottery="${kind}"]`);
@@ -43,20 +65,26 @@ async function main() {
                 assert.deepEqual(clipped,[],`No clipped text at ${width}, dark=${dark}`);
                 await page.locator('#latest-results-section').screenshot({path:path.join(__dirname,`results-${width}-${dark?'dark':'light'}.png`)});
             }
+            assert.equal(await page.locator('.latest-result-card:visible').count(),width<=600?1:2);
+            assert.equal(await page.locator('#results-page-select option').count(),width<=600?5:3);
         }
+        const originalPageFont=await page.locator('#results-page-select').evaluate(n=>parseFloat(getComputedStyle(n).fontSize));
         for(let i=0;i<4;i++)await page.locator('#increase-font').click();
+        assert.ok(await page.locator('#results-page-select').evaluate(n=>parseFloat(getComputedStyle(n).fontSize))>originalPageFont,'Pagination respects the text-size preference');
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Enlarged text fits');
         assert.deepEqual(await page.locator('#latest-results-grid').evaluate(root=>[...root.querySelectorAll('h3,span,strong,time,button')].filter(n=>n.getClientRects().length&&n.scrollWidth>n.clientWidth+1).map(n=>n.textContent)),[],'Enlarged card text is not clipped');
         for(let i=0;i<4;i++)await page.locator('#decrease-font').click();
+        await showLottery('diadesorte');
         await page.locator('[data-results-kind="diadesorte"][data-results-action="copy"]').click();
         assert.match(await page.evaluate(()=>window.copiedResult),/Mês da Sorte: Setembro/);
-        await page.evaluate(()=>window.failCopy=true);await page.locator('[data-results-kind="quina"][data-results-action="copy"]').click();
+        await page.evaluate(()=>window.failCopy=true);await showLottery('quina');await page.locator('[data-results-kind="quina"][data-results-action="copy"]').click();
         assert.match(await page.locator('#results-action-feedback').innerText(),/Não foi possível copiar/);
-        await page.locator('[data-results-kind="diadesorte"][data-results-action="digest"]').click();
+        await showLottery('diadesorte');await page.locator('[data-results-kind="diadesorte"][data-results-action="digest"]').click();
         await page.waitForFunction(()=>document.getElementById('digest-tab-diadesorte').getAttribute('aria-selected')==='true');
         assert.equal(await page.locator('#draw-digest-panel').getAttribute('open'),'');
         const before=reads;mismatch=true;await page.locator('#results-reload').click();
         await page.waitForFunction(()=>document.querySelectorAll('.result-state-note').length===5);assert.ok(reads>before);
+        assert.equal(await page.locator('#results-page-select').inputValue(),'3','Refresh preserves page');
         mismatch=false;results.megasena.numbers=[1,1,1,1,1,1];await page.locator('#results-reload').click();
         await page.waitForFunction(()=>document.querySelector('.latest-result-card[data-lottery="megasena"]')?.dataset.state==='unavailable');
         assert.equal(await page.locator('.latest-result-card[data-lottery="megasena"] .latest-result-ball').count(),0);
@@ -68,6 +96,30 @@ async function main() {
         assert.equal(await page.locator('.latest-result-ball').count(),0,'Failed read never retains apparently current numbers');
         failed=false;results=fixture();await page.locator('#results-reload').click();
         await page.waitForFunction(()=>document.querySelectorAll('.latest-result-ball').length===39);
+        await page.emulateMedia({reducedMotion:'reduce'});await page.locator('#results-page-select').selectOption('4');
+        assert.equal(await page.locator('#latest-results-grid').evaluate(n=>n.getAnimations().length),0);
+        const readsBeforePaging=reads;
+        await page.locator('#results-page-select').selectOption('1');await page.waitForTimeout(250);
+        assert.equal(reads,readsBeforePaging,'Pagination only uses the loaded results');
+        assert.equal(await page.locator('.latest-result-card[hidden][inert]').count(),4);
+        const height=await page.locator('#latest-results-grid').evaluate(n=>n.getBoundingClientRect().height);
+        await page.locator('#results-page-select').selectOption('4');
+        assert.ok(Math.abs(await page.locator('#latest-results-grid').evaluate(n=>n.getBoundingClientRect().height)-height)<3,'Page height remains stable');
+        await page.setViewportSize({width:1440,height:1100});
+        assert.equal(await page.locator('.latest-result-card:visible').first().getAttribute('data-lottery'),'maismilionaria','Resizing preserves the first displayed lottery');
+        await page.evaluate(()=>{
+            const grid=document.getElementById('latest-results-grid');
+            for(let i=0;i<4;i++){const card=grid.firstElementChild.cloneNode(true);card.dataset.extraTest='true';card.querySelector('h3').textContent=`Modalidade de teste ${i+1}`;grid.append(card);}
+            grid.dispatchEvent(new Event('results:rendered'));
+        });
+        assert.equal(await page.locator('#results-page-select option').count(),5,'Additional lotteries automatically create pages');
+        await page.locator('#results-page-select').selectOption('4');
+        assert.equal(await page.locator('.latest-result-card:visible').count(),1);
+        await page.evaluate(()=>{document.querySelectorAll('[data-extra-test]').forEach(n=>n.remove());document.getElementById('latest-results-grid').dispatchEvent(new Event('results:rendered'));});
+        assert.equal(await page.locator('#results-page-select').inputValue(),'2','Shrinking the list clamps the page instead of leaving a blank panel');
+        await page.locator('[data-results-page="2"]').focus();
+        await page.evaluate(()=>document.getElementById('latest-results-grid').dispatchEvent(new Event('results:rendered')));
+        assert.equal(await page.locator('[data-results-page="2"]').evaluate(n=>n===document.activeElement),true,'Refresh preserves focus on numbered pages');
         assert.deepEqual(errors,[]);
         console.log('Results board: all lotteries, themes, mobile, enlarged text, safe copy, digest link, mismatch, invalid data and retry passed.');
     } finally {await browser?.close();server.kill();await new Promise(resolve=>server.exitCode!==null?resolve():server.once('exit',resolve));}

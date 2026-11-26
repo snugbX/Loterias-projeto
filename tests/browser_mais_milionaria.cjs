@@ -22,6 +22,7 @@ async function main() {
         assert.match(await page.locator('#selected-lottery-meta').innerText(),/2 trevos/);
         const latest=(await (await page.request.get('http://127.0.0.1:5119/latest_results')).json()).results.maismilionaria;
         await page.waitForFunction(()=>document.querySelector('.latest-result-card[data-lottery="maismilionaria"]')?.dataset.state==='available');
+        await page.locator('#results-page-select').selectOption('2');
         await page.locator('[data-results-kind="maismilionaria"][data-results-action="digest"]').click();
         await page.waitForFunction(()=>document.querySelector('#digest-page-maismilionaria')?.dataset.state==='current');
         assert.match(await page.locator('#digest-page-maismilionaria .digest-month').innerText(),new RegExp(latest.extras['Trevo 1']));

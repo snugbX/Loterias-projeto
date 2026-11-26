@@ -5,6 +5,32 @@ geração ou o histórico particular dos usuários. São duas colunas no desktop
 uma coluna abaixo de 600 px. A Lotofácil usa cinco colunas de dezenas; Dia de
 Sorte destaca separadamente o Mês da Sorte. Não há rotação automática.
 
+## Paginação
+
+O painel exibe dois bilhetes por página no desktop e um em telas de até 600 px.
+Setas e um seletor nativo permitem navegar sem novas consultas à API. A quantidade
+de páginas é calculada a partir dos bilhetes renderizados, sem limite fixo de
+modalidades. A recarga preserva a página e a mudança de faixa de tela mantém a
+primeira loteria visível sempre que possível. Se a lista encolher, a página é
+ajustada para o novo limite.
+
+Os bilhetes fora da página usam `hidden` e `inert`, portanto não ficam na ordem
+de foco ou na leitura por tecnologias assistivas. Há anúncio do intervalo
+visível, teclas direcionais nos botões, controles de 44 px e transição curta
+de opacidade que respeita movimento reduzido. Não existe avanço automático.
+Uma altura mínima evita saltos comuns entre bilhetes sem impedir a expansão
+do texto ou dos detalhes da base.
+
+A navegação numerada exibe uma janela de até três páginas, com pequenas faixas
+nas cores das loterias presentes em cada uma. A página atual usa contraste e
+`aria-current`, não apenas cor. O seletor nativo continua disponível para ir a
+qualquer página sem criar uma faixa de navegação interminável. Atualizações
+preservam também o foco nos botões numerados.
+
+O evento local `results:rendered`, emitido por `render.js` ao terminar a montagem,
+permite que `resultsBoard.js` reaplique a página sem acoplar o renderizador aos
+controles. O estado da página existe apenas em memória, não em contas ou banco.
+
 ## Responsabilidades
 
 - `render.js`: valida quantidade, unicidade, limites das dezenas e metadados;
